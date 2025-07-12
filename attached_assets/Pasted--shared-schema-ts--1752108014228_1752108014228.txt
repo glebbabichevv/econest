@@ -1,0 +1,23 @@
+ Следующий шаг — проверить shared/schema.ts
+Сейчас открою и посмотрю, всё ли там правильно. 
+
+Проанализировано
+Всегда показывать подробности
+
+# Проверим содержимое файла shared/schema.ts
+shared_schema_path = os.path.join(project_path, "shared", "schema.ts")
+with open(shared_schema_path, "r", encoding="utf-8") as f:
+    schema_ts = f.read()
+
+schema_ts[:1500]  # Выведем первые 1500 символов для обзора
+Результат
+'import {\n  pgTable,\n  text,\n  varchar,\n  timestamp,\n  jsonb,\n  index,\n  serial,\n  integer,\n  decimal,\n  boolean,\n} from "drizzle-orm/pg-core";\nimport { createInsertSchema } from "drizzle-zod";\nimport { z } from "zod";\nimport { relations } from "drizzle-orm";\n\n// Session storage table (required for Replit Auth)\nexport const sessions = pgTable(\n  "sessions",\n  {\n    sid: varchar("sid").primaryKey(),\n    sess: jsonb("sess").notNull(),\n    expire: timestamp("expire").notNull(),\n  },\n  (table) => [index("IDX_session_expire").on(table.expire)],\n);\n\n// User storage table (required for Replit Auth)\nexport const users = pgTable("users", {\n  id: varchar("id").primaryKey().notNull(),\n  email: varchar("email").unique(),\n  firstName: varchar("first_name"),\n  lastName: varchar("last_name"),\n  profileImageUrl: varchar("profile_image_url"),\n  password: varchar("password"), // For traditional registration\n  role: varchar("role").notNull().default("individual"), // individual, company, student\n  language: varchar("language").default("en"),\n  region: varchar("region"),\n\n  isRegistrationComplete: boolean("is_registration_complete").default(false),\n  createdAt: timestamp("created_at").defaultNow(),\n  updatedAt: timestamp("updated_at").defaultNow(),\n});\n\n\n\n// Consumption readings - monthly data structure\nexport const consumptionReadings = pgTable("consumption_readings", {\n  id: serial("id").primaryKey(),\n  userId: varchar("user_id").notNull().references(() => users.id),\n  // Monthly consumption da'
+Отличные новости — таблица users действительно определена в shared/schema.ts, и она валидная.
+💥 Но в чём проблема?
+Хотя таблица определена, ты не экспортируешь её как schema для Drizzle. В файле drizzle.config.ts используется вот это:
+schema: "./shared/schema.ts"
+А значит, Drizzle ожидает export default [...] или export const schema = {...} — а этого там нет.
+✅ Как срочно починить
+Добавь в самый конец файла shared/schema.ts вот это:
+export default [sessions, users, consumptionReadings];
+💡 Также можешь добавить туда и другие таблицы, если они есть (feedback, footprints, и т. д.).

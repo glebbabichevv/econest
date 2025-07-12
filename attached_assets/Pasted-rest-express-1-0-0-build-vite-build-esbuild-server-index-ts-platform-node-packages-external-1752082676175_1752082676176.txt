@@ -1,0 +1,44 @@
+rest-express@1.0.0 build
+> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+vite v5.4.19 building for production...
+transforming...
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ 2583 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/public/index.html                     2.07 kB │ gzip:   0.83 kB
+../dist/public/assets/index-Dw3MKaXP.css    124.77 kB │ gzip:  19.75 kB
+../dist/public/assets/index-Dlfpf8Un.js   1,650.58 kB │ gzip: 449.51 kB
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 8.09s
+  dist/index.js  73.2kb
+⚡ Done in 8ms
+==> Uploading build...
+==> Uploaded in 5.8s. Compression took 3.1s
+==> Build successful 🎉
+==> Deploying...
+==> Running ' npm start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+Original DATABASE_URL length: 152
+Cleaned DATABASE_URL starts with: postgresql://neondb_owner:npg_MLQjTS59bJzI@ep-crim...
+Contains psql prefix: true
+URL encoded characters: false
+✅ Database connection test successful
+5:35:58 PM [express] Auto-migrating database...
+5:36:10 PM [express] Database migration completed successfully
+5:36:10 PM [express] serving on port 5000
+==> Your service is live 🎉
+==> 
+==> ///////////////////////////////////////////////////////////
+==> 
+==> Available at your primary URL https://econest-q3hj.onrender.com
+==> 
+==> ///////////////////////////////////////////////////////////
+5:36:34 PM [express] GET /api/auth/user 401 in 2ms :: {"message":"Unauthorized"}
+5:36:38 PM [express] GET /api/auth/user 401 in 1ms :: {"message":"Unauthorized"}

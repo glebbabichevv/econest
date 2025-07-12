@@ -1,0 +1,71 @@
+ Cloning from https://github.com/glebbabichevv/econest
+==> Checking out commit 9506b81ddf91461581121d1a3aecf39c1f499cf3 in branch main
+==> Downloading cache...
+==> Transferred 225MB in 7s. Extraction took 8s.
+==> Using Node.js version 22.16.0 (default)
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Using Bun version 1.1.0 (default)
+==> Docs on specifying a Bun version: https://render.com/docs/bun-version
+==> Running build command ' npm install && npm run build'...
+up to date, audited 546 packages in 2s
+69 packages are looking for funding
+  run `npm fund` for details
+9 vulnerabilities (1 low, 8 moderate)
+To address issues that do not require attention, run:
+  npm audit fix
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+Run `npm audit` for details.
+> rest-express@1.0.0 build
+> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+vite v5.4.19 building for production...
+transforming...
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ 2583 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/public/index.html                     2.07 kB │ gzip:   0.83 kB
+../dist/public/assets/index-DCyeYw3v.css    125.80 kB │ gzip:  19.92 kB
+../dist/public/assets/index-BRTqI7uY.js   1,652.92 kB │ gzip: 449.97 kB
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 9.08s
+  dist/index.js  79.3kb
+⚡ Done in 8ms
+==> Uploading build...
+==> Uploaded in 5.2s. Compression took 3.8s
+==> Build successful 🎉
+==> Deploying...
+==> Running ' npm start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+Original DATABASE_URL length: 153
+Cleaned DATABASE_URL starts with: postgresql://neondb_owner:npg_7cPfdehQlTD5@ep-whit...
+Contains psql prefix: true
+URL encoded characters: false
+✅ Database connection test successful
+1:06:28 AM [express] Auto-migrating database...
+1:06:41 AM [express] Database migration completed successfully
+1:06:41 AM [] Tables in database:
+1:06:41 AM [express] No tables found, attempting to create schema...
+1:06:53 AM [express] Force schema creation completed
+1:06:53 AM [express] serving on port 10000
+==> Your service is live 🎉
+==> 
+==> ///////////////////////////////////////////////////////////
+==> 
+==> Available at your primary URL https://econest-q3hj.onrender.com
+==> 
+==> ///////////////////////////////////////////////////////////
+GET /api/auth/user - Session ID: 1NUV2qq2c9bAL_meK3X5OSa12Dr3yfV6
+GET /api/auth/user - Session userId: undefined
+GET /api/auth/user - Cookie: undefined
+1:07:32 AM [express] GET /api/auth/user 401 in 2ms :: {"message":"Unauthorized"}
+GET /api/auth/user - Session ID: EgEwfshxhK8_0ocN9Jo8rvfkL6eMyS19
+GET /api/auth/user - Session userId: undefined
+GET /api/auth/user - Cookie: undefined
+1:07:34 AM [express] GET /api/auth/user 401 in 0ms :: {"message":"Unauthorized"}

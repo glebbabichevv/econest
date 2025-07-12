@@ -1,0 +1,1363 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Mobile optimizations */
+@layer base {
+  * {
+    @apply touch-manipulation;
+  }
+  
+  html {
+    @apply text-base;
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  body {
+    @apply min-h-screen overflow-x-hidden;
+  }
+  
+  /* Improve tap targets on mobile */
+  button, 
+  [role="button"], 
+  input, 
+  select, 
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Better mobile scrolling */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Mobile-friendly containers */
+  .mobile-container {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Mobile grid adjustments */
+  .mobile-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
+  }
+  
+  /* Mobile typography */
+  .mobile-title {
+    @apply text-xl sm:text-2xl lg:text-3xl font-bold;
+  }
+  
+  .mobile-subtitle {
+    @apply text-lg sm:text-xl lg:text-2xl font-semibold;
+  }
+  
+  .mobile-text {
+    @apply text-sm sm:text-base lg:text-lg;
+  }
+  
+  /* Mobile form elements */
+  .mobile-input {
+    @apply h-10 sm:h-11 text-base sm:text-sm;
+  }
+  
+  .mobile-button {
+    @apply h-10 sm:h-11 px-4 sm:px-6 text-sm sm:text-base;
+  }
+}
+
+/* Custom animations for Landing page */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 30px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translate3d(30px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes wiggle {
+  0%, 7% {
+    transform: rotateZ(0);
+  }
+  15% {
+    transform: rotateZ(-15deg);
+  }
+  20% {
+    transform: rotateZ(10deg);
+  }
+  25% {
+    transform: rotateZ(-10deg);
+  }
+  30% {
+    transform: rotateZ(6deg);
+  }
+  35% {
+    transform: rotateZ(-4deg);
+  }
+  40%, 100% {
+    transform: rotateZ(0);
+  }
+}
+
+/* Accordion animations */
+@keyframes accordion-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+/* Utility classes */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s infinite;
+}
+
+.animate-accordion-down {
+  animation: accordion-down 0.3s ease-out;
+}
+
+.animate-accordion-up {
+  animation: accordion-up 0.3s ease-out;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 400% 400%;
+  animation: gradient-shift 4s ease infinite;
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.8s ease-out forwards;
+}
+
+.animate-wiggle {
+  animation: wiggle 2s ease-in-out infinite;
+}
+
+/* Custom gradient backgrounds */
+.bg-gradient-radial {
+  background: radial-gradient(ellipse at center, var(--tw-gradient-stops));
+}
+
+.bg-gradient-conic {
+  background: conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops));
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition-property: transform, opacity, background-color, border-color, color, fill, stroke, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(34, 197, 94, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 197, 94, 0.5);
+}
+
+/* Enhanced button hover effects */
+.btn-glow:hover {
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+}
+
+/* Loading shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+:root {
+  /* Econest color scheme */
+  --primary: hsl(122, 39%, 49%); /* #4CAF50 */
+  --primary-dark: hsl(189, 41%, 19%); /* #1A3C40 */
+  --primary-light: hsl(122, 53%, 94%); /* #DFF5E1 */
+  --neutral-bg: hsl(0, 0%, 94%); /* #F0F0F0 */
+  
+  /* Base colors */
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(189, 41%, 19%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(189, 41%, 19%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(189, 41%, 19%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(189, 41%, 19%);
+  --radius: 0.5rem;
+  
+  /* Chart colors */
+  --chart-1: hsl(207, 90%, 54%);
+  --chart-2: hsl(45, 100%, 51%);
+  --chart-3: hsl(14, 100%, 57%);
+  --chart-4: hsl(122, 39%, 49%);
+  --chart-5: hsl(271, 87%, 60%);
+  
+  /* Sidebar colors */
+  --sidebar-background: hsl(0, 0%, 98%);
+  --sidebar-foreground: hsl(189, 41%, 19%);
+  --sidebar-primary: hsl(122, 39%, 49%);
+  --sidebar-primary-foreground: hsl(0, 0%, 100%);
+  --sidebar-accent: hsl(60, 4.8%, 95.9%);
+  --sidebar-accent-foreground: hsl(24, 9.8%, 10%);
+  --sidebar-border: hsl(20, 5.9%, 90%);
+  --sidebar-ring: hsl(189, 41%, 19%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(122, 39%, 49%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  
+  /* Sidebar colors for dark mode */
+  --sidebar-background: hsl(240, 5.9%, 10%);
+  --sidebar-foreground: hsl(240, 4.8%, 95.9%);
+  --sidebar-primary: hsl(122, 39%, 49%);
+  --sidebar-primary-foreground: hsl(0, 0%, 100%);
+  --sidebar-accent: hsl(240, 3.7%, 15.9%);
+  --sidebar-accent-foreground: hsl(240, 4.8%, 95.9%);
+  --sidebar-border: hsl(240, 3.7%, 15.9%);
+  --sidebar-ring: hsl(240, 4.9%, 83.9%);
+}
+
+.ocean {
+  /* Ocean theme - яркие и явные голубые оттенки */
+  --background: hsl(195, 100%, 96%);
+  --foreground: hsl(210, 90%, 20%);
+  --muted: hsl(190, 80%, 85%);
+  --muted-foreground: hsl(205, 60%, 40%);
+  --popover: hsl(195, 100%, 96%);
+  --popover-foreground: hsl(210, 90%, 20%);
+  --card: hsl(185, 90%, 92%);
+  --card-foreground: hsl(210, 90%, 20%);
+  --border: hsl(180, 80%, 70%);
+  --input: hsl(175, 70%, 82%);
+  --primary: hsl(200, 100%, 40%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(185, 60%, 80%);
+  --secondary-foreground: hsl(210, 90%, 20%);
+  --accent: hsl(170, 90%, 65%);
+  --accent-foreground: hsl(210, 90%, 20%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(200, 100%, 40%);
+  
+  /* Sidebar colors for ocean theme */
+  --sidebar-background: hsl(185, 90%, 88%);
+  --sidebar-foreground: hsl(210, 90%, 20%);
+  --sidebar-primary: hsl(200, 100%, 40%);
+  --sidebar-primary-foreground: hsl(0, 0%, 100%);
+  --sidebar-accent: hsl(185, 60%, 80%);
+  --sidebar-accent-foreground: hsl(210, 90%, 20%);
+  --sidebar-border: hsl(180, 80%, 70%);
+  --sidebar-ring: hsl(200, 100%, 40%);
+  
+  /* Custom ocean variables */
+  --primary-dark: hsl(210, 90%, 25%);
+  --primary-light: hsl(175, 70%, 88%);
+  --neutral-bg: hsl(185, 70%, 90%);
+}
+
+.spooky {
+  /* Spooky theme - как на Replit с оптимизированными шрифтами */
+  --background: hsl(225, 9%, 9%);
+  --foreground: hsl(213, 31%, 91%);
+  --muted: hsl(223, 10%, 15%);
+  --muted-foreground: hsl(215, 20%, 65%);
+  --popover: hsl(224, 10%, 11%);
+  --popover-foreground: hsl(213, 31%, 91%);
+  --card: hsl(223, 13%, 12%);
+  --card-foreground: hsl(213, 31%, 91%);
+  --border: hsl(216, 13%, 20%);
+  --input: hsl(216, 13%, 17%);
+  --primary: hsl(25, 80%, 55%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(215, 13%, 15%);
+  --secondary-foreground: hsl(213, 31%, 91%);
+  --accent: hsl(25, 50%, 20%);
+  --accent-foreground: hsl(25, 80%, 75%);
+  --destructive: hsl(0, 75%, 65%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --ring: hsl(25, 80%, 55%);
+  
+  /* Sidebar colors for spooky theme */
+  --sidebar-background: hsl(225, 9%, 7%);
+  --sidebar-foreground: hsl(213, 31%, 91%);
+  --sidebar-primary: hsl(25, 80%, 55%);
+  --sidebar-primary-foreground: hsl(0, 0%, 100%);
+  --sidebar-accent: hsl(25, 50%, 15%);
+  --sidebar-accent-foreground: hsl(25, 80%, 75%);
+  --sidebar-border: hsl(25, 30%, 20%);
+  --sidebar-ring: hsl(25, 80%, 55%);
+  
+  /* Custom spooky variables */
+  --primary-dark: hsl(25, 80%, 35%);
+  --primary-light: hsl(25, 50%, 25%);
+  --neutral-bg: hsl(223, 13%, 12%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  /* Force theme application */
+  html.ocean {
+    color-scheme: light;
+    background-color: hsl(195, 100%, 96%) !important;
+  }
+  
+  html.spooky {
+    color-scheme: dark;
+    background-color: hsl(225, 9%, 9%) !important;
+  }
+  
+  html.dark {
+    color-scheme: dark;
+    background-color: hsl(240, 10%, 3.9%) !important;
+  }
+  
+  /* Ocean theme body override */
+  html.ocean body {
+    background-color: hsl(195, 100%, 96%) !important;
+    color: hsl(210, 90%, 20%) !important;
+  }
+  
+  /* Spooky theme body override */
+  html.spooky body {
+    background-color: hsl(225, 9%, 9%) !important;
+    color: hsl(213, 31%, 91%) !important;
+    font-weight: 400;
+  }
+  
+  /* Ocean theme component overrides */
+  html.ocean [data-theme] {
+    background-color: var(--background) !important;
+    color: var(--foreground) !important;
+  }
+  
+  html.ocean .bg-background {
+    background-color: hsl(195, 100%, 96%) !important;
+  }
+  
+  html.ocean .bg-card {
+    background-color: hsl(185, 90%, 92%) !important;
+  }
+  
+  /* Spooky theme component overrides */
+  html.spooky [data-theme] {
+    background-color: var(--background) !important;
+    color: var(--foreground) !important;
+  }
+  
+  html.spooky .bg-background {
+    background-color: hsl(225, 9%, 9%) !important;
+  }
+  
+  html.spooky .bg-card {
+    background-color: hsl(223, 13%, 12%) !important;
+  }
+  
+  /* Additional overrides for specific components */
+  html.ocean main,
+  html.ocean .min-h-screen {
+    background-color: hsl(195, 100%, 96%) !important;
+  }
+  
+  html.spooky main,
+  html.spooky .min-h-screen {
+    background: linear-gradient(135deg, hsl(225, 9%, 9%) 0%, hsl(223, 13%, 12%) 50%, hsl(225, 15%, 8%) 100%) !important;
+  }
+  
+  /* Spooky theme body background */
+  html.spooky body {
+    background: linear-gradient(135deg, hsl(225, 9%, 9%) 0%, hsl(223, 13%, 12%) 50%, hsl(225, 15%, 8%) 100%) !important;
+    color: hsl(213, 31%, 91%) !important;
+  }
+  
+  /* Landing pages specific dark background for spooky theme */
+  html.spooky .landing-page,
+  html.spooky .auth-page,
+  html.spooky .public-page {
+    background: linear-gradient(135deg, hsl(225, 9%, 7%) 0%, hsl(223, 13%, 10%) 50%, hsl(225, 15%, 6%) 100%) !important;
+    min-height: 100vh;
+  }
+  
+  /* Button and card styles for ocean theme */
+  html.ocean .bg-primary {
+    background-color: hsl(200, 100%, 40%) !important;
+  }
+  
+  html.ocean .border {
+    border-color: hsl(180, 80%, 70%) !important;
+  }
+  
+  /* Button and card styles for spooky theme */
+  html.spooky .bg-primary {
+    background-color: hsl(263, 70%, 65%) !important;
+  }
+  
+  html.spooky .border {
+    border-color: hsl(216, 13%, 20%) !important;
+  }
+  
+  /* Панель навигации для готической темы */
+  html.spooky .bg-sidebar {
+    background-color: hsl(225, 9%, 7%) !important;
+  }
+  
+  html.spooky .bg-secondary {
+    background-color: hsl(215, 13%, 15%) !important;
+  }
+  
+  /* Панель навигации для океанической темы */
+  html.ocean .bg-sidebar {
+    background-color: hsl(185, 90%, 88%) !important;
+  }
+  
+  html.ocean .bg-secondary {
+    background-color: hsl(185, 60%, 80%) !important;
+  }
+  
+  /* Улучшенная типографика для готической темы в стиле Replit */
+  html.spooky {
+    font-feature-settings: "liga" 1, "kern" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  html.spooky body {
+    text-rendering: optimizeLegibility;
+  }
+  
+  /* Улучшение контраста текста */
+  html.spooky h1,
+  html.spooky h2,
+  html.spooky h3,
+  html.spooky h4,
+  html.spooky h5,
+  html.spooky h6 {
+    color: hsl(213, 31%, 95%) !important;
+    font-weight: 600;
+  }
+  
+  html.spooky p,
+  html.spooky span,
+  html.spooky div {
+    color: hsl(213, 31%, 91%) !important;
+  }
+  
+  html.spooky .text-muted-foreground {
+    color: hsl(215, 20%, 70%) !important;
+  }
+  
+  html.spooky .text-foreground {
+    color: hsl(213, 31%, 91%) !important;
+  }
+  
+  /* Кнопки и интерактивные элементы */
+  html.spooky button {
+    font-weight: 500;
+  }
+  
+  html.spooky input,
+  html.spooky textarea {
+    color: hsl(213, 31%, 91%) !important;
+    background-color: hsl(216, 13%, 17%) !important;
+  }
+  
+  html.spooky input::placeholder,
+  html.spooky textarea::placeholder {
+    color: hsl(215, 20%, 65%) !important;
+  }
+  
+  /* Hover эффекты для готической темы - оранжевые акценты */
+  html.spooky button:hover,
+  html.spooky .hover\:bg-accent:hover {
+    background-color: hsl(25, 70%, 25%) !important;
+  }
+  
+  html.spooky .hover\:bg-gray-100:hover,
+  html.spooky .hover\:bg-muted:hover {
+    background-color: hsl(25, 30%, 18%) !important;
+  }
+  
+  html.spooky .hover\:text-foreground:hover {
+    color: hsl(25, 80%, 75%) !important;
+  }
+  
+  /* Карточки и панели */
+  html.spooky .bg-muted {
+    background-color: hsl(223, 10%, 15%) !important;
+  }
+  
+  html.spooky .bg-accent {
+    background-color: hsl(25, 50%, 20%) !important;
+  }
+  
+  /* Сообщения о недостаточности данных */
+  html.spooky .text-gray-500,
+  html.spooky .text-muted-foreground {
+    color: hsl(215, 20%, 70%) !important;
+  }
+  
+  html.spooky .text-gray-600 {
+    color: hsl(215, 20%, 75%) !important;
+  }
+  
+  html.spooky .text-gray-400 {
+    color: hsl(215, 20%, 65%) !important;
+  }
+  
+  /* Фоны для пустых состояний */
+  html.spooky .bg-gray-50,
+  html.spooky .bg-gray-100 {
+    background-color: hsl(223, 10%, 15%) !important;
+  }
+  
+  html.spooky .bg-white {
+    background-color: hsl(223, 13%, 12%) !important;
+  }
+  
+  /* Границы */
+  html.spooky .border-gray-200,
+  html.spooky .border-gray-300 {
+    border-color: hsl(216, 13%, 20%) !important;
+  }
+  
+  /* Таблицы и списки */
+  html.spooky table,
+  html.spooky tr,
+  html.spooky td,
+  html.spooky th {
+    border-color: hsl(216, 13%, 20%) !important;
+  }
+  
+  html.spooky .bg-gray-50:nth-child(even),
+  html.spooky tr:nth-child(even) {
+    background-color: hsl(223, 10%, 12%) !important;
+  }
+  
+  /* Состояния загрузки и скелетоны */
+  html.spooky .animate-pulse {
+    background-color: hsl(223, 10%, 15%) !important;
+  }
+  
+  /* Dropdown и Select элементы */
+  html.spooky [role="option"],
+  html.spooky .select-item {
+    background-color: hsl(223, 13%, 12%) !important;
+    color: hsl(213, 31%, 91%) !important;
+  }
+  
+  html.spooky [role="option"]:hover,
+  html.spooky .select-item:hover {
+    background-color: hsl(25, 60%, 20%) !important;
+  }
+  
+  /* Специфичные компоненты Econest */
+  html.spooky .consumption-card,
+  html.spooky [class*="card"] {
+    background-color: hsl(223, 13%, 12%) !important;
+    border-color: hsl(216, 13%, 20%) !important;
+  }
+  
+  /* Сообщения о недостатке данных */
+  html.spooky .no-data-message,
+  html.spooky .insufficient-data,
+  html.spooky .empty-chart {
+    background-color: hsl(223, 10%, 15%) !important;
+    color: hsl(215, 20%, 70%) !important;
+    border: 1px solid hsl(216, 13%, 20%) !important;
+  }
+  
+  /* Chart.js и графики в темной теме */
+  html.spooky .chart-container {
+    background-color: hsl(223, 13%, 12%) !important;
+  }
+  
+  html.spooky canvas {
+    background-color: hsl(223, 13%, 12%) !important;
+  }
+  
+  /* Навигационное меню */
+  html.spooky nav,
+  html.spooky .navigation {
+    background-color: hsl(225, 9%, 7%) !important;
+  }
+  
+  html.spooky .nav-item:hover,
+  html.spooky nav a:hover,
+  html.spooky .navigation-item:hover {
+    background-color: hsl(25, 60%, 20%) !important;
+    color: hsl(25, 80%, 85%) !important;
+  }
+  
+  /* Menu hover эффекты */
+  html.spooky button:hover,
+  html.spooky [role="menuitem"]:hover,
+  html.spooky .menu-item:hover {
+    background-color: hsl(25, 60%, 20%) !important;
+    color: hsl(25, 80%, 85%) !important;
+  }
+  
+  /* Все белые элементы */
+  html.spooky .text-white {
+    color: hsl(25, 80%, 85%) !important;
+  }
+  
+  html.spooky .bg-white {
+    background-color: hsl(223, 13%, 12%) !important;
+    color: hsl(213, 31%, 91%) !important;
+  }
+  
+  /* Формы и поля */
+  html.spooky .form-group,
+  html.spooky fieldset {
+    background-color: hsl(223, 13%, 12%) !important;
+  }
+  
+  html.spooky label {
+    color: hsl(213, 31%, 91%) !important;
+  }
+  
+  /* Toast уведомления */
+  html.spooky .toast,
+  html.spooky [data-sonner-toast] {
+    background-color: hsl(224, 10%, 11%) !important;
+    color: hsl(213, 31%, 91%) !important;
+    border-color: hsl(216, 13%, 20%) !important;
+  }
+  
+  /* Модальные окна */
+  html.spooky .modal,
+  html.spooky .dialog,
+  html.spooky [role="dialog"] {
+    background-color: hsl(224, 10%, 11%) !important;
+    color: hsl(213, 31%, 91%) !important;
+  }
+  
+  /* Разделители */
+  html.spooky hr,
+  html.spooky .separator {
+    border-color: hsl(216, 13%, 20%) !important;
+  }
+  
+  /* Дополнительные белые элементы для исправления */
+  html.spooky .text-gray-900,
+  html.spooky .text-black {
+    color: hsl(213, 31%, 91%) !important;
+  }
+  
+  html.spooky .bg-gray-50,
+  html.spooky .bg-gray-100,
+  html.spooky .bg-gray-200 {
+    background-color: hsl(223, 10%, 15%) !important;
+  }
+  
+  /* Header и navigation специфичные стили */
+  html.spooky header,
+  html.spooky .header {
+    background-color: hsl(225, 9%, 7%) !important;
+  }
+  
+  html.spooky .header-item:hover,
+  html.spooky .nav-link:hover {
+    background-color: hsl(25, 60%, 20%) !important;
+    color: hsl(25, 80%, 85%) !important;
+  }
+  
+  /* Button ghost variants */
+  html.spooky .btn-ghost:hover,
+  html.spooky button[variant="ghost"]:hover {
+    background-color: hsl(25, 40%, 20%) !important;
+    color: hsl(25, 80%, 85%) !important;
+  }
+  
+  /* Все span и div элементы с белым текстом */
+  html.spooky span[class*="text-white"],
+  html.spooky div[class*="text-white"] {
+    color: hsl(25, 80%, 85%) !important;
+  }
+  
+  /* Link элементы */
+  html.spooky a:hover {
+    color: hsl(25, 80%, 85%) !important;
+  }
+  
+  /* Все элементы с hover:bg-white */
+  html.spooky .hover\:bg-white:hover {
+    background-color: hsl(25, 40%, 20%) !important;
+  }
+
+  /* Исправления для специфических страниц */
+  
+  /* How It Works - исправление исчезающего текста при hover */
+  html.spooky .how-it-works-page .hover\:shadow-2xl:hover * {
+    color: hsl(213, 31%, 91%) !important;
+    background-color: inherit !important;
+  }
+  
+  html.spooky .how-it-works-page .text-gray-600,
+  html.spooky .how-it-works-page .text-gray-700,
+  html.spooky .how-it-works-page .text-gray-800,
+  html.spooky .how-it-works-page .text-gray-900 {
+    color: hsl(213, 31%, 91%) !important;
+  }
+  
+  /* FAQ - темные аккордеоны по умолчанию, светлые при hover */
+  html.spooky .faq-page .bg-white\/50 {
+    background-color: hsl(223, 13%, 10%) !important;
+    border-color: hsl(216, 13%, 25%) !important;
+    color: hsl(213, 31%, 91%) !important;
+  }
+  
+  html.spooky .faq-page .hover\:border-blue-300:hover {
+    border-color: hsl(25, 80%, 55%) !important;
+    background-color: hsl(223, 13%, 15%) !important;
+    box-shadow: 0 4px 6px -1px hsl(25, 80%, 55%, 0.3) !important;
+  }
+  
+  html.spooky .faq-page .hover\:shadow-md:hover {
+    box-shadow: 0 4px 6px -1px hsl(25, 80%, 55%, 0.3) !important;
+  }
+  
+  /* About - убираем белые плашки */
+  html.spooky .about-page .bg-white\/80 {
+    background-color: hsl(223, 13%, 12%, 0.9) !important;
+    color: hsl(213, 31%, 91%) !important;
+  }
+  
+  html.spooky .about-page .bg-gradient-to-br {
+    background: hsl(223, 13%, 12%) !important;
+  }
+  
+  html.spooky .about-page .from-emerald-50 {
+    background: hsl(223, 13%, 12%) !important;
+  }
+  
+  /* Landing - исправление белого фона в CTA секции "Ready to start" */
+  html.spooky .landing-page .bg-gradient-to-r {
+    background: hsl(223, 13%, 12%) !important;
+  }
+  
+  html.spooky .landing-page .from-primary\/10 {
+    background: hsl(223, 13%, 12%) !important;
+  }
+  
+  html.spooky .landing-page .to-green-500\/10 {
+    background: hsl(223, 13%, 12%) !important;
+  }
+  
+  html.spooky .landing-page .backdrop-blur-sm {
+    background-color: hsl(223, 13%, 12%, 0.9) !important;
+    border: 1px solid hsl(25, 80%, 55%, 0.3) !important;
+  }
+
+  /* Исправления для всех страниц до регистрации - оранжевые hover с темным текстом */
+  
+  /* Логотип Econest - убираем серый прямоугольник и делаем оранжевым */
+  html.spooky .landing-page h1,
+  html.spooky .auth-page h1,
+  html.spooky .about-page h1,
+  html.spooky .faq-page h1,
+  html.spooky .contact-page h1,
+  html.spooky .how-it-works-page h1 {
+    color: hsl(25, 80%, 70%) !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* Карточки и блоки - оранжевые hover с сохранением темного текста */
+  html.spooky .landing-page .hover\:shadow-2xl:hover,
+  html.spooky .about-page .hover\:shadow-3xl:hover,
+  html.spooky .how-it-works-page .hover\:shadow-2xl:hover,
+  html.spooky .contact-page .hover\:shadow-xl:hover {
+    background-color: hsl(25, 60%, 20%) !important;
+    border-color: hsl(25, 80%, 55%) !important;
+    box-shadow: 0 25px 50px -12px hsl(25, 80%, 55%, 0.4) !important;
+  }
+  
+  /* Сохраняем темный текст при hover */
+  html.spooky .landing-page .hover\:shadow-2xl:hover h3,
+  html.spooky .landing-page .hover\:shadow-2xl:hover p,
+  html.spooky .about-page .hover\:shadow-3xl:hover h3,
+  html.spooky .about-page .hover\:shadow-3xl:hover p,
+  html.spooky .how-it-works-page .hover\:shadow-2xl:hover h3,
+  html.spooky .how-it-works-page .hover\:shadow-2xl:hover p,
+  html.spooky .contact-page .hover\:shadow-xl:hover * {
+    color: hsl(213, 31%, 91%) !important;
+  }
+  
+  /* FAQ аккордеоны - оранжевые hover */
+  html.spooky .faq-page .hover\:border-blue-300:hover {
+    border-color: hsl(25, 80%, 55%) !important;
+    background-color: hsl(25, 60%, 15%) !important;
+    box-shadow: 0 4px 6px -1px hsl(25, 80%, 55%, 0.3) !important;
+  }
+  
+  html.spooky .faq-page .hover\:border-blue-300:hover .text-gray-900,
+  html.spooky .faq-page .hover\:border-blue-300:hover .text-gray-600 {
+    color: hsl(213, 31%, 91%) !important;
+  }
+  
+  /* Убираем серый прямоугольник вокруг Econest в навигации */
+  html.spooky nav {
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    border-bottom: 1px solid hsl(216, 13%, 20%) !important;
+  }
+  
+  html.spooky .bg-white\/80 {
+    background-color: transparent !important;
+  }
+  
+  html.spooky .backdrop-blur-sm {
+    backdrop-filter: none !important;
+    background-color: transparent !important;
+  }
+  
+  /* Поправка для иконок в кнопках с темными фонами */
+  html.spooky button svg,
+  html.spooky a svg {
+    color: hsl(25, 80%, 70%) !important;
+    background-color: transparent !important;
+  }
+  
+  html.spooky button:hover svg,
+  html.spooky a:hover svg {
+    color: hsl(25, 90%, 80%) !important;
+    background-color: transparent !important;
+  }
+  
+  /* Фоны для иконок */
+  html.spooky .icon-background,
+  html.spooky [class*="icon"] {
+    background-color: hsl(223, 13%, 12%) !important;
+  }
+  
+  /* Панель навигации - убираем все белые эффекты */
+  html.spooky nav button,
+  html.spooky .navigation button,
+  html.spooky header button {
+    background-color: transparent !important;
+    border: none !important;
+  }
+  
+  html.spooky nav button:hover,
+  html.spooky .navigation button:hover,
+  html.spooky header button:hover {
+    background-color: hsl(25, 50%, 18%) !important;
+    color: hsl(25, 80%, 85%) !important;
+  }
+  
+  /* Убираем белые hover эффекты полностью */
+  html.spooky *:hover {
+    background-color: initial !important;
+  }
+  
+  html.spooky button:hover {
+    background-color: hsl(25, 50%, 18%) !important;
+  }
+  
+  html.spooky .hover\:bg-blue-50:hover,
+  html.spooky .hover\:bg-gray-50:hover,
+  html.spooky .hover\:bg-white:hover {
+    background-color: hsl(25, 50%, 18%) !important;
+  }
+  
+  /* Специфичные стили для AuthenticatedLayout */
+  html.spooky .authenticated-layout header,
+  html.spooky header[class*="bg-white"] {
+    background-color: hsl(225, 9%, 7%) !important;
+  }
+  
+  /* Кнопки в header */
+  html.spooky header button,
+  html.spooky .header-button {
+    background-color: transparent !important;
+    color: hsl(25, 80%, 70%) !important;
+  }
+  
+  html.spooky header button:hover,
+  html.spooky .header-button:hover {
+    background-color: hsl(25, 50%, 18%) !important;
+    color: hsl(25, 90%, 85%) !important;
+  }
+  
+  /* Все hover эффекты с bg-blue */
+  html.spooky .hover\:bg-blue-50:hover,
+  html.spooky .hover\:bg-blue-100:hover,
+  html.spooky .hover\:bg-blue-900\/20:hover {
+    background-color: hsl(25, 50%, 18%) !important;
+  }
+  
+  /* Dark mode hover эффекты */
+  html.spooky .dark\:hover\:bg-blue-900\/20:hover {
+    background-color: hsl(25, 50%, 18%) !important;
+  }
+  
+  /* Gradient buttons */
+  html.spooky .gradient-button,
+  html.spooky button[class*="gradient"] {
+    background: linear-gradient(135deg, hsl(25, 80%, 35%), hsl(25, 70%, 45%)) !important;
+  }
+  
+  /* Scale и rotate hover эффекты */
+  html.spooky .hover\:scale-110:hover,
+  html.spooky .hover\:rotate-12:hover {
+    background-color: hsl(25, 50%, 18%) !important;
+  }
+  
+  /* Полная замена всех светлых hover эффектов */
+  html.spooky [class*="hover:bg-"]:not([class*="hover:bg-primary"]):not([class*="hover:bg-destructive"]):hover {
+    background-color: hsl(25, 50%, 18%) !important;
+  }
+  
+  /* Убираем белые и светлые фоны навсегда */
+  html.spooky .bg-slate-50,
+  html.spooky .bg-stone-50,
+  html.spooky .bg-neutral-50,
+  html.spooky .bg-zinc-50 {
+    background-color: hsl(223, 13%, 12%) !important;
+  }
+  
+  /* Убираем все светлые hover эффекты */
+  html.spooky .hover\:bg-slate-50:hover,
+  html.spooky .hover\:bg-stone-50:hover,
+  html.spooky .hover\:bg-neutral-50:hover,
+  html.spooky .hover\:bg-zinc-50:hover {
+    background-color: hsl(25, 50%, 18%) !important;
+  }
+  
+  /* Финальная проверка - любой hover с белым/светлым фоном */
+  html.spooky *[class*="hover"]:hover {
+    background-color: hsl(25, 50%, 18%) !important;
+    color: hsl(25, 80%, 85%) !important;
+  }
+  
+  /* Исключения для primary и destructive кнопок */
+  html.spooky .bg-primary:hover {
+    background-color: hsl(25, 80%, 60%) !important;
+  }
+  
+  html.spooky .bg-destructive:hover {
+    background-color: hsl(0, 75%, 70%) !important;
+  }
+  
+  /* Иконки потребления - делаем их оранжевыми в готической теме */
+  html.spooky .text-blue-600,
+  html.spooky .text-blue-400 {
+    color: hsl(25, 80%, 70%) !important;
+  }
+  
+  html.spooky .text-yellow-600,
+  html.spooky .text-yellow-400 {
+    color: hsl(25, 90%, 65%) !important;
+  }
+  
+  html.spooky .text-orange-600,
+  html.spooky .text-orange-400 {
+    color: hsl(25, 80%, 70%) !important;
+  }
+  
+  html.spooky .text-green-600,
+  html.spooky .text-green-400 {
+    color: hsl(25, 70%, 60%) !important;
+  }
+  
+  html.spooky .text-gray-400 {
+    color: hsl(25, 80%, 70%) !important;
+  }
+  
+  /* Фоны карточек потребления */
+  html.spooky .bg-blue-100,
+  html.spooky .bg-blue-900\/20 {
+    background-color: hsl(25, 40%, 15%) !important;
+  }
+  
+  html.spooky .bg-yellow-100,
+  html.spooky .bg-yellow-900\/20 {
+    background-color: hsl(25, 40%, 15%) !important;
+  }
+  
+  html.spooky .bg-orange-100,
+  html.spooky .bg-orange-900\/20 {
+    background-color: hsl(25, 40%, 15%) !important;
+  }
+  
+  html.spooky .bg-green-100,
+  html.spooky .bg-green-900\/20 {
+    background-color: hsl(25, 40%, 15%) !important;
+  }
+  
+  /* Цвета значений в карточках */
+  html.spooky .text-blue-600,
+  html.spooky .text-yellow-600,
+  html.spooky .text-orange-600,
+  html.spooky .text-green-600 {
+    color: hsl(25, 80%, 85%) !important;
+  }
+  
+  /* Погода - делаем иконку оранжевой */
+  html.spooky .text-gray-400 {
+    color: hsl(25, 80%, 70%) !important;
+  }
+  
+  html.spooky .text-gray-900,
+  html.spooky .text-white {
+    color: hsl(25, 80%, 85%) !important;
+  }
+  
+  html.spooky .text-gray-500 {
+    color: hsl(25, 60%, 75%) !important;
+  }
+  
+  html.spooky .text-blue-700,
+  html.spooky .text-blue-300 {
+    color: hsl(25, 80%, 80%) !important;
+  }
+  
+  html.spooky .bg-blue-50,
+  html.spooky .bg-blue-900\/20 {
+    background-color: hsl(25, 40%, 15%) !important;
+  }
+  
+  /* Иконки в QuickActions и форм */
+  html.spooky .text-blue-500 {
+    color: hsl(25, 80%, 70%) !important;
+  }
+  
+  html.spooky .text-yellow-500 {
+    color: hsl(25, 90%, 65%) !important;
+  }
+  
+  html.spooky .text-orange-500 {
+    color: hsl(25, 80%, 70%) !important;
+  }
+  
+  /* Эмодзи иконки заменяем на оранжевые цвета */
+  html.spooky .emoji-icon {
+    filter: hue-rotate(25deg) saturate(1.2) brightness(1.1) !important;
+  }
+  
+  /* Специальные стили для Lucide иконок */
+  html.spooky .lucide-droplets,
+  html.spooky .lucide-zap,
+  html.spooky .lucide-flame,
+  html.spooky .lucide-leaf,
+  html.spooky .lucide-cloud-sun {
+    color: hsl(25, 80%, 70%) !important;
+  }
+  
+  /* Цвета изменений в карточках */
+  html.spooky .text-red-600,
+  html.spooky .text-red-400 {
+    color: hsl(15, 80%, 70%) !important;
+  }
+  
+  html.spooky .text-green-600,
+  html.spooky .text-green-400 {
+    color: hsl(120, 60%, 70%) !important;
+  }
+  
+  /* Специальные элементы и состояния */
+  html.spooky .text-destructive {
+    color: hsl(0, 75%, 70%) !important;
+  }
+  
+  html.spooky .bg-destructive {
+    background-color: hsl(0, 75%, 65%) !important;
+  }
+  
+  /* Активные состояния - оранжевые акценты */
+  html.spooky .bg-primary {
+    background-color: hsl(25, 80%, 55%) !important;
+    color: hsl(0, 0%, 100%) !important;
+  }
+  
+  html.spooky .text-primary {
+    color: hsl(25, 80%, 70%) !important;
+  }
+  
+  /* Иконки и символы - оранжевые */
+  html.spooky svg {
+    color: hsl(25, 80%, 70%) !important;
+  }
+  
+  html.spooky .lucide {
+    color: hsl(25, 80%, 70%) !important;
+  }
+  
+  /* Focus состояния - оранжевые */
+  html.spooky *:focus {
+    outline-color: hsl(25, 80%, 55%) !important;
+    box-shadow: 0 0 0 2px hsl(25, 80%, 55%, 0.3) !important;
+  }
+  
+  /* Модальные окна и диалоги */
+  html.spooky [role="dialog"],
+  html.spooky .modal {
+    background-color: hsl(224, 10%, 11%) !important;
+    border-color: hsl(216, 13%, 20%) !important;
+  }
+  
+  /* Уведомления и тосты */
+  html.spooky .toast,
+  html.spooky [data-toast] {
+    background-color: hsl(223, 13%, 12%) !important;
+    color: hsl(213, 31%, 91%) !important;
+    border-color: hsl(216, 13%, 20%) !important;
+  }
+  
+  /* Hover эффекты для готической темы */
+  html.spooky .hover\:bg-accent:hover {
+    background-color: hsl(216, 13%, 20%) !important;
+  }
+  
+  html.spooky .hover\:bg-secondary:hover {
+    background-color: hsl(215, 13%, 18%) !important;
+  }
+  
+  html.spooky .hover\:bg-muted:hover {
+    background-color: hsl(223, 10%, 18%) !important;
+  }
+  
+  html.spooky button:hover {
+    background-color: hsl(263, 70%, 70%) !important;
+  }
+  
+  html.spooky .bg-muted {
+    background-color: hsl(223, 10%, 15%) !important;
+  }
+  
+  /* Элементы "недостаточно информации" */
+  html.spooky .text-muted,
+  html.spooky .text-gray-500,
+  html.spooky .text-gray-400 {
+    color: hsl(215, 20%, 70%) !important;
+  }
+  
+  html.spooky .bg-gray-50,
+  html.spooky .bg-gray-100 {
+    background-color: hsl(223, 10%, 15%) !important;
+  }
+  
+  /* Карточки и панели */
+  html.spooky .bg-white {
+    background-color: hsl(223, 13%, 12%) !important;
+    color: hsl(213, 31%, 91%) !important;
+  }
+  
+  /* Границы и разделители */
+  html.spooky .border-gray-200,
+  html.spooky .border-gray-300 {
+    border-color: hsl(216, 13%, 20%) !important;
+  }
+  
+  /* Select и dropdown элементы */
+  html.spooky [role="option"]:hover {
+    background-color: hsl(216, 13%, 20%) !important;
+  }
+  
+  html.spooky [data-radix-select-content] {
+    background-color: hsl(224, 10%, 11%) !important;
+    border-color: hsl(216, 13%, 20%) !important;
+  }
+  
+  /* Tooltip и popover */
+  html.spooky [data-radix-tooltip-content],
+  html.spooky [data-radix-popover-content] {
+    background-color: hsl(224, 10%, 11%) !important;
+    color: hsl(213, 31%, 91%) !important;
+    border-color: hsl(216, 13%, 20%) !important;
+  }
+  
+  /* Accordion и collapsible */
+  html.spooky [data-radix-accordion-content],
+  html.spooky [data-radix-collapsible-content] {
+    background-color: hsl(223, 13%, 12%) !important;
+  }
+  
+  /* Empty state сообщения */
+  html.spooky .empty-state,
+  html.spooky [class*="empty"],
+  html.spooky [class*="no-data"] {
+    background-color: hsl(223, 13%, 12%) !important;
+    color: hsl(215, 20%, 70%) !important;
+    border-color: hsl(216, 13%, 20%) !important;
+  }
+}
+
+@layer utilities {
+  .text-primary-dark {
+    color: var(--primary-dark);
+  }
+  
+  .text-primary-light {
+    color: var(--primary-light);
+  }
+  
+  .bg-primary-dark {
+    background-color: var(--primary-dark);
+  }
+  
+  .bg-primary-light {
+    background-color: var(--primary-light);
+  }
+  
+  .bg-neutral-bg {
+    background-color: var(--neutral-bg);
+  }
+  
+  .border-primary {
+    border-color: var(--primary);
+  }
+}
