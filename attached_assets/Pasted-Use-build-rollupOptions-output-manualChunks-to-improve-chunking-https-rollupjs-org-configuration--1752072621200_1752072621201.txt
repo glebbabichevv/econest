@@ -1,0 +1,39 @@
+Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 8.35s
+  dist/index.js  72.1kb
+⚡ Done in 31ms
+==> Uploading build...
+==> Uploaded in 7.0s. Compression took 3.6s
+==> Build successful 🎉
+==> Deploying...
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+2:46:03 PM [express] Auto-migrating database...
+2:46:15 PM [express] Database migration completed successfully
+2:46:16 PM [express] serving on port 5000
+==> Your service is live 🎉
+==> 
+==> ///////////////////////////////////////////////////////////
+==> 
+==> Available at your primary URL https://econest-q3hj.onrender.com
+==> 
+==> ///////////////////////////////////////////////////////////
+2:46:25 PM [express] GET /api/auth/user 401 in 2ms :: {"message":"Unauthorized"}
+2:46:27 PM [express] GET /api/auth/user 401 in 1ms :: {"message":"Unauthorized"}
+Registration attempt: { firstName: 'Gleb', email: 'demo@gmail.com' }
+Registration error: TypeError: Invalid URL
+2:47:32 PM [express] POST /api/auth/register 500 in 8ms :: {"message":"Registration error"}
+    at new URL (node:internal/url:818:25)
+    at Object.parse (file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:841:225)
+    at parse (file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:848:1)
+    at new ConnectionParameters (file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:869:23)
+    at new Client (file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1226:35)
+    at new NeonClient (file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1570:121)
+    at Cn.newClient (file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1378:74)
+    at Cn.connect (file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1378:23)
+    at Cn.query (file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1407:63)
+    at Cn.query (file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1623:14) {
+  code: 'ERR_INVALID_URL',
+  input: "psql%20'postgresql://neondb_owner:npg_MLQjTS59bJzI@ep-tiny-voice-a8a08ero-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require'"
+}

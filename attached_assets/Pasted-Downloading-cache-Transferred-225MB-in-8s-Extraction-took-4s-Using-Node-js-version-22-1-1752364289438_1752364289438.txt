@@ -1,0 +1,72 @@
+Downloading cache...
+==> Transferred 225MB in 8s. Extraction took 4s.
+==> Using Node.js version 22.16.0 (default)
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Using Bun version 1.1.0 (default)
+==> Docs on specifying a Bun version: https://render.com/docs/bun-version
+==> Running build command ' npm install && npm run build'...
+up to date, audited 546 packages in 1s
+69 packages are looking for funding
+  run `npm fund` for details
+9 vulnerabilities (1 low, 8 moderate)
+To address issues that do not require attention, run:
+  npm audit fix
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+Run `npm audit` for details.
+> rest-express@1.0.0 build
+> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+vite v5.4.19 building for production...
+transforming...
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ 2583 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/public/index.html                     2.07 kB │ gzip:   0.83 kB
+../dist/public/assets/index-VeXoxjJX.css    125.75 kB │ gzip:  19.91 kB
+../dist/public/assets/index-BvBohbQG.js   1,652.76 kB │ gzip: 450.01 kB
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 8.95s
+  dist/index.js  79.8kb
+⚡ Done in 7ms
+==> Uploading build...
+==> Uploaded in 5.1s. Compression took 3.6s
+==> Build successful 🎉
+==> Deploying...
+==> Running 'node dist/index.js'
+Original DATABASE_URL length: 148
+Cleaned DATABASE_URL starts with: postgresql://neondb_owner:npg_VEcJZRdC2qb6@ep-autu...
+Contains psql prefix: false
+URL encoded characters: false
+✅ Database connection test successful
+📊 Schema tables: [
+  'co2Insights',
+  'co2InsightsRelations',
+  'consumptionReadings',
+  'consumptionReadingsRelations',
+  'default',
+  'insertCO2InsightSchema',
+  'insertConsumptionReadingSchema',
+  'insertPredictionSchema',
+  'insertRecommendationSchema',
+  'predictions',
+  'predictionsRelations',
+  'recommendations',
+  'recommendationsRelations',
+  'regionalStats',
+  'sessions',
+  'users',
+  'usersRelations'
+]
+📊 Users table: Found
+📦 Starting database migration...
+11:49:28 PM [express] Auto-migrating database...
+==> No open ports detected, continuing to scan...
+==> Docs on specifying a port: https://render.com/docs/web-services#port-binding
+==> No open ports detected, continuing to scan...
+==> Docs on specifying a port: https://render.com/docs/web-services#port-binding
