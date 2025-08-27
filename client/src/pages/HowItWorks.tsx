@@ -328,31 +328,6 @@ export default function HowItWorks() {
         </CardContent>
       </Card>
 
-      {/* Technical Implementation */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Brain className="h-6 w-6 text-blue-600" />
-            {content.aiModels.title}
-          </CardTitle>
-          <CardDescription>
-            {content.aiModels.description}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {content.aiModels.metrics.map((metric, index) => (
-              <div key={index} className={`text-center p-4 bg-${metric.color}-50 dark:bg-${metric.color}-900/20 rounded-lg`}>
-                <div className={`text-2xl font-bold text-${metric.color}-600 dark:text-${metric.color}-400`}>
-                  {metric.value}
-                </div>
-                <div className="text-sm font-medium text-gray-900 dark:text-white">{metric.title}</div>
-                <div className="text-xs text-gray-600 dark:text-gray-300">{metric.subtitle}</div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Data Security & Privacy */}
       <Card>

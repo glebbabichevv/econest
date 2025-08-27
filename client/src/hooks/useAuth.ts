@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useState } from "react";
 
 interface User {
   id: string;
@@ -12,6 +13,7 @@ interface User {
 
 export function useAuth() {
   const queryClient = useQueryClient();
+  const [isTransitioning, setIsTransitioning] = useState(false);
   
   const { data: user, isLoading } = useQuery<User>({
     queryKey: ["/api/auth/user"],
@@ -20,8 +22,11 @@ export function useAuth() {
 
   const logoutMutation = useMutation({
     mutationFn: () => fetch('/api/auth/logout', { method: 'GET' }),
+    onMutate: () => {
+      setIsTransitioning(true);
+    },
     onSuccess: () => {
-      // Reset spooky theme to dark theme when logging out
+      // Reset spooky theme to dark theme when logging out  
       const currentTheme = localStorage.getItem("econest-theme");
       if (currentTheme === "spooky") {
         localStorage.setItem("econest-theme", "dark");
@@ -30,7 +35,11 @@ export function useAuth() {
       }
       queryClient.setQueryData(["/api/auth/user"], null);
       queryClient.clear();
-      window.location.href = '/';
+      
+      // Show loading for 1 second before redirect
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1000);
     },
   });
 
@@ -43,5 +52,7 @@ export function useAuth() {
     isLoading,
     isAuthenticated: !!user,
     logout,
+    isTransitioning: isTransitioning || logoutMutation.isPending,
+    setIsTransitioning,
   };
 }

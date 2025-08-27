@@ -49,9 +49,12 @@ export const consumptionReadings = pgTable("consumption_readings", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id),
   // Monthly consumption data
-  electricity: decimal("electricity", { precision: 10, scale: 2 }).default("0"), // kWh
-  water: decimal("water", { precision: 10, scale: 2 }).default("0"), // m³
-  gas: decimal("gas", { precision: 10, scale: 2 }).default("0"), // m³
+  coldWater: decimal("cold_water", { precision: 10, scale: 2 }).default("0"), // м³
+  hotWater: decimal("hot_water", { precision: 10, scale: 2 }).default("0"), // м³
+  sewage: decimal("sewage", { precision: 10, scale: 2 }).default("0"), // м³
+  heating: decimal("heating", { precision: 10, scale: 2 }).default("0"), // Гкал
+  electricity: decimal("electricity", { precision: 10, scale: 2 }).default("0"), // кВт·ч
+  gas: decimal("gas", { precision: 10, scale: 2 }).default("0"), // м³
   // Date information
   month: integer("month").notNull(), // 1-12
   year: integer("year").notNull(),
@@ -68,7 +71,7 @@ export const consumptionReadings = pgTable("consumption_readings", {
 export const predictions = pgTable("predictions", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id),
-  type: varchar("type").notNull(), // water, electricity, gas
+  type: varchar("type").notNull(), // coldWater, hotWater, sewage, heating, electricity, gas
   predictedAmount: decimal("predicted_amount", { precision: 10, scale: 2 }).notNull(),
   confidence: decimal("confidence", { precision: 5, scale: 4 }),
   predictionDate: timestamp("prediction_date").notNull(),
@@ -82,7 +85,7 @@ export const recommendations = pgTable("recommendations", {
   userId: varchar("user_id").notNull().references(() => users.id),
   title: text("title").notNull(),
   description: text("description").notNull(),
-  category: varchar("category").notNull(), // energy, water, gas, general
+  category: varchar("category").notNull(), // coldWater, hotWater, sewage, heating, electricity, gas, general
   potentialSavings: decimal("potential_savings", { precision: 10, scale: 2 }),
   isRead: boolean("is_read").default(false),
   priority: varchar("priority").default("medium"), // low, medium, high
@@ -95,7 +98,7 @@ export const co2Insights = pgTable("co2_insights", {
   userId: varchar("user_id").notNull().references(() => users.id),
   title: text("title").notNull(),
   description: text("description").notNull(),
-  category: varchar("category").notNull(), // electricity, gas, water, environmental
+  category: varchar("category").notNull(), // coldWater, hotWater, sewage, heating, electricity, gas, environmental
   potentialSavings: text("potential_savings"), // CO2 reduction potential
   isRead: boolean("is_read").default(false),
   priority: varchar("priority").default("medium"), // low, medium, high
@@ -108,7 +111,10 @@ export const regionalStats = pgTable("regional_stats", {
   region: varchar("region").notNull(),
   month: varchar("month").notNull(), // YYYY-MM format
   participantCount: integer("participant_count").default(0),
-  avgWaterConsumption: decimal("avg_water_consumption", { precision: 10, scale: 2 }),
+  avgColdWaterConsumption: decimal("avg_cold_water_consumption", { precision: 10, scale: 2 }),
+  avgHotWaterConsumption: decimal("avg_hot_water_consumption", { precision: 10, scale: 2 }),
+  avgSewageConsumption: decimal("avg_sewage_consumption", { precision: 10, scale: 2 }),
+  avgHeatingConsumption: decimal("avg_heating_consumption", { precision: 10, scale: 2 }),
   avgElectricityConsumption: decimal("avg_electricity_consumption", { precision: 10, scale: 2 }),
   avgGasConsumption: decimal("avg_gas_consumption", { precision: 10, scale: 2 }),
   co2Reduction: decimal("co2_reduction", { precision: 5, scale: 2 }),
@@ -161,8 +167,11 @@ export const insertConsumptionReadingSchema = createInsertSchema(consumptionRead
   createdAt: true,
   updatedAt: true,
 }).extend({
+  coldWater: z.union([z.string(), z.number()]).transform(val => String(val)),
+  hotWater: z.union([z.string(), z.number()]).transform(val => String(val)),
+  sewage: z.union([z.string(), z.number()]).transform(val => String(val)),
+  heating: z.union([z.string(), z.number()]).transform(val => String(val)),
   electricity: z.union([z.string(), z.number()]).transform(val => String(val)),
-  water: z.union([z.string(), z.number()]).transform(val => String(val)),
   gas: z.union([z.string(), z.number()]).transform(val => String(val)),
   readingDate: z.union([z.string(), z.date()]).transform(val => 
     typeof val === 'string' ? new Date(val) : val

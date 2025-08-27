@@ -413,7 +413,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/recommendations/generate', requireAuth, async (req: any, res) => {
     try {
       const userId = req.session.userId;
-      const recommendations = await aiService.generateRecommendations(userId);
+      const recommendations = await aiService.generateAIRecommendations(userId);
       res.json(recommendations);
     } catch (error) {
       console.error("Error generating recommendations:", error);
@@ -454,6 +454,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error generating CO2 insights:", error);
       res.status(500).json({ message: "Failed to generate CO2 insights" });
+    }
+  });
+
+  // Generate Footprint AI insights (emotional & visual)
+  app.post('/api/footprint-insights/generate', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const insights = await aiService.generateFootprintInsights(userId);
+      res.json(insights);
+    } catch (error) {
+      console.error("Error generating footprint insights:", error);
+      res.status(500).json({ message: "Failed to generate footprint insights" });
     }
   });
 
@@ -512,22 +524,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get recent consumption readings
       const consumptionReadings = await storage.getUserConsumptionReadings(userId, undefined, 30);
       
-      // Calculate current month consumption from monthly readings
+      // Find readings based on proximity to current date (only past dates)
       const currentDate = new Date();
-      const currentMonth = currentDate.getMonth() + 1;
-      const currentYear = currentDate.getFullYear();
       
-      const thisMonthReading = consumptionReadings.find(reading => 
-        reading.month === currentMonth && reading.year === currentYear
-      );
+      // Filter only past readings (dates that have already passed)
+      const pastReadings = consumptionReadings
+        .filter(reading => {
+          const readingDate = reading.readingDate ? new Date(reading.readingDate) : new Date(reading.year || 2024, (reading.month || 1) - 1);
+          return readingDate.getTime() <= currentDate.getTime();
+        })
+        .sort((a, b) => {
+          const dateA = a.readingDate ? new Date(a.readingDate) : new Date(a.year || 2024, (a.month || 1) - 1);
+          const dateB = b.readingDate ? new Date(b.readingDate) : new Date(b.year || 2024, (b.month || 1) - 1);
+          return dateB.getTime() - dateA.getTime(); // Newest first
+        });
+      
+      // Current month = most recent past reading
+      // Previous month = second most recent past reading  
+      const thisMonthReading = pastReadings[0];
+      const previousMonthReading = pastReadings[1];
+      
+      // Use all readings for chart data
+      const currentMonthData = consumptionReadings;
       
       const consumption = {
-        water: thisMonthReading ? parseFloat(thisMonthReading.water || '0') : 0,
+        coldWater: thisMonthReading ? parseFloat(thisMonthReading.coldWater || '0') : 0,
+        hotWater: thisMonthReading ? parseFloat(thisMonthReading.hotWater || '0') : 0,
+        sewage: thisMonthReading ? parseFloat(thisMonthReading.sewage || '0') : 0,
+        heating: thisMonthReading ? parseFloat(thisMonthReading.heating || '0') : 0,
         electricity: thisMonthReading ? parseFloat(thisMonthReading.electricity || '0') : 0,
         gas: thisMonthReading ? parseFloat(thisMonthReading.gas || '0') : 0
       };
+
+      const previousConsumption = {
+        coldWater: previousMonthReading ? parseFloat(previousMonthReading.coldWater || '0') : 0,
+        hotWater: previousMonthReading ? parseFloat(previousMonthReading.hotWater || '0') : 0,
+        sewage: previousMonthReading ? parseFloat(previousMonthReading.sewage || '0') : 0,
+        heating: previousMonthReading ? parseFloat(previousMonthReading.heating || '0') : 0,
+        electricity: previousMonthReading ? parseFloat(previousMonthReading.electricity || '0') : 0,
+        gas: previousMonthReading ? parseFloat(previousMonthReading.gas || '0') : 0
+      };
+
+      // Calculate month-over-month changes (only if we have previous month data)
+      let changes;
+      if (previousMonthReading) {
+        const rawChanges = {
+          coldWater: consumption.coldWater - previousConsumption.coldWater,
+          hotWater: consumption.hotWater - previousConsumption.hotWater,
+          sewage: consumption.sewage - previousConsumption.sewage,
+          heating: consumption.heating - previousConsumption.heating,
+          electricity: consumption.electricity - previousConsumption.electricity,
+          gas: consumption.gas - previousConsumption.gas,
+          co2: 0 // Will be calculated below
+        };
+
+        // Calculate percentage changes with max 100% limit
+        const calculatePercentageChange = (current: number, previous: number) => {
+          if (previous === 0) return current > 0 ? 100 : 0;
+          const change = ((current - previous) / previous) * 100;
+          return Math.max(-100, Math.min(100, change)); // Limit between -100% and +100%
+        };
+
+        changes = {
+          coldWater: calculatePercentageChange(consumption.coldWater, previousConsumption.coldWater),
+          hotWater: calculatePercentageChange(consumption.hotWater, previousConsumption.hotWater),
+          sewage: calculatePercentageChange(consumption.sewage, previousConsumption.sewage),
+          heating: calculatePercentageChange(consumption.heating, previousConsumption.heating),
+          electricity: calculatePercentageChange(consumption.electricity, previousConsumption.electricity),
+          gas: calculatePercentageChange(consumption.gas, previousConsumption.gas),
+          co2: 0 // Will be calculated below
+        };
+
+        // Calculate CO2 changes
+        const currentCO2 = aiService.calculateCO2Footprint(consumption).total;
+        const previousCO2 = aiService.calculateCO2Footprint(previousConsumption).total;
+        changes.co2 = calculatePercentageChange(currentCO2, previousCO2);
+      } else {
+        // No previous month data, show zeros
+        changes = { coldWater: 0, hotWater: 0, sewage: 0, heating: 0, electricity: 0, gas: 0, co2: 0 };
+      }
       
-      // Calculate CO2 footprint
+      // Calculate CO2 footprint (already calculated above)
       const co2Footprint = aiService.calculateCO2Footprint(consumption).total;
       
       // Get latest predictions
@@ -543,12 +620,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           lastName: user.lastName,
           email: user.email,
           role: user.role,
-          school: user.school,
-          className: user.className
+          region: user.region
         },
         consumption,
         co2Footprint,
-        changes: { water: 0, electricity: 0, gas: 0, co2: 0 }, // TODO: Calculate month-over-month changes
+        changes,
         chartData: consumptionReadings || [], // Use all consumption readings for chart
         consumptionReadings,
         predictions,
@@ -565,21 +641,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.session.userId;
       
-      // Get recent consumption data
-      const readings = await storage.getUserConsumptionReadings(userId, undefined, 30);
+      // Get consumption data with proper ordering
+      const readings = await storage.getUserConsumptionReadings(userId, undefined, 12);
       
-      // Calculate total consumption from monthly readings
-      const consumption = readings.reduce((acc: any, reading) => {
-        acc.water += parseFloat(reading.water || '0');
-        acc.electricity += parseFloat(reading.electricity || '0');
-        acc.gas += parseFloat(reading.gas || '0');
-        return acc;
-      }, { water: 0, electricity: 0, gas: 0 });
+      // Process readings for monthly and yearly data
+      const monthlyData = readings.map(reading => {
+        const co2Data = aiService.calculateCO2Footprint(reading);
+        const date = reading.readingDate ? new Date(reading.readingDate) : new Date(reading.year || 2024, (reading.month || 1) - 1);
+        
+        return {
+          month: reading.month,
+          year: reading.year,
+          date: date,
+          readingDate: reading.readingDate,
+          consumption: {
+            electricity: parseFloat(reading.electricity || '0'),
+            gas: parseFloat(reading.gas || '0'),
+            heating: parseFloat(reading.heating || '0'),
+            coldWater: parseFloat(reading.coldWater || '0'),
+            hotWater: parseFloat(reading.hotWater || '0'),
+            sewage: parseFloat(reading.sewage || '0')
+          },
+          co2: co2Data
+        };
+      })
+      // Sort by date descending (most recent first) to match Dashboard logic
+      .sort((a, b) => b.date.getTime() - a.date.getTime());
 
-      // Calculate CO2 footprint
-      const carbonFootprint = aiService.calculateCO2Footprint(consumption);
-
-      res.json({ carbonFootprint });
+      res.json({ monthlyData });
     } catch (error) {
       console.error("Error calculating footprint:", error);
       res.status(500).json({ message: "Failed to calculate footprint" });
@@ -632,8 +721,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const electricity = parseFloat(reading.electricity || '0');
           const gas = parseFloat(reading.gas || '0');
           
-          // CO2 calculation (same as in aiService)
-          totalCO2 += electricity * 0.5; // 0.5 kg CO2 per kWh
+          // CO2 calculation using correct Kazakhstan coefficients
+          totalCO2 += electricity * 0.9; // 0.9 kg CO2 per kWh (Kazakhstan)
           totalCO2 += gas * 2.0; // 2.0 kg CO2 per m³
         });
 
@@ -797,9 +886,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: reading.id,
         createdAt: reading.createdAt,
         readingDate: reading.readingDate,
-        water: parseFloat(reading.water || '0'),
+        coldWater: parseFloat(reading.coldWater || '0'),
+        hotWater: parseFloat(reading.hotWater || '0'),
+        sewage: parseFloat(reading.sewage || '0'),
+        heating: parseFloat(reading.heating || '0'),
         electricity: parseFloat(reading.electricity || '0'),
         gas: parseFloat(reading.gas || '0'),
+        // Legacy water field for compatibility
+        water: parseFloat(reading.coldWater || '0') + parseFloat(reading.hotWater || '0'),
         month: reading.month,
         year: reading.year
       }));
@@ -838,8 +932,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const electricity = parseFloat(reading.electricity || '0');
           const gas = parseFloat(reading.gas || '0');
           
-          // CO2 calculation (excluding water)
-          totalCO2 += electricity * 0.5 + gas * 2.0;
+          // CO2 calculation using correct Kazakhstan coefficients  
+          totalCO2 += electricity * 0.9 + gas * 2.0;
         });
 
         if (totalCO2 > 0) {
@@ -892,7 +986,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         readings.forEach(reading => {
           const electricity = parseFloat(reading.electricity || '0');
           const gas = parseFloat(reading.gas || '0');
-          userCO2 += electricity * 0.5 + gas * 2.0;
+          const heating = parseFloat(reading.heating || '0');
+          const coldWater = parseFloat(reading.coldWater || '0');
+          const hotWater = parseFloat(reading.hotWater || '0');
+          const sewage = parseFloat(reading.sewage || '0');
+          // Use correct Kazakhstan coefficients
+          userCO2 += electricity * 0.9 + gas * 2.0 + heating * 230.0 + coldWater * 0.34 + hotWater * 0.34 + sewage * 0.7;
         });
 
         if (!regionData[user.region]) {

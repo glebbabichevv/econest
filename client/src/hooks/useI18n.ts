@@ -21,7 +21,6 @@ const translations: Translations = {
     dashboard: "Dashboard",
     aiAssistant: "AI Assistant",
     footprint: "Footprint",
-    schoolPanel: "School Panel",
     leaderboard: "Leaderboard",
     history: "History",
     profile: "Profile",

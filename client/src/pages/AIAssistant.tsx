@@ -33,6 +33,8 @@ export default function AIAssistant() {
   const generateRecommendations = useMutation({
     mutationFn: () => apiRequest("POST", "/api/recommendations/generate"),
     onSuccess: () => {
+      // Clear cache first, then invalidate to force fresh data
+      queryClient.removeQueries({ queryKey: ["/api/recommendations"] });
       queryClient.invalidateQueries({ queryKey: ["/api/recommendations"] });
     },
   });
@@ -185,7 +187,7 @@ export default function AIAssistant() {
                       <div className="text-right">
                         <div className="text-sm text-gray-500 dark:text-gray-400">Potential savings</div>
                         <div className="font-semibold text-green-600 dark:text-green-400">
-                          ${rec.potentialSavings}/month
+                          {rec.potentialSavings}₸/month
                         </div>
                       </div>
                     )}

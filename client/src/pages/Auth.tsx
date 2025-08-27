@@ -16,7 +16,7 @@ import { useI18n } from "@/hooks/useI18n";
 export default function Auth() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, setIsTransitioning } = useAuth();
   const { t } = useI18n();
   
   // Login form state
@@ -48,14 +48,14 @@ export default function Auth() {
       return response.json();
     },
     onSuccess: async () => {
+      setIsTransitioning(true);
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
         title: t('auth.loginSuccess'),
         description: t('auth.welcome'),
       });
-      // Для мобильных устройств требуется больше времени на синхронизацию cookie
+      // Show loading for 1 second before redirect
       setTimeout(() => {
-        // Принудительная перезагрузка страницы для обновления сессии
         window.location.replace("/dashboard");
       }, 1000);
     },
@@ -84,14 +84,14 @@ export default function Auth() {
       return response.json();
     },
     onSuccess: async () => {
+      setIsTransitioning(true);
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
         title: t('auth.registerSuccess'),
         description: t('auth.welcome'),
       });
-      // Для мобильных устройств требуется больше времени на синхронизацию cookie
+      // Show loading for 1 second before redirect
       setTimeout(() => {
-        // Принудительная перезагрузка страницы для обновления сессии
         window.location.replace("/dashboard");
       }, 1000);
     },
@@ -130,6 +130,7 @@ export default function Auth() {
     }
     registerMutation.mutate(registerData);
   };
+
 
   return (
     <div className="auth-page min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -193,8 +194,17 @@ export default function Auth() {
                       className="w-full"
                       disabled={loginMutation.isPending}
                     >
-                      <LogIn className="mr-2 h-4 w-4" />
-                      {loginMutation.isPending ? `${t('auth.signIn')}...` : t('auth.signIn')}
+                      {loginMutation.isPending ? (
+                        <div className="flex items-center">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                          {t('auth.signIn')}...
+                        </div>
+                      ) : (
+                        <>
+                          <LogIn className="mr-2 h-4 w-4" />
+                          {t('auth.signIn')}
+                        </>
+                      )}
                     </Button>
                   </form>
                 </TabsContent>
@@ -349,8 +359,17 @@ export default function Auth() {
                       className="w-full"
                       disabled={registerMutation.isPending}
                     >
-                      <UserPlus className="mr-2 h-4 w-4" />
-                      {registerMutation.isPending ? `${t('auth.signUp')}...` : t('auth.signUp')}
+                      {registerMutation.isPending ? (
+                        <div className="flex items-center">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                          {t('auth.signUp')}...
+                        </div>
+                      ) : (
+                        <>
+                          <UserPlus className="mr-2 h-4 w-4" />
+                          {t('auth.signUp')}
+                        </>
+                      )}
                     </Button>
                   </form>
                 </TabsContent>

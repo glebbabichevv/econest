@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, TrendingUp, Settings, ChevronRight, Droplets, Zap, Flame } from "lucide-react";
+import { Plus, BarChart3, Settings, ChevronRight, Droplets, Zap, Flame, Thermometer } from "lucide-react";
 import { useI18n } from "@/hooks/useI18n";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,11 +16,12 @@ import { z } from "zod";
 import { useState } from "react";
 
 const getFormSchema = (t: any) => z.object({
-  electricity: z.string().min(0, t("electricityRequired")).default("0"),
-  water: z.string().min(0, t("waterRequired")).default("0"),
-  gas: z.string().min(0, t("gasRequired")).default("0"),
-  month: z.number().min(1).max(12),
-  year: z.number().min(2020).max(2030),
+  coldWater: z.string().min(0).default("0"),
+  hotWater: z.string().min(0).default("0"),
+  sewage: z.string().min(0).default("0"),
+  heating: z.string().min(0).default("0"),
+  electricity: z.string().min(0).default("0"),
+  gas: z.string().min(0).default("0"),
   readingDate: z.string().min(1, t("dateRequired")),
   isAdvancedMode: z.boolean().default(false),
   weekNumber: z.number().min(1).max(4).optional(),
@@ -39,11 +40,12 @@ export function QuickActions() {
   const form = useForm<ConsumptionFormData>({
     resolver: zodResolver(consumptionFormSchema),
     defaultValues: {
+      coldWater: "0",
+      hotWater: "0",
+      sewage: "0",
+      heating: "0",
       electricity: "0",
-      water: "0", 
       gas: "0",
-      month: currentDate.getMonth() + 1,
-      year: currentDate.getFullYear(),
       readingDate: currentDate.toISOString().split('T')[0],
       isAdvancedMode: false
     }
@@ -51,13 +53,17 @@ export function QuickActions() {
 
   const addReadingMutation = useMutation({
     mutationFn: async (data: ConsumptionFormData) => {
+      const readingDate = new Date(data.readingDate);
       const payload = {
+        coldWater: data.coldWater,
+        hotWater: data.hotWater,
+        sewage: data.sewage,
+        heating: data.heating,
         electricity: data.electricity,
-        water: data.water,
         gas: data.gas,
-        month: data.month,
-        year: data.year,
-        readingDate: new Date(data.readingDate).toISOString(),
+        month: readingDate.getMonth() + 1,
+        year: readingDate.getFullYear(),
+        readingDate: readingDate.toISOString(),
         isAdvancedMode: data.isAdvancedMode,
         weekNumber: data.weekNumber
       };
@@ -96,9 +102,9 @@ export function QuickActions() {
       action: () => setIsAddReadingOpen(true),
     },
     {
-      icon: <TrendingUp className="text-primary mr-3" />,
-      label: t("dashboard.viewReport"),
-      action: () => window.location.href = "/analytics",
+      icon: <BarChart3 className="text-primary mr-3" />,
+      label: "CO₂ Footprint",
+      action: () => window.location.href = "/footprint",
     },
     {
       icon: <Settings className="text-primary mr-3" />,
@@ -144,146 +150,7 @@ export function QuickActions() {
             
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                {/* Month and Year Selection */}
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="month"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("selectMonth")}</FormLabel>
-                        <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t("selectMonth")} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {Array.from({length: 12}, (_, i) => i + 1).map(month => (
-                              <SelectItem key={month} value={month.toString()}>
-                                {new Date(2025, month - 1).toLocaleString('en', { month: 'long' })}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="year"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("selectYear")}</FormLabel>
-                        <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t("selectYear")} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {Array.from({length: 11}, (_, i) => 2020 + i).map(year => (
-                              <SelectItem key={year} value={year.toString()}>
-                                {year}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Resource consumption inputs */}
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="electricity"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          <div className="flex items-center gap-2">
-                            <Zap className="h-4 w-4 text-yellow-500" />
-                            {t("dashboard.electricity")} (kWh)
-                          </div>
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            step="0.01"
-                            placeholder="0" 
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="water"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          <div className="flex items-center gap-2">
-                            <Droplets className="h-4 w-4 text-blue-500" />
-                            {t("dashboard.water")} (m³)
-                          </div>
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            step="0.01"
-                            placeholder="0" 
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="gas"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          <div className="flex items-center gap-2">
-                            <Flame className="h-4 w-4 text-orange-500" />
-                            {t("dashboard.gas")} (m³)
-                          </div>
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            step="0.01"
-                            placeholder="0" 
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Helpful tips */}
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <p className="text-sm text-blue-900 dark:text-blue-100 font-medium mb-2">
-                    {t("dataSourcesTitle")}
-                  </p>
-                  <div className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
-                    {t("dataSourcesDescription").split('\n').map((line, index) => (
-                      <div key={index}>{line}</div>
-                    ))}
-                  </div>
-                </div>
-
+                {/* Reading Date Selection */}
                 <FormField
                   control={form.control}
                   name="readingDate"
@@ -297,6 +164,171 @@ export function QuickActions() {
                     </FormItem>
                   )}
                 />
+
+                {/* Resource consumption inputs */}
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="coldWater"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            <div className="flex items-center gap-2">
+                              <Droplets className="h-4 w-4 text-blue-500" />
+                              Cold Water (m³)
+                            </div>
+                          </FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              step="0.01"
+                              placeholder="0" 
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="hotWater"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            <div className="flex items-center gap-2">
+                              <Droplets className="h-4 w-4 text-red-500" />
+                              Hot Water (m³)
+                            </div>
+                          </FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              step="0.01"
+                              placeholder="0" 
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="sewage"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            <div className="flex items-center gap-2">
+                              <Droplets className="h-4 w-4 text-gray-500" />
+                              Sewage (m³)
+                            </div>
+                          </FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              step="0.01"
+                              placeholder="0" 
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="heating"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            <div className="flex items-center gap-2">
+                              <Thermometer className="h-4 w-4 text-orange-600" />
+                              Heating (Gcal)
+                            </div>
+                          </FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              step="0.01"
+                              placeholder="0" 
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="electricity"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            <div className="flex items-center gap-2">
+                              <Zap className="h-4 w-4 text-yellow-500" />
+                              Electricity (kWh)
+                            </div>
+                          </FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              step="0.01"
+                              placeholder="0" 
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="gas"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            <div className="flex items-center gap-2">
+                              <Flame className="h-4 w-4 text-orange-500" />
+                              Gas (m³)
+                            </div>
+                          </FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              step="0.01"
+                              placeholder="0" 
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                {/* Helpful tips */}
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <p className="text-sm text-blue-900 dark:text-blue-100 font-medium mb-2">
+                    {t("dataSourcesTitle")}
+                  </p>
+                  <div className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
+                    {t("dataSourcesDescription").split('\n').map((line, index) => (
+                      <div key={index}>{line}</div>
+                    ))}
+                  </div>
+                </div>
 
                 <DialogFooter>
                   <Button 

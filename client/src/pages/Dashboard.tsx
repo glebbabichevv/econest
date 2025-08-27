@@ -22,7 +22,8 @@ export default function Dashboard() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { t } = useI18n();
   const { toast } = useToast();
-  const [period, setPeriod] = useState<"week" | "month" | "year">("month");
+  const [period, setPeriod] = useState<"month" | "year">("month");
+  const [category, setCategory] = useState<"water-gas" | "electricity" | "heating">("water-gas");
 
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ["/api/dashboard"],
@@ -108,8 +109,8 @@ export default function Dashboard() {
   }
 
   // Use real user data or show empty state
-  const consumption = (dashboardData as any)?.consumption || { water: 0, electricity: 0, gas: 0 };
-  const changes = (dashboardData as any)?.changes || { water: 0, electricity: 0, gas: 0, co2: 0 };
+  const consumption = (dashboardData as any)?.consumption || { coldWater: 0, hotWater: 0, sewage: 0, heating: 0, electricity: 0, gas: 0 };
+  const changes = (dashboardData as any)?.changes || { coldWater: 0, hotWater: 0, sewage: 0, heating: 0, electricity: 0, gas: 0, co2: 0 };
   const chartData = (dashboardData as any)?.chartData || [];
   const co2Footprint = (dashboardData as any)?.co2Footprint || 0;
 
@@ -133,13 +134,38 @@ export default function Dashboard() {
 
 
         {/* Consumption Cards - Mobile Optimized */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 md:gap-6">
           <ConsumptionCard
             type="water"
-            value={consumption.water}
+            value={consumption.coldWater || 0}
             unit={t("units.cubicMeters")}
-            change={changes.water}
+            change={changes.coldWater || 0}
             period={t("dashboard.thisMonth")}
+            title="Cold Water"
+          />
+          <ConsumptionCard
+            type="water"
+            value={consumption.hotWater || 0}
+            unit={t("units.cubicMeters")}
+            change={changes.hotWater || 0}
+            period={t("dashboard.thisMonth")}
+            title="Hot Water"
+          />
+          <ConsumptionCard
+            type="water"
+            value={consumption.sewage || 0}
+            unit={t("units.cubicMeters")}
+            change={changes.sewage || 0}
+            period={t("dashboard.thisMonth")}
+            title="Sewage"
+          />
+          <ConsumptionCard
+            type="heating"
+            value={consumption.heating || 0}
+            unit="Gcal"
+            change={changes.heating || 0}
+            period={t("dashboard.thisMonth")}
+            title="Heating"
           />
           <ConsumptionCard
             type="electricity"
@@ -147,6 +173,7 @@ export default function Dashboard() {
             unit={t("units.kilowattHours")}
             change={changes.electricity}
             period={t("dashboard.thisMonth")}
+            title="Electricity"
           />
           <ConsumptionCard
             type="gas"
@@ -154,13 +181,7 @@ export default function Dashboard() {
             unit={t("units.cubicMeters")}
             change={changes.gas}
             period={t("dashboard.thisMonth")}
-          />
-          <ConsumptionCard
-            type="co2"
-            value={co2Footprint}
-            unit={t("units.tonnes")}
-            change={changes.co2 || 0}
-            period={t("dashboard.thisMonth")}
+            title="Gas"
           />
         </div>
 
@@ -186,20 +207,20 @@ export default function Dashboard() {
             <ConsumptionChart 
               data={chartData}
               period={period}
+              category={category}
               onPeriodChange={setPeriod}
+              onCategoryChange={setCategory}
+              showPeriodControls={true}
             />
           </div>
 
           {/* AI Insights */}
           <div>
-            <AIInsights recommendations={recommendations} isLoading={recommendationsLoading} />
+            <AIInsights recommendations={recommendations as any[] || []} isLoading={recommendationsLoading} />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Weather Impact */}
-          <WeatherImpact />
-
+        <div className="grid grid-cols-1 gap-8">
           {/* Quick Actions */}
           <QuickActions />
         </div>

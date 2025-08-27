@@ -24,13 +24,14 @@ import {
   Save,
   Eye,
   EyeOff,
-  Palette
+  Palette,
+  Phone
 } from "lucide-react";
 
 
 export default function Profile() {
   const { user, logout } = useAuth();
-  const { t, currentLanguage, setLanguage } = useI18n();
+  const { t, language: currentLanguage, changeLanguage } = useI18n();
   const { theme, setTheme, toggleTheme } = useTheme();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -171,7 +172,7 @@ export default function Profile() {
   };
 
   const handleLanguageChange = (newLanguage: string) => {
-    setLanguage(newLanguage);
+    changeLanguage();
     setFormData(prev => ({ ...prev, language: newLanguage }));
   };
 
@@ -390,6 +391,49 @@ export default function Profile() {
         </Card>
 
         <Separator />
+
+        {/* Support Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Mail className="w-5 h-5" />
+              Support & Contact
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="text-center p-6 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                <div className="flex justify-center mb-4">
+                  <div className="p-3 bg-purple-500 rounded-full">
+                    <Mail className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Email Support</h4>
+                <a href="mailto:econest_future@gmail.com" className="text-purple-600 dark:text-purple-400 font-medium hover:underline">
+                  econest_future@gmail.com
+                </a>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  We respond within 24 hours
+                </p>
+              </div>
+              
+              <div className="text-center p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <div className="flex justify-center mb-4">
+                  <div className="p-3 bg-blue-500 rounded-full">
+                    <Phone className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Office Phone</h4>
+                <a href="tel:+77073287707" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
+                  +7 707 328 77 07
+                </a>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  Office hours only
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Danger Zone */}
         <Card className="border-red-200 dark:border-red-800">

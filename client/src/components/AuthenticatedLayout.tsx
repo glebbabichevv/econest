@@ -5,7 +5,6 @@ import {
   LayoutDashboard, 
   Bot, 
   Leaf, 
-  GraduationCap, 
   Trophy, 
   History, 
   User,
@@ -30,7 +29,6 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const isStudent = user?.role === 'student';
 
   const navigationItems = [
     {
@@ -51,12 +49,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
       href: "/footprint",
       key: "footprint"
     },
-    ...(isStudent ? [{
-      icon: GraduationCap,
-      label: t("sidebar.schoolPanel"),
-      href: "/school",
-      key: "school"
-    }] : []),
+
     {
       icon: Trophy,
       label: t("sidebar.leaderboard"),

@@ -103,7 +103,7 @@ export default function About() {
                   <div>
                     <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Track Your Usage</h3>
                     <p className="text-gray-600 dark:text-gray-300">
-                      Input your daily consumption data for water, electricity, and gas to build your personal usage profile.
+                      Input your monthly consumption data for water, electricity, and gas to build your personal usage profile.
                     </p>
                   </div>
                 </div>

@@ -22,14 +22,19 @@ interface HistoryEntry {
   month: string;
   year: number;
   consumption: {
-    water: number;
+    coldWater: number;
+    hotWater: number;
+    sewage: number;
+    heating: number;
     electricity: number;
     gas: number;
   };
   co2Footprint: number;
-  totalCost: number;
   previousMonthChange: {
-    water: number;
+    coldWater: number;
+    hotWater: number;
+    sewage: number;
+    heating: number;
     electricity: number;
     gas: number;
     co2: number;
@@ -40,6 +45,8 @@ export default function History() {
   const { user } = useAuth();
   const { t } = useI18n();
   const [selectedEntry, setSelectedEntry] = useState<HistoryEntry | null>(null);
+  const [chartCategory, setChartCategory] = useState<"water-gas" | "electricity" | "heating">("water-gas");
+  const [detailChartCategory, setDetailChartCategory] = useState<"water-gas" | "electricity" | "heating">("water-gas");
 
   const { data: consumptionData, isLoading } = useQuery({
     queryKey: ["/api/consumption"],
@@ -53,14 +60,23 @@ export default function History() {
       month: new Date(reading.year, reading.month - 1).toLocaleString('en-US', { month: 'long' }),
       year: reading.year,
       consumption: {
-        water: parseFloat(reading.water) || 0,
+        coldWater: parseFloat(reading.coldWater) || 0,
+        hotWater: parseFloat(reading.hotWater) || 0,
+        sewage: parseFloat(reading.sewage) || 0,
+        heating: parseFloat(reading.heating) || 0,
         electricity: parseFloat(reading.electricity) || 0,
         gas: parseFloat(reading.gas) || 0
       },
-      co2Footprint: ((parseFloat(reading.electricity) || 0) * 0.5 + (parseFloat(reading.gas) || 0) * 2.0 + (parseFloat(reading.water) || 0) * 0.1),
-      totalCost: ((parseFloat(reading.electricity) || 0) * 0.12 + (parseFloat(reading.gas) || 0) * 0.05 + (parseFloat(reading.water) || 0) * 2.5),
+      co2Footprint: (
+        (parseFloat(reading.electricity) || 0) * 0.9 +  // kWh × 0.9 kg CO₂/kWh
+        (parseFloat(reading.gas) || 0) * 2.0 +          // m³ × 2.0 kg CO₂/m³
+        (parseFloat(reading.heating) || 0) * 230.0 +     // Gcal × 230.0 kg CO₂/Gcal
+        (parseFloat(reading.coldWater) || 0) * 0.34 +   // m³ × 0.34 kg CO₂/m³
+        (parseFloat(reading.hotWater) || 0) * 0.34 +    // m³ × 0.34 kg CO₂/m³
+        (parseFloat(reading.sewage) || 0) * 0.7         // m³ × 0.7 kg CO₂/m³
+      ),
       previousMonthChange: {
-        water: 0, electricity: 0, gas: 0, co2: 0  // Will calculate if we have previous data
+        coldWater: 0, hotWater: 0, sewage: 0, heating: 0, electricity: 0, gas: 0, co2: 0  // Will calculate if we have previous data
       }
     }))
     .sort((a, b) => new Date(b.year, b.month === 'January' ? 0 : b.month === 'February' ? 1 : 2).getTime() - new Date(a.year, a.month === 'January' ? 0 : a.month === 'February' ? 1 : 2).getTime())
@@ -71,7 +87,10 @@ export default function History() {
     if (index < historyData.length - 1) {
       const prevEntry = historyData[index + 1];
       entry.previousMonthChange = {
-        water: ((entry.consumption.water - prevEntry.consumption.water) / prevEntry.consumption.water * 100) || 0,
+        coldWater: ((entry.consumption.coldWater - prevEntry.consumption.coldWater) / prevEntry.consumption.coldWater * 100) || 0,
+        hotWater: ((entry.consumption.hotWater - prevEntry.consumption.hotWater) / prevEntry.consumption.hotWater * 100) || 0,
+        sewage: ((entry.consumption.sewage - prevEntry.consumption.sewage) / prevEntry.consumption.sewage * 100) || 0,
+        heating: ((entry.consumption.heating - prevEntry.consumption.heating) / prevEntry.consumption.heating * 100) || 0,
         electricity: ((entry.consumption.electricity - prevEntry.consumption.electricity) / prevEntry.consumption.electricity * 100) || 0,
         gas: ((entry.consumption.gas - prevEntry.consumption.gas) / prevEntry.consumption.gas * 100) || 0,
         co2: ((entry.co2Footprint - prevEntry.co2Footprint) / prevEntry.co2Footprint * 100) || 0
@@ -79,99 +98,6 @@ export default function History() {
     }
   });
 
-  // Fallback empty data for demonstration if no real data
-  const mockHistoryData: HistoryEntry[] = historyData.length > 0 ? historyData : [
-    {
-      id: "2024-05",
-      month: "May",
-      year: 2024,
-      consumption: {
-        water: 45.2,
-        electricity: 287.5,
-        gas: 123.8
-      },
-      co2Footprint: 2.85,
-      totalCost: 156.50,
-      previousMonthChange: {
-        water: -12.5,
-        electricity: 8.3,
-        gas: -5.2,
-        co2: -15.7
-      }
-    },
-    {
-      id: "2024-04",
-      month: "April",
-      year: 2024,
-      consumption: {
-        water: 51.7,
-        electricity: 265.2,
-        gas: 130.6
-      },
-      co2Footprint: 3.38,
-      totalCost: 178.20,
-      previousMonthChange: {
-        water: 15.2,
-        electricity: -4.1,
-        gas: 12.8,
-        co2: 8.5
-      }
-    },
-    {
-      id: "2024-03",
-      month: "March",
-      year: 2024,
-      consumption: {
-        water: 44.9,
-        electricity: 276.5,
-        gas: 115.8
-      },
-      co2Footprint: 3.11,
-      totalCost: 164.30,
-      previousMonthChange: {
-        water: -8.3,
-        electricity: 12.7,
-        gas: -18.5,
-        co2: -6.2
-      }
-    },
-    {
-      id: "2024-02",
-      month: "February",
-      year: 2024,
-      consumption: {
-        water: 49.0,
-        electricity: 245.2,
-        gas: 142.1
-      },
-      co2Footprint: 3.32,
-      totalCost: 189.80,
-      previousMonthChange: {
-        water: 2.1,
-        electricity: -15.3,
-        gas: 8.9,
-        co2: -3.1
-      }
-    },
-    {
-      id: "2024-01",
-      month: "January",
-      year: 2024,
-      consumption: {
-        water: 48.0,
-        electricity: 289.7,
-        gas: 130.4
-      },
-      co2Footprint: 3.43,
-      totalCost: 201.60,
-      previousMonthChange: {
-        water: -5.8,
-        electricity: 18.2,
-        gas: -12.3,
-        co2: 4.7
-      }
-    }
-  ];
 
   const getChangeIcon = (change: number) => {
     return change > 0 ? (
@@ -221,16 +147,41 @@ export default function History() {
               View and analyze your historical consumption patterns by month
             </p>
           </div>
-          <Button variant="outline" className="gap-2 text-sm" size="sm">
-            <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">Export Data</span>
-            <span className="sm:hidden">Export</span>
-          </Button>
         </div>
+
+        {/* Chart Controls for All Data */}
+        {historyData.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Annual Consumption Overview</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ConsumptionChart 
+                data={historyData.map(entry => ({
+                  id: entry.id,
+                  month: parseInt(entry.id.split('-')[1]),
+                  year: entry.year,
+                  coldWater: entry.consumption.coldWater,
+                  hotWater: entry.consumption.hotWater,
+                  sewage: entry.consumption.sewage,
+                  heating: entry.consumption.heating,
+                  electricity: entry.consumption.electricity,
+                  gas: entry.consumption.gas,
+                  createdAt: new Date().toISOString(),
+                  readingDate: new Date(entry.year, parseInt(entry.id.split('-')[1]) - 1).toISOString()
+                }))}
+                period="year"
+                category={chartCategory}
+                onCategoryChange={setChartCategory}
+                showPeriodControls={false}
+              />
+            </CardContent>
+          </Card>
+        )}
 
         {/* History List */}
         <div className="grid gap-4">
-          {mockHistoryData.length === 0 ? (
+          {historyData.length === 0 ? (
             <Card className="p-12 text-center">
               <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
@@ -239,12 +190,12 @@ export default function History() {
               <p className="text-gray-500 dark:text-gray-500 mb-4">
                 Start by adding your first consumption readings to see your history here.
               </p>
-              <Button>
+              <Button onClick={() => window.location.href = '/dashboard'}>
                 Add First Reading
               </Button>
             </Card>
           ) : (
-            mockHistoryData.map((entry) => (
+            historyData.map((entry) => (
             <Card key={entry.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -258,41 +209,47 @@ export default function History() {
                         {entry.month} {entry.year}
                       </h3>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Total Cost: ${entry.totalCost.toFixed(2)} • CO₂: {entry.co2Footprint} tonnes
+                        CO₂ Emissions: {entry.co2Footprint.toFixed(1)} kg
                       </p>
                     </div>
                   </div>
 
                   {/* Consumption Summary */}
-                  <div className="grid grid-cols-3 gap-6 text-center">
+                  <div className="grid grid-cols-3 md:grid-cols-6 gap-3 text-center">
                     <div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Water</div>
-                      <div className="font-semibold text-gray-900 dark:text-white">
-                        {entry.consumption.water} m³
-                      </div>
-                      <div className="flex items-center gap-1 justify-center mt-1">
-                        {getChangeIcon(entry.previousMonthChange.water)}
-                        {getChangeBadge(entry.previousMonthChange.water)}
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Cold Water</div>
+                      <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                        {entry.consumption.coldWater.toFixed(1)} m³
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Electricity</div>
-                      <div className="font-semibold text-gray-900 dark:text-white">
-                        {entry.consumption.electricity} kWh
-                      </div>
-                      <div className="flex items-center gap-1 justify-center mt-1">
-                        {getChangeIcon(entry.previousMonthChange.electricity)}
-                        {getChangeBadge(entry.previousMonthChange.electricity)}
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Hot Water</div>
+                      <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                        {entry.consumption.hotWater.toFixed(1)} m³
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Gas</div>
-                      <div className="font-semibold text-gray-900 dark:text-white">
-                        {entry.consumption.gas} m³
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Sewage</div>
+                      <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                        {entry.consumption.sewage.toFixed(1)} m³
                       </div>
-                      <div className="flex items-center gap-1 justify-center mt-1">
-                        {getChangeIcon(entry.previousMonthChange.gas)}
-                        {getChangeBadge(entry.previousMonthChange.gas)}
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Heating</div>
+                      <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                        {entry.consumption.heating.toFixed(1)} Gcal
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Electricity</div>
+                      <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                        {entry.consumption.electricity.toFixed(1)} kWh
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Gas</div>
+                      <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                        {entry.consumption.gas.toFixed(1)} m³
                       </div>
                     </div>
                   </div>
@@ -307,15 +264,6 @@ export default function History() {
                     >
                       <Eye className="w-4 h-4" />
                       View Details
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleCompareWithPrevious(entry)}
-                      className="gap-2"
-                    >
-                      <BarChart3 className="w-4 h-4" />
-                      Compare
                     </Button>
                   </div>
                 </div>
@@ -348,67 +296,60 @@ export default function History() {
                 </h4>
                 <ConsumptionChart 
                   data={[{
-                    month: selectedEntry.month,
-                    water: selectedEntry.consumption.water,
+                    id: selectedEntry.id,
+                    month: parseInt(selectedEntry.id.split('-')[1]),
+                    year: selectedEntry.year,
+                    coldWater: selectedEntry.consumption.coldWater,
+                    hotWater: selectedEntry.consumption.hotWater,
+                    sewage: selectedEntry.consumption.sewage,
+                    heating: selectedEntry.consumption.heating,
                     electricity: selectedEntry.consumption.electricity,
-                    gas: selectedEntry.consumption.gas
+                    gas: selectedEntry.consumption.gas,
+                    createdAt: new Date().toISOString(),
+                    readingDate: new Date(selectedEntry.year, parseInt(selectedEntry.id.split('-')[1]) - 1).toISOString()
                   }]}
                   period="month"
+                  category={detailChartCategory}
+                  onCategoryChange={setDetailChartCategory}
+                  showPeriodControls={false}
                 />
               </div>
 
               {/* Detailed Metrics */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 <div>
                   <h4 className="font-medium text-gray-900 dark:text-white mb-3">
                     Consumption Details
                   </h4>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">💧 Water Usage:</span>
-                      <span className="font-medium">{selectedEntry.consumption.water} m³</span>
+                      <span className="text-gray-600 dark:text-gray-400">💧 Cold Water:</span>
+                      <span className="font-medium">{selectedEntry.consumption.coldWater.toFixed(1)} m³</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">🌊 Hot Water:</span>
+                      <span className="font-medium">{selectedEntry.consumption.hotWater.toFixed(1)} m³</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">🚰 Sewage:</span>
+                      <span className="font-medium">{selectedEntry.consumption.sewage.toFixed(1)} m³</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">🔥 Heating:</span>
+                      <span className="font-medium">{selectedEntry.consumption.heating.toFixed(1)} Gcal</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-400">⚡ Electricity:</span>
-                      <span className="font-medium">{selectedEntry.consumption.electricity} kWh</span>
+                      <span className="font-medium">{selectedEntry.consumption.electricity.toFixed(1)} kWh</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">🔥 Gas Usage:</span>
-                      <span className="font-medium">{selectedEntry.consumption.gas} m³</span>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-900 dark:text-white mb-3">
-                    Environmental Impact
-                  </h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">🌍 CO₂ Footprint:</span>
-                      <span className="font-medium">{selectedEntry.co2Footprint} tonnes</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">💰 Total Cost:</span>
-                      <span className="font-medium">${selectedEntry.totalCost.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">📊 Efficiency:</span>
-                      <Badge variant="default">Good</Badge>
+                      <span className="text-gray-600 dark:text-gray-400">🔥 Gas:</span>
+                      <span className="font-medium">{selectedEntry.consumption.gas.toFixed(1)} m³</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Compare Button */}
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                <Button
-                  onClick={() => handleCompareWithPrevious(selectedEntry)}
-                  className="gap-2"
-                >
-                  Compare with Previous Month
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </div>
             </CardContent>
           </Card>
         )}

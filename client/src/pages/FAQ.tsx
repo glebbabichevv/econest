@@ -201,20 +201,16 @@ export default function FAQ() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center">
-          <div className="flex gap-4">
-            <a 
-              href="/contact" 
-              className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-            >
-              {language === 'ru' ? 'Связаться с поддержкой' : 'Contact Support'}
-            </a>
-            <a 
-              href="mailto:support@econest.ru" 
-              className="inline-flex items-center px-6 py-3 border border-primary text-primary rounded-lg hover:bg-primary/10 transition-colors"
-            >
-              {language === 'ru' ? 'Написать нам' : 'Email Us'}
-            </a>
-          </div>
+          <a 
+            href="/contact" 
+            className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.href = '/contact';
+            }}
+          >
+            {language === 'ru' ? 'Связаться с поддержкой' : 'Contact Support'}
+          </a>
         </CardContent>
       </Card>
       </main>

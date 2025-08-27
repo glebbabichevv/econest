@@ -3,14 +3,15 @@ import { Droplets, Zap, Flame, Leaf } from "lucide-react";
 import { useI18n } from "@/hooks/useI18n";
 
 interface ConsumptionCardProps {
-  type: "water" | "electricity" | "gas" | "co2";
+  type: "water" | "electricity" | "gas" | "co2" | "heating";
   value: number | string;
   unit: string;
   change?: number;
   period?: string;
+  title?: string;
 }
 
-export function ConsumptionCard({ type, value, unit, change, period = "This month" }: ConsumptionCardProps) {
+export function ConsumptionCard({ type, value, unit, change, period = "This month", title }: ConsumptionCardProps) {
   const { t } = useI18n();
 
   const getIcon = () => {
@@ -23,6 +24,8 @@ export function ConsumptionCard({ type, value, unit, change, period = "This mont
         return <Flame className="text-orange-600 dark:text-orange-400 text-xl" />;
       case "co2":
         return <Leaf className="text-emerald-600 dark:text-emerald-400 text-xl" />;
+      case "heating":
+        return <Flame className="text-yellow-600 dark:text-yellow-400 text-xl" />;
       default:
         return null;
     }
@@ -38,6 +41,8 @@ export function ConsumptionCard({ type, value, unit, change, period = "This mont
         return t('dashboard.gasUsage');
       case "co2":
         return t('dashboard.co2Footprint');
+      case "heating":
+        return "Heating";
       default:
         return "";
     }
@@ -53,6 +58,8 @@ export function ConsumptionCard({ type, value, unit, change, period = "This mont
         return "bg-orange-50 dark:bg-orange-900/20";
       case "co2":
         return "bg-emerald-50 dark:bg-emerald-900/20";
+      case "heating":
+        return "bg-yellow-50 dark:bg-yellow-900/20";
       default:
         return "bg-gray-50 dark:bg-gray-900/20";
     }
@@ -68,6 +75,8 @@ export function ConsumptionCard({ type, value, unit, change, period = "This mont
         return "text-orange-700 dark:text-orange-300";
       case "co2":
         return "text-emerald-700 dark:text-emerald-300";
+      case "heating":
+        return "text-yellow-700 dark:text-yellow-300";
       default:
         return "text-gray-700 dark:text-gray-300";
     }
@@ -100,7 +109,7 @@ export function ConsumptionCard({ type, value, unit, change, period = "This mont
           )}
         </div>
         <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-1 truncate">
-          {getTitle()}
+          {title || getTitle()}
         </h3>
         <p className={`text-xl sm:text-2xl font-bold ${getValueColor()} break-all`}>
           {value} <span className="text-sm sm:text-base">{unit}</span>

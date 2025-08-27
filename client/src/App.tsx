@@ -11,7 +11,7 @@ import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import Analytics from "@/pages/Analytics";
 import About from "@/pages/About";
-import Footprint from "@/pages/FootprintNew";
+import Footprint from "@/pages/Footprint";
 import HowItWorks from "@/pages/HowItWorks";
 import FAQ from "@/pages/FAQ";
 import Contact from "@/pages/Contact";
@@ -22,12 +22,24 @@ import Profile from "@/pages/Profile";
 import Auth from "@/pages/Auth";
 
 function Router() {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isTransitioning } = useAuth();
+
+  // Show loading screen during authentication transitions
+  if (isTransitioning) {
+    return (
+      <div className="min-h-screen bg-neutral-bg dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Please wait...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-neutral-bg dark:bg-gray-900">
       <Switch>
-        {isLoading || !isAuthenticated ? (
+        {!isAuthenticated ? (
           <>
             <Route path="/" component={Landing} />
             <Route path="/auth" component={Auth} />
