@@ -44,19 +44,15 @@ export default function Auth() {
       return response.json();
     },
     onSuccess: async () => {
-      // Invalidate and refetch user data
-      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
-      
       toast({
         title: t('auth.loginSuccess'),
         description: t('auth.welcome'),
       });
       
-      // Wait longer for state update on Render
+      // Direct redirect - let new page load fresh data
       setTimeout(() => {
         window.location.replace("/dashboard");
-      }, 1000);
+      }, 500);
     },
     onError: (error: Error) => {
       toast({
@@ -83,19 +79,15 @@ export default function Auth() {
       return response.json();
     },
     onSuccess: async () => {
-      // Invalidate and refetch user data
-      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
-      
       toast({
         title: t('auth.registerSuccess'),
         description: t('auth.welcome'),
       });
       
-      // Wait longer for state update on Render
+      // Direct redirect - let new page load fresh data
       setTimeout(() => {
         window.location.replace("/dashboard");
-      }, 1000);
+      }, 500);
     },
     onError: (error: Error) => {
       toast({

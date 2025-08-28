@@ -56,9 +56,9 @@ app.use(
     saveUninitialized: false,
     name: 'econest.sid',
     cookie: {
-      secure: process.env.NODE_ENV === 'production',           // HTTPS в production
+      secure: false,  // Временно отключаем для тестирования на Render
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',       // кросс-доменные запросы
+      sameSite: 'lax',  // Более мягкие настройки для совместимости
       maxAge: 1000 * 60 * 60, // 1 час
     },
   })
