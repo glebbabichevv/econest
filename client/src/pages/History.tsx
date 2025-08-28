@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/hooks/useI18n";
 import { AuthenticatedLayout } from "@/components/AuthenticatedLayout";
@@ -14,7 +14,8 @@ import {
   BarChart3, 
   Download,
   Eye,
-  ArrowRight
+  ArrowRight,
+  Trash2
 } from "lucide-react";
 
 interface HistoryEntry {
@@ -43,6 +44,7 @@ interface HistoryEntry {
 
 export default function History() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const { t } = useI18n();
   const [selectedEntry, setSelectedEntry] = useState<HistoryEntry | null>(null);
   const [chartCategory, setChartCategory] = useState<"water-gas" | "electricity" | "heating">("water-gas");
@@ -79,7 +81,17 @@ export default function History() {
         coldWater: 0, hotWater: 0, sewage: 0, heating: 0, electricity: 0, gas: 0, co2: 0  // Will calculate if we have previous data
       }
     }))
-    .sort((a, b) => new Date(b.year, b.month === 'January' ? 0 : b.month === 'February' ? 1 : 2).getTime() - new Date(a.year, a.month === 'January' ? 0 : a.month === 'February' ? 1 : 2).getTime())
+    .sort((a, b) => {
+      // Правильная сортировка по году и месяцу
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      const monthA = monthNames.indexOf(a.month);
+      const monthB = monthNames.indexOf(b.month);
+      
+      if (b.year !== a.year) {
+        return b.year - a.year; // Сначала более поздние годы
+      }
+      return monthB - monthA; // Затем более поздние месяцы
+    })
     : [];
 
   // Calculate changes from previous month
@@ -124,6 +136,47 @@ export default function History() {
     console.log("Compare with previous month:", entry);
   };
 
+  const handleDeleteEntry = async (entry: HistoryEntry) => {
+    if (!confirm(`Are you sure you want to delete the consumption data for ${entry.month} ${entry.year}? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      // Find the actual consumption reading ID from the monthly data
+      const historyResponse = await fetch('/api/consumption');
+      const consumptionData = await historyResponse.json();
+      
+      // Find the reading that matches this month/year
+      const targetReading = consumptionData.find((reading: any) => {
+        const readingDate = new Date(reading.readingDate);
+        const readingYear = readingDate.getFullYear();
+        const readingMonth = readingDate.toLocaleString('default', { month: 'long' });
+        return readingYear === entry.year && readingMonth === entry.month;
+      });
+
+      if (!targetReading) {
+        alert('Could not find consumption reading to delete.');
+        return;
+      }
+
+      const response = await fetch(`/api/consumption/${targetReading.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Refresh history data
+        queryClient.invalidateQueries({ queryKey: ["/api/consumption"] });
+        // Show success message
+        alert('Consumption data deleted successfully.');
+      } else {
+        throw new Error('Failed to delete');
+      }
+    } catch (error) {
+      console.error('Error deleting entry:', error);
+      alert('Failed to delete consumption data. Please try again.');
+    }
+  };
+
   if (isLoading) {
     return (
       <AuthenticatedLayout>
@@ -157,19 +210,22 @@ export default function History() {
             </CardHeader>
             <CardContent>
               <ConsumptionChart 
-                data={historyData.map(entry => ({
-                  id: entry.id,
-                  month: parseInt(entry.id.split('-')[1]),
-                  year: entry.year,
-                  coldWater: entry.consumption.coldWater,
-                  hotWater: entry.consumption.hotWater,
-                  sewage: entry.consumption.sewage,
-                  heating: entry.consumption.heating,
-                  electricity: entry.consumption.electricity,
-                  gas: entry.consumption.gas,
-                  createdAt: new Date().toISOString(),
-                  readingDate: new Date(entry.year, parseInt(entry.id.split('-')[1]) - 1).toISOString()
-                }))}
+                data={historyData.map(entry => {
+                  const monthNum = parseInt(entry.id.split('-')[1]);
+                  return {
+                    id: entry.id,
+                    month: monthNum,
+                    year: entry.year,
+                    coldWater: Number(entry.consumption.coldWater) || 0,
+                    hotWater: Number(entry.consumption.hotWater) || 0,
+                    sewage: Number(entry.consumption.sewage) || 0,
+                    heating: Number(entry.consumption.heating) || 0,
+                    electricity: Number(entry.consumption.electricity) || 0,
+                    gas: Number(entry.consumption.gas) || 0,
+                    createdAt: new Date().toISOString(),
+                    readingDate: new Date(entry.year, monthNum - 1).toISOString()
+                  };
+                })}
                 period="year"
                 category={chartCategory}
                 onCategoryChange={setChartCategory}
@@ -198,7 +254,7 @@ export default function History() {
             historyData.map((entry) => (
             <Card key={entry.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   {/* Month Info */}
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
@@ -214,39 +270,39 @@ export default function History() {
                     </div>
                   </div>
 
-                  {/* Consumption Summary */}
-                  <div className="grid grid-cols-3 md:grid-cols-6 gap-3 text-center">
-                    <div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Cold Water</div>
-                      <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                  {/* Consumption Summary - Hidden on mobile, show only on desktop */}
+                  <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center">
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Cold</div>
+                      <div className="font-semibold text-gray-900 dark:text-white text-xs">
                         {entry.consumption.coldWater.toFixed(1)} m³
                       </div>
                     </div>
-                    <div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Hot Water</div>
-                      <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Hot</div>
+                      <div className="font-semibold text-gray-900 dark:text-white text-xs">
                         {entry.consumption.hotWater.toFixed(1)} m³
                       </div>
                     </div>
-                    <div>
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
                       <div className="text-xs text-gray-500 dark:text-gray-400">Sewage</div>
-                      <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                      <div className="font-semibold text-gray-900 dark:text-white text-xs">
                         {entry.consumption.sewage.toFixed(1)} m³
                       </div>
                     </div>
-                    <div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Heating</div>
-                      <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Heat</div>
+                      <div className="font-semibold text-gray-900 dark:text-white text-xs">
                         {entry.consumption.heating.toFixed(1)} Gcal
                       </div>
                     </div>
-                    <div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Electricity</div>
-                      <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Electric</div>
+                      <div className="font-semibold text-gray-900 dark:text-white text-xs">
                         {entry.consumption.electricity.toFixed(1)} kWh
                       </div>
                     </div>
-                    <div>
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
                       <div className="text-xs text-gray-500 dark:text-gray-400">Gas</div>
                       <div className="font-semibold text-gray-900 dark:text-white text-sm">
                         {entry.consumption.gas.toFixed(1)} m³
@@ -264,6 +320,15 @@ export default function History() {
                     >
                       <Eye className="w-4 h-4" />
                       View Details
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeleteEntry(entry)}
+                      className="gap-2"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete
                     </Button>
                   </div>
                 </div>

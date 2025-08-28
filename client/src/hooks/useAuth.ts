@@ -15,9 +15,10 @@ export function useAuth() {
   const queryClient = useQueryClient();
   const [isTransitioning, setIsTransitioning] = useState(false);
   
-  const { data: user, isLoading } = useQuery<User>({
+  const { data: user, isLoading, refetch } = useQuery<User>({
     queryKey: ["/api/auth/user"],
     retry: false,
+    staleTime: 0, // Always refetch fresh data
   });
 
   const logoutMutation = useMutation({
@@ -49,6 +50,7 @@ export function useAuth() {
     isLoading,
     isAuthenticated: !!user,
     logout,
+    refetch,
     isTransitioning: isTransitioning || logoutMutation.isPending,
     setIsTransitioning,
   };

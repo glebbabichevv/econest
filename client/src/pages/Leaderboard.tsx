@@ -26,12 +26,33 @@ import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+// Helper function to get available months (June 2025 to December 2025)
+const getAvailableMonths = () => {
+  const months = [];
+  
+  // June 2025 to December 2025
+  for (let month = 6; month <= 12; month++) {
+    months.push({
+      month, 
+      year: 2025, 
+      name: new Date(2025, month - 1).toLocaleString('default', { month: 'long' }),
+      value: `${month}-2025`
+    });
+  }
+  
+  return months;
+};
+
 export default function Leaderboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { t } = useI18n();
   const [, setLocation] = useLocation();
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  
+  const availableMonths = getAvailableMonths();
+  const defaultMonth = availableMonths[0]; // Start with June 2025
+  
+  const [selectedMonth, setSelectedMonth] = useState(defaultMonth?.month || 6);
+  const [selectedYear, setSelectedYear] = useState(defaultMonth?.year || 2025);
 
   const goBack = () => {
     setLocation('/dashboard');
@@ -46,14 +67,20 @@ export default function Leaderboard() {
     }
   }, [isAuthenticated, isLoading]);
 
-  const { data: usersData } = useQuery({
-    queryKey: ["/api/leaderboard/users", selectedMonth, selectedYear],
-    enabled: isAuthenticated,
-  });
-
   const { data: regionsData } = useQuery({
     queryKey: ["/api/leaderboard/regions-monthly", selectedMonth, selectedYear],
+    queryFn: async () => {
+      const response = await fetch(`/api/leaderboard/regions-monthly?month=${selectedMonth}&year=${selectedYear}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch regions data');
+      }
+      return response.json();
+    },
     enabled: isAuthenticated,
+    staleTime: 0, // Always fetch fresh data
+    cacheTime: 0, // Don't cache the data
   });
 
   if (isLoading) {
@@ -89,7 +116,7 @@ export default function Leaderboard() {
           CO₂ Leaderboard
         </h1>
         <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-sm md:text-base px-4 md:px-0">
-          Compare CO₂ emissions by users and regions for selected month
+          Compare CO₂ emissions by regions for selected month
         </p>
       </div>
 
@@ -102,18 +129,11 @@ export default function Leaderboard() {
               <SelectValue placeholder="Month" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1">January</SelectItem>
-              <SelectItem value="2">February</SelectItem>
-              <SelectItem value="3">March</SelectItem>
-              <SelectItem value="4">April</SelectItem>
-              <SelectItem value="5">May</SelectItem>
-              <SelectItem value="6">June</SelectItem>
-              <SelectItem value="7">July</SelectItem>
-              <SelectItem value="8">August</SelectItem>
-              <SelectItem value="9">September</SelectItem>
-              <SelectItem value="10">October</SelectItem>
-              <SelectItem value="11">November</SelectItem>
-              <SelectItem value="12">December</SelectItem>
+              {availableMonths.map((monthData) => (
+                <SelectItem key={monthData.value} value={String(monthData.month)}>
+                  {monthData.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -123,95 +143,47 @@ export default function Leaderboard() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="2025">2025</SelectItem>
-            <SelectItem value="2024">2024</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      <Tabs defaultValue="users" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="users">Users CO₂</TabsTrigger>
-          <TabsTrigger value="regions">Regions CO₂</TabsTrigger>
-        </TabsList>
-
-        {/* Users Tab */}
-        <TabsContent value="users">
-          <Card>
-            <CardHeader>
-              <CardTitle>Users CO₂ Emissions - {new Date(selectedYear, selectedMonth - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left p-2">Rank</th>
-                      <th className="text-left p-2">Name</th>
-                      <th className="text-right p-2">CO₂ Emissions (kg)</th>
-                      <th className="text-right p-2">Readings</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(usersData || []).map((user: any, index: number) => (
-                      <tr key={user.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
-                        <td className="p-2 font-bold">#{index + 1}</td>
-                        <td className="p-2">{user.name}</td>
-                        <td className="p-2 text-right font-semibold">{user.totalCO2}</td>
-                        <td className="p-2 text-right">{user.readingsCount}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {(!usersData || usersData.length === 0) && (
-                  <div className="text-center py-8 text-gray-500">
-                    No user data available for this month.
-                  </div>
-                )}
+      {/* Regions Leaderboard */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Regions CO₂ Emissions - {new Date(selectedYear, selectedMonth - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left p-2">Rank</th>
+                  <th className="text-left p-2">Region</th>
+                  <th className="text-right p-2">Total CO₂ (kg)</th>
+                  <th className="text-right p-2">Average CO₂ (kg)</th>
+                  <th className="text-right p-2">Users</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(regionsData || []).map((region: any, index: number) => (
+                  <tr key={region.region} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <td className="p-2 font-bold">#{index + 1}</td>
+                    <td className="p-2">{region.region}</td>
+                    <td className="p-2 text-right font-semibold">{region.totalCO2}</td>
+                    <td className="p-2 text-right">{region.averageCO2}</td>
+                    <td className="p-2 text-right">{region.userCount}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {(!regionsData || regionsData.length === 0) && (
+              <div className="text-center py-8 text-gray-500">
+                No regional data available for this month.
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Regions Tab */}
-        <TabsContent value="regions">
-          <Card>
-            <CardHeader>
-              <CardTitle>Regions CO₂ Emissions - {new Date(selectedYear, selectedMonth - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left p-2">Rank</th>
-                      <th className="text-left p-2">Region</th>
-                      <th className="text-right p-2">Total CO₂ (kg)</th>
-                      <th className="text-right p-2">Average CO₂ (kg)</th>
-                      <th className="text-right p-2">Users</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(regionsData || []).map((region: any, index: number) => (
-                      <tr key={region.region} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
-                        <td className="p-2 font-bold">#{index + 1}</td>
-                        <td className="p-2">{region.region}</td>
-                        <td className="p-2 text-right font-semibold">{region.totalCO2}</td>
-                        <td className="p-2 text-right">{region.averageCO2}</td>
-                        <td className="p-2 text-right">{region.userCount}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {(!regionsData || regionsData.length === 0) && (
-                  <div className="text-center py-8 text-gray-500">
-                    No regional data available for this month.
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

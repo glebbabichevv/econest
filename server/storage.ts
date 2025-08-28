@@ -55,6 +55,11 @@ export interface IStorage {
   createUserWithRole(userData: UpsertUser): Promise<User>;
   updateUserRole(userId: string, role: string, additionalData?: Partial<User>): Promise<User>;
   completeUserRegistration(userId: string, data: Partial<User>): Promise<User>;
+  updateUser(userId: string, data: Partial<User>): Promise<User>;
+  
+  // Consumption reading management
+  getConsumptionReading(id: number): Promise<ConsumptionReading | undefined>;
+  deleteConsumptionReading(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -248,6 +253,29 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     return user;
+  }
+
+  async updateUser(userId: string, data: Partial<User>): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async getConsumptionReading(id: number): Promise<ConsumptionReading | undefined> {
+    const [reading] = await db
+      .select()
+      .from(consumptionReadings)
+      .where(eq(consumptionReadings.id, id));
+    return reading;
+  }
+
+  async deleteConsumptionReading(id: number): Promise<void> {
+    await db
+      .delete(consumptionReadings)
+      .where(eq(consumptionReadings.id, id));
   }
 }
 

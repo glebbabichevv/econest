@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 
 export default function Dashboard() {
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading, refetch: refetchUser } = useAuth();
   const { t } = useI18n();
   const { toast } = useToast();
   const [period, setPeriod] = useState<"month" | "year">("month");
@@ -29,6 +29,7 @@ export default function Dashboard() {
     queryKey: ["/api/dashboard"],
     enabled: isAuthenticated && !authLoading,
     retry: false,
+    staleTime: 0, // Always refetch to get fresh data
   });
 
   const currentMonth = new Date().getMonth() + 1;
@@ -121,7 +122,7 @@ export default function Dashboard() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight">
-              {t("dashboard.welcome")}, {user?.name || user?.email?.split('@')[0] || 'User'}!
+              {t("dashboard.welcome")}, {user?.firstName || 'User'}!
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">
               {t("dashboard.overview")}
@@ -133,8 +134,8 @@ export default function Dashboard() {
 
 
 
-        {/* Consumption Cards - Mobile Optimized */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 md:gap-6">
+        {/* Consumption Cards - Mobile Optimized in 2 rows */}
+        <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2 sm:gap-4 md:gap-6">
           <ConsumptionCard
             type="water"
             value={consumption.coldWater || 0}

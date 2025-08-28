@@ -105,7 +105,7 @@ export default function AIAssistant() {
                   </div>
                   <div className="text-gray-700 dark:text-gray-300">
                     <p className="mb-3 text-sm sm:text-base">
-                      Hello, {user?.name || user?.firstName || user?.email?.split('@')[0] || 'User'}!
+                      Hello, {user?.firstName || 'User'}!
                     </p>
                     <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                       I analyze your consumption patterns and current weather to provide personalized recommendations for reducing your environmental impact.

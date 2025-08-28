@@ -52,9 +52,9 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
 
       // Show empty state when no data
       if (!data || data.length === 0) {
-        // Don't render chart, show empty message
         return;
       }
+
 
       // Создаем разные типы графиков в зависимости от периода
       let chartData: ChartData;
@@ -64,19 +64,21 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
         // Для годового периода - линейный график с данными по месяцам
         // Сортируем данные по readingDate для хронологического порядка
         const sortedData = [...data].sort((a, b) => {
-          const dateA = a.readingDate ? new Date(a.readingDate) : new Date(a.year || 2024, (a.month || 1) - 1);
-          const dateB = b.readingDate ? new Date(b.readingDate) : new Date(b.year || 2024, (b.month || 1) - 1);
-          return dateA.getTime() - dateB.getTime();
+          // Сортируем по году и месяцу
+          const yearA = a.year || 2024;
+          const monthA = a.month || 1; 
+          const yearB = b.year || 2024;
+          const monthB = b.month || 1;
+          
+          if (yearA !== yearB) {
+            return yearA - yearB;
+          }
+          return monthA - monthB;
         });
         
         const groupedData = sortedData.reduce((acc, reading) => {
-          // Используем поля month и year напрямую, если они есть, иначе берем из readingDate
-          const monthKey = reading.month && reading.year 
-            ? `${reading.year}-${String(reading.month).padStart(2, '0')}`
-            : (() => {
-                const date = new Date(reading.readingDate || reading.createdAt);
-                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-              })();
+          // Используем поля month и year напрямую
+          const monthKey = `${reading.year}-${String(reading.month).padStart(2, '0')}`;
           
           if (!acc[monthKey]) {
             acc[monthKey] = { coldWater: 0, hotWater: 0, sewage: 0, heating: 0, electricity: 0, gas: 0 };
@@ -93,6 +95,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
         }, {} as Record<string, {coldWater: number, hotWater: number, sewage: number, heating: number, electricity: number, gas: number}>);
 
         const sortedMonthKeys = Object.keys(groupedData).sort();
+        
         chartData = {
           labels: sortedMonthKeys.map(monthKey => {
             const [year, month] = monthKey.split('-');
@@ -234,6 +237,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
         chartType = "bar";
       }
 
+      
       chartRef.current = new Chart(ctx, {
         type: chartType,
         data: chartData,
@@ -289,27 +293,30 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
             {t('dashboard.consumptionTrends')}
           </CardTitle>
           <div className="flex flex-col gap-2">
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-1">
               <Button
                 variant={category === "water-gas" ? "default" : "outline"}
                 size="sm"
                 onClick={() => onCategoryChange?.("water-gas")}
+                className="text-xs px-2 flex-1 sm:flex-none min-w-0"
               >
-                Water/Gas
+                Water
               </Button>
               <Button
                 variant={category === "electricity" ? "default" : "outline"}
                 size="sm"
                 onClick={() => onCategoryChange?.("electricity")}
+                className="text-xs px-2 flex-1 sm:flex-none min-w-0"
               >
-                Electricity
+                Electric
               </Button>
               <Button
                 variant={category === "heating" ? "default" : "outline"}
                 size="sm"
                 onClick={() => onCategoryChange?.("heating")}
+                className="text-xs px-2 flex-1 sm:flex-none min-w-0"
               >
-                Heating
+                Heat
               </Button>
             </div>
             {showPeriodControls && (
@@ -318,15 +325,17 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
                   variant={period === "month" ? "default" : "outline"}
                   size="sm"
                   onClick={() => onPeriodChange?.("month")}
+                  className="text-xs px-3"
                 >
-                  Monthly
+                  Month
                 </Button>
                 <Button
                   variant={period === "year" ? "default" : "outline"}
                   size="sm"
                   onClick={() => onPeriodChange?.("year")}
+                  className="text-xs px-3"
                 >
-                  Yearly
+                  Year
                 </Button>
               </div>
             )}

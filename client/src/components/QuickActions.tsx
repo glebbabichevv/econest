@@ -15,6 +15,17 @@ import { insertConsumptionReadingSchema } from "@shared/schema";
 import { z } from "zod";
 import { useState } from "react";
 
+// Helper function to get available dates (from June 1st 2025 to current date)
+const getAvailableDateRange = () => {
+  const currentDate = new Date();
+  
+  // Start from June 1st, 2025
+  const minDate = new Date(2025, 5, 1).toISOString().split('T')[0]; // June 1st, 2025
+  const maxDate = currentDate.toISOString().split('T')[0]; // Today
+  
+  return { minDate, maxDate };
+};
+
 const getFormSchema = (t: any) => z.object({
   coldWater: z.string().min(0).default("0"),
   hotWater: z.string().min(0).default("0"),
@@ -37,6 +48,8 @@ export function QuickActions() {
   type ConsumptionFormData = z.infer<typeof consumptionFormSchema>;
 
   const currentDate = new Date();
+  const { minDate, maxDate } = getAvailableDateRange();
+  
   const form = useForm<ConsumptionFormData>({
     resolver: zodResolver(consumptionFormSchema),
     defaultValues: {
@@ -158,7 +171,12 @@ export function QuickActions() {
                     <FormItem>
                       <FormLabel>{t("readingDate")}</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <Input 
+                          type="date" 
+                          min={minDate}
+                          max={maxDate}
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

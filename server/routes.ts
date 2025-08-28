@@ -106,12 +106,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         id: user.id,
         email: user.email,
+        name: [user.firstName, user.lastName].filter(Boolean).join(' ') || 'User',
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
         isRegistrationComplete: user.isRegistrationComplete,
-        school: user.school,
-        className: user.className,
         region: user.region,
         language: user.language
       });
@@ -905,63 +904,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // New Leaderboard endpoints with month selection
-  app.get("/api/leaderboard/users", requireAuth, async (req: any, res) => {
-    try {
-      const { month, year } = req.query;
-      const selectedMonth = month ? parseInt(month) : new Date().getMonth() + 1;
-      const selectedYear = year ? parseInt(year) : new Date().getFullYear();
-
-      const users = await db.select({
-        id: usersTable.id,
-        firstName: usersTable.firstName,
-        lastName: usersTable.lastName,
-        role: usersTable.role
-      }).from(usersTable);
-
-      const leaderboardData = [];
-
-      for (const user of users) {
-        // Get readings for the specific month
-        const startDate = new Date(selectedYear, selectedMonth - 1, 1);
-        const endDate = new Date(selectedYear, selectedMonth, 0);
-        const readings = await storage.getConsumptionByDateRange(user.id, startDate, endDate);
-
-        let totalCO2 = 0;
-        readings.forEach(reading => {
-          const electricity = parseFloat(reading.electricity || '0');
-          const gas = parseFloat(reading.gas || '0');
-          
-          // CO2 calculation using correct Kazakhstan coefficients  
-          totalCO2 += electricity * 0.9 + gas * 2.0;
-        });
-
-        if (totalCO2 > 0) {
-          leaderboardData.push({
-            id: user.id,
-            name: `${user.firstName || 'User'} ${user.lastName || ''}`.trim(),
-            role: user.role,
-            totalCO2: Math.round(totalCO2 * 100) / 100,
-            readingsCount: readings.length
-          });
-        }
-      }
-
-      // Sort by CO2 emissions (ascending - lower is better)
-      leaderboardData.sort((a, b) => a.totalCO2 - b.totalCO2);
-
-      res.json(leaderboardData);
-    } catch (error) {
-      console.error('Error fetching users leaderboard:', error);
-      res.status(500).json({ error: 'Failed to fetch users leaderboard' });
-    }
-  });
 
   app.get("/api/leaderboard/regions-monthly", requireAuth, async (req: any, res) => {
     try {
       const { month, year } = req.query;
       const selectedMonth = month ? parseInt(month) : new Date().getMonth() + 1;
       const selectedYear = year ? parseInt(year) : new Date().getFullYear();
+
+      console.log(`🔍 Fetching regions data for: ${selectedMonth}/${selectedYear}`);
 
       // All users now have regions assigned
 
@@ -981,6 +931,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const startDate = new Date(selectedYear, selectedMonth - 1, 1);
         const endDate = new Date(selectedYear, selectedMonth, 0);
         const readings = await storage.getConsumptionByDateRange(user.id, startDate, endDate);
+        
+        if (readings.length > 0) {
+          console.log(`📊 User ${user.firstName} (${user.region}): ${readings.length} readings for ${selectedMonth}/${selectedYear}`);
+        }
 
         let userCO2 = 0;
         readings.forEach(reading => {
@@ -1013,10 +967,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
         usersWithData: data.usersWithData
       })).sort((a, b) => a.totalCO2 - b.totalCO2);
 
-      res.json(regionLeaderboard);
+      console.log(`✅ Regional data for ${selectedMonth}/${selectedYear}:`, regionLeaderboard);
+      
+      // For future months (where no data exists yet), return empty array
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth() + 1;
+      
+      const isRequestingFutureMonth = selectedYear > currentYear || 
+        (selectedYear === currentYear && selectedMonth > currentMonth);
+      
+      // Disable caching for leaderboard data to ensure fresh results
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
+      
+      if (isRequestingFutureMonth) {
+        console.log(`⚠️ Requesting future month ${selectedMonth}/${selectedYear}, returning empty data`);
+        res.json([]);
+      } else {
+        res.json(regionLeaderboard);
+      }
     } catch (error) {
       console.error('Error fetching regions leaderboard:', error);
       res.status(500).json({ error: 'Failed to fetch regions leaderboard' });
+    }
+  });
+
+  // Profile update endpoint
+  app.post('/api/profile/update', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const { firstName, lastName, email, role, language } = req.body;
+
+      // Update user in database
+      const updatedUser = await storage.updateUser(userId, {
+        firstName,
+        lastName,
+        email,
+        role,
+        language
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ 
+        success: true, 
+        user: {
+          id: updatedUser.id,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          email: updatedUser.email,
+          role: updatedUser.role,
+          language: updatedUser.language
+        }
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  // Delete consumption reading endpoint
+  app.delete('/api/consumption/:id', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const readingId = parseInt(req.params.id);
+
+      // Verify the reading belongs to the current user
+      const reading = await storage.getConsumptionReading(readingId);
+      if (!reading || reading.userId !== userId) {
+        return res.status(404).json({ message: "Consumption reading not found" });
+      }
+
+      // Delete the reading
+      await storage.deleteConsumptionReading(readingId);
+
+      res.json({ success: true, message: "Consumption reading deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting consumption reading:", error);
+      res.status(500).json({ message: "Failed to delete consumption reading" });
     }
   });
 

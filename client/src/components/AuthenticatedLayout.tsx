@@ -129,23 +129,12 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
             {/* Right side actions - Compact with animations */}
             <div className="flex items-center space-x-1 flex-shrink-0 animate-in slide-in-from-right-5 duration-500">
               
-              {/* Mobile menu button - More prominent */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden w-10 h-10 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 border border-gray-300 dark:border-gray-600"
-              >
-                {mobileMenuOpen ? <X className="w-6 h-6 text-gray-700 dark:text-gray-300" /> : <Menu className="w-6 h-6 text-gray-700 dark:text-gray-300" />}
-              </Button>
-
-
-              {/* Theme toggle */}
+              {/* Theme toggle - Desktop only */}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleTheme}
-                className="w-8 h-8 transition-all duration-300 hover:scale-110 hover:rotate-12"
+                className="hidden sm:flex w-8 h-8 transition-all duration-300 hover:scale-110 hover:rotate-12"
               >
                 <span className="text-sm transition-transform duration-500">
                   {theme === 'light' ? '☀️' : theme === 'dark' ? '🌙' : theme === 'ocean' ? '🌊' : '👻'}
@@ -162,18 +151,20 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
                 <LogOut className="w-3 h-3 transition-transform duration-300 hover:rotate-12" />
               </Button>
 
-
             </div>
           </div>
 
-          {/* Mobile Navigation Menu */}
-          {mobileMenuOpen && (
-            <div className="lg:hidden border-t border-gray-200 dark:border-gray-700 py-4 animate-in slide-in-from-top-3 duration-300 bg-white dark:bg-gray-800 shadow-lg z-50">
-              <div className="space-y-2 px-2">
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-3 px-2 font-medium">
-                  Навигация / Navigation
-                </div>
-                {navigationItems.map((item, index) => {
+        </div>
+
+        {/* Mobile Menu Overlay - только для кнопки More */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setMobileMenuOpen(false)}>
+            <div className="absolute bottom-20 left-4 right-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 animate-in slide-in-from-bottom-3 duration-300">
+              <div className="space-y-2">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-3 px-2 font-medium">More Options</div>
+                
+                {/* Additional navigation items that don't fit in bottom nav */}
+                {navigationItems.slice(4).map((item, index) => {
                   const isActive = location === item.href;
                   const Icon = item.icon;
                   
@@ -182,16 +173,13 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
                       <Button
                         variant={isActive ? "default" : "ghost"}
                         className={cn(
-                          "w-full justify-start space-x-3 h-12 transition-all duration-300 hover:scale-[1.02] animate-in slide-in-from-left-3",
-                          isActive && "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-lg",
-                          !isActive && "text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600"
+                          "w-full justify-start space-x-3 h-12 transition-all duration-300",
+                          isActive && "bg-blue-600 text-white hover:bg-blue-700",
+                          !isActive && "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         )}
-                        style={{
-                          animationDelay: `${index * 50}ms`
-                        }}
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        <Icon className="w-5 h-5 transition-transform duration-300" />
+                        <Icon className="w-5 h-5" />
                         <span className="font-medium">{item.label}</span>
                       </Button>
                     </Link>
@@ -199,29 +187,27 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
                 })}
                 
                 {/* Mobile actions */}
-                <div className="pt-4 space-y-2 border-t border-gray-200 dark:border-gray-700">
+                <div className="pt-2 space-y-2 border-t border-gray-200 dark:border-gray-700">
                   <Button
                     variant="ghost"
                     onClick={handleLogout}
                     className="w-full justify-start space-x-3 h-12 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                   >
                     <LogOut className="w-5 h-5" />
-                    <span>{t("sidebar.logout")}</span>
+                    <span>Logout</span>
                   </Button>
                 </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </header>
-
       {/* Page content with animations */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 animate-in fade-in-0 slide-in-from-bottom-5 duration-700">
         <div className="animate-in fade-in-0 duration-1000 delay-300">
           {children}
         </div>
       </main>
-
       {/* Bottom Navigation for Mobile */}
       <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50">
         <div className="flex justify-around items-center py-2">
@@ -258,7 +244,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
             className="flex flex-col items-center space-y-1 p-2 h-auto min-h-[60px] text-gray-600 dark:text-gray-400"
           >
             <Menu className="w-5 h-5" />
-            <span className="text-xs font-medium">Еще</span>
+            <span className="text-xs font-medium">More</span>
           </Button>
         </div>
       </div>

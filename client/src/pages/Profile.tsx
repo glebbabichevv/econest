@@ -39,8 +39,10 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    name: user?.name || '',
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
     email: user?.email || '',
+    role: user?.role || 'adult',
     language: currentLanguage,
     currentPassword: '',
     newPassword: '',
@@ -49,11 +51,19 @@ export default function Profile() {
 
   // Update profile mutation
   const updateProfileMutation = useMutation({
-    mutationFn: (data: any) => fetch('/api/profile/update', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: { 'Content-Type': 'application/json' }
-    }),
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/profile/update', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update profile');
+      }
+      
+      return response.json();
+    },
     onSuccess: () => {
       toast({
         title: "Profile Updated",
@@ -121,19 +131,27 @@ export default function Profile() {
   });
 
   const handleSaveProfile = () => {
-    if (formData.name.trim() === '' || formData.email.trim() === '') {
+    if (formData.firstName.trim() === '' || formData.email.trim() === '') {
       toast({
         title: "Validation Error",
-        description: "Name and email are required.",
+        description: "First name and email are required.",
         variant: "destructive",
       });
       return;
     }
 
     updateProfileMutation.mutate({
-      name: formData.name,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
       email: formData.email,
+      role: formData.role,
       language: formData.language
+    }, {
+      onSuccess: () => {
+        // Invalidate user data to refresh throughout the app
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      }
     });
   };
 
@@ -211,7 +229,29 @@ export default function Profile() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  type="text"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                  disabled={!isEditing}
+                  placeholder="Enter your first name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+                  disabled={!isEditing}
+                  placeholder="Enter your last name"
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <Input
@@ -223,14 +263,22 @@ export default function Profile() {
                 />
               </div>
             </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="role">Account Type</Label>
+              <Select value={formData.role} onValueChange={(value) => setFormData(prev => ({ ...prev, role: value }))} disabled={!isEditing}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="adult">Adult</SelectItem>
+                  <SelectItem value="student">Student</SelectItem>
+                  <SelectItem value="company">Company</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-            <div className="flex items-center justify-between">
-              <div>
-                <Label>Account Type</Label>
-                <div className="mt-1">
-                  {getRoleBadge(user?.role || 'unknown')}
-                </div>
-              </div>
+            <div className="flex items-center justify-end">
               <div>
                 {isEditing ? (
                   <div className="flex gap-2">
@@ -239,8 +287,10 @@ export default function Profile() {
                       onClick={() => {
                         setIsEditing(false);
                         setFormData({
-                          name: user?.name || '',
+                          firstName: user?.firstName || '',
+                          lastName: user?.lastName || '',
                           email: user?.email || '',
+                          role: user?.role || 'adult',
                           language: currentLanguage,
                           currentPassword: '',
                           newPassword: '',

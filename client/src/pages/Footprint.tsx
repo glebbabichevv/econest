@@ -449,7 +449,7 @@ export default function Footprint() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
               <Button
                 onClick={(e) => {
                   e.preventDefault();
@@ -457,7 +457,7 @@ export default function Footprint() {
                   generateInsightsMutation.mutate();
                 }}
                 disabled={generateInsightsMutation.isPending}
-                className="gap-2"
+                className="gap-2 w-full sm:w-auto"
                 type="button"
               >
                 {generateInsightsMutation.isPending ? (
@@ -477,7 +477,7 @@ export default function Footprint() {
                 disabled={clearInsightsMutation.isPending}
                 variant="outline"
                 size="sm"
-                className="gap-2"
+                className="gap-2 w-full sm:w-auto"
                 type="button"
               >
                 {clearInsightsMutation.isPending ? (
