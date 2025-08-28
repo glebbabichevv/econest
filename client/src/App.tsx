@@ -24,7 +24,7 @@ import Auth from "@/pages/Auth";
 function Router() {
   const { user, isAuthenticated, isTransitioning } = useAuth();
 
-  // Show loading screen during authentication transitions
+  // Show loading screen only during transitions (login/logout)
   if (isTransitioning) {
     return (
       <div className="min-h-screen bg-neutral-bg dark:bg-gray-900 flex items-center justify-center">
@@ -65,7 +65,9 @@ function Router() {
             <Route path="/about" component={About} />
           </>
         )}
-        <Route component={NotFound} />
+        <Route>
+          {isAuthenticated ? <Dashboard /> : <Landing />}
+        </Route>
       </Switch>
     </div>
   );

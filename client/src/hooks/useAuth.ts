@@ -36,10 +36,10 @@ export function useAuth() {
       queryClient.setQueryData(["/api/auth/user"], null);
       queryClient.clear();
       
-      // Show loading for 1 second before redirect
+      // Quick redirect to auth page
       setTimeout(() => {
-        window.location.href = '/';
-      }, 1000);
+        window.location.replace('/');
+      }, 500);
     },
   });
 

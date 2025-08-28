@@ -36,11 +36,7 @@ export default function Auth() {
     region: ""
   });
 
-  // Redirect if already logged in
-  if (user) {
-    window.location.href = "/dashboard";
-    return null;
-  }
+  // No need to redirect here - App.tsx handles auth routing
 
   const loginMutation = useMutation({
     mutationFn: async (data: typeof loginData) => {
@@ -48,16 +44,12 @@ export default function Auth() {
       return response.json();
     },
     onSuccess: async () => {
-      setIsTransitioning(true);
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
         title: t('auth.loginSuccess'),
         description: t('auth.welcome'),
       });
-      // Show loading for 1 second before redirect
-      setTimeout(() => {
-        window.location.replace("/dashboard");
-      }, 1000);
+      // App.tsx will handle the redirect automatically
     },
     onError: (error: Error) => {
       toast({
@@ -84,16 +76,12 @@ export default function Auth() {
       return response.json();
     },
     onSuccess: async () => {
-      setIsTransitioning(true);
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
         title: t('auth.registerSuccess'),
         description: t('auth.welcome'),
       });
-      // Show loading for 1 second before redirect
-      setTimeout(() => {
-        window.location.replace("/dashboard");
-      }, 1000);
+      // App.tsx will handle the redirect automatically
     },
     onError: (error: Error) => {
       toast({
