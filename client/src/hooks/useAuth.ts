@@ -36,10 +36,7 @@ export function useAuth() {
       queryClient.setQueryData(["/api/auth/user"], null);
       queryClient.clear();
       
-      // Quick redirect to auth page
-      setTimeout(() => {
-        window.location.replace('/');
-      }, 500);
+      // App.tsx will handle the redirect automatically
     },
   });
 

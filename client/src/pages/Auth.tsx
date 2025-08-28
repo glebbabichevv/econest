@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserPlus, LogIn, Mail, Lock, User, Building2, MapPin } from "lucide-react";
+import { UserPlus, LogIn, Mail, Lock, User, Building2, MapPin, ArrowLeft } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -49,7 +49,10 @@ export default function Auth() {
         title: t('auth.loginSuccess'),
         description: t('auth.welcome'),
       });
-      // App.tsx will handle the redirect automatically
+      // Force redirect to dashboard for Render compatibility
+      setTimeout(() => {
+        setLocation("/dashboard");
+      }, 100);
     },
     onError: (error: Error) => {
       toast({
@@ -81,7 +84,10 @@ export default function Auth() {
         title: t('auth.registerSuccess'),
         description: t('auth.welcome'),
       });
-      // App.tsx will handle the redirect automatically
+      // Force redirect to dashboard for Render compatibility  
+      setTimeout(() => {
+        setLocation("/dashboard");
+      }, 100);
     },
     onError: (error: Error) => {
       toast({
@@ -122,6 +128,17 @@ export default function Auth() {
 
   return (
     <div className="auth-page min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      {/* Back button */}
+      <Button 
+        variant="ghost" 
+        size="sm"
+        className="absolute top-8 left-8 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+        onClick={() => setLocation("/")}
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back to Home
+      </Button>
+      
       <div className="max-w-4xl w-full space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
