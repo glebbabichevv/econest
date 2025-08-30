@@ -45,7 +45,7 @@ const getAvailableMonths = () => {
 
 export default function Leaderboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const [, setLocation] = useLocation();
   
   const availableMonths = getAvailableMonths();
@@ -106,17 +106,17 @@ export default function Leaderboard() {
         size="sm"
       >
         <ArrowLeft className="h-4 w-4" />
-        <span className="hidden sm:inline">Back to Dashboard</span>
-        <span className="sm:hidden">Back</span>
+        <span className="hidden sm:inline">{language === 'ru' ? 'Назад к панели' : language === 'kk' ? 'Басқару панеліне' : 'Back to Dashboard'}</span>
+        <span className="sm:hidden">{language === 'ru' ? 'Назад' : language === 'kk' ? 'Артқа' : 'Back'}</span>
       </Button>
 
       {/* Header - Mobile Optimized */}
       <div className="text-center mb-6 md:mb-8">
         <h1 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
-          CO₂ Leaderboard
+          {language === 'ru' ? 'Рейтинг CO₂' : language === 'kk' ? 'CO₂ рейтингі' : 'CO₂ Leaderboard'}
         </h1>
         <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-sm md:text-base px-4 md:px-0">
-          Compare CO₂ emissions by regions for selected month
+          {language === 'ru' ? 'Сравните выбросы CO₂ по регионам за выбранный месяц' : language === 'kk' ? 'Таңдалған ай үшін аймақтар бойынша CO₂ шығарындыларын салыстырыңыз' : 'Compare CO₂ emissions by regions for selected month'}
         </p>
       </div>
 
@@ -150,18 +150,18 @@ export default function Leaderboard() {
       {/* Regions Leaderboard */}
       <Card>
         <CardHeader>
-          <CardTitle>Regions CO₂ Emissions - {new Date(selectedYear, selectedMonth - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</CardTitle>
+          <CardTitle>{language === 'ru' ? `Выбросы CO₂ по регионам - ${new Date(selectedYear, selectedMonth - 1).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })}` : language === 'kk' ? `Аймақтар бойынша CO₂ шығарындылар - ${new Date(selectedYear, selectedMonth - 1).toLocaleDateString('kk-KZ', { month: 'long', year: 'numeric' })}` : `Regions CO₂ Emissions - ${new Date(selectedYear, selectedMonth - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left p-2">Rank</th>
-                  <th className="text-left p-2">Region</th>
-                  <th className="text-right p-2">Total CO₂ (kg)</th>
-                  <th className="text-right p-2">Average CO₂ (kg)</th>
-                  <th className="text-right p-2">Users</th>
+                  <th className="text-left p-2">{language === 'ru' ? 'Место' : language === 'kk' ? 'Орны' : 'Rank'}</th>
+                  <th className="text-left p-2">{language === 'ru' ? 'Регион' : language === 'kk' ? 'Аймақ' : 'Region'}</th>
+                  <th className="text-right p-2">{language === 'ru' ? 'Общие CO₂ (кг)' : language === 'kk' ? 'Жалпы CO₂ (кг)' : 'Total CO₂ (kg)'}</th>
+                  <th className="text-right p-2">{language === 'ru' ? 'Средние CO₂ (кг)' : language === 'kk' ? 'Орташа CO₂ (кг)' : 'Average CO₂ (kg)'}</th>
+                  <th className="text-right p-2">{language === 'ru' ? 'Пользователи' : language === 'kk' ? 'Пайдаланушылар' : 'Users'}</th>
                 </tr>
               </thead>
               <tbody>
@@ -178,7 +178,7 @@ export default function Leaderboard() {
             </table>
             {(!regionsData || regionsData.length === 0) && (
               <div className="text-center py-8 text-gray-500">
-                No regional data available for this month.
+                {language === 'ru' ? 'Нет данных по регионам за этот месяц.' : language === 'kk' ? 'Осы айға арналған аймақтық деректер жоқ.' : 'No regional data available for this month.'}
               </div>
             )}
           </div>

@@ -1,9 +1,11 @@
 import { useAuth } from "@/hooks/useAuth";
+import { useI18n } from "@/hooks/useI18n";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Factory, Calendar, CalendarRange, BarChart3, PieChart as PieChartIcon, TrendingUp, TreePine, Bot, Sparkles, AlertCircle, Lightbulb, Trash2 } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useEffect } from "react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { AuthenticatedLayout } from "@/components/AuthenticatedLayout";
@@ -13,8 +15,22 @@ import { apiRequest } from "@/lib/queryClient";
 
 const COLORS = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B'];
 
+// Format timestamp for display
+const formatTimestamp = (date: Date) => {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  
+  if (diffMins < 1) return 'just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  return date.toLocaleDateString();
+};
+
 export default function Footprint() {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const { t, language } = useI18n();
   const [periodType, setPeriodType] = useState<'month' | 'year'>('month');
   const [chartType, setChartType] = useState<'bar' | 'pie' | 'line'>('bar');
 
@@ -41,7 +57,7 @@ export default function Footprint() {
 
   // Generate footprint insights mutation
   const generateInsightsMutation = useMutation({
-    mutationFn: () => apiRequest("POST", "/api/footprint-insights/generate"),
+    mutationFn: () => apiRequest("POST", "/api/footprint-insights/generate", { language }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/co2-insights"] });
     },
@@ -160,17 +176,17 @@ export default function Footprint() {
 
   // Data for charts
   const pieData = currentPeriod ? [
-    { name: 'Electricity', value: currentPeriod.electricity, color: COLORS[0] },
-    { name: 'Gas', value: currentPeriod.gas, color: COLORS[1] },
-    { name: 'Heating', value: currentPeriod.heating, color: COLORS[2] },
-    { name: 'Water', value: currentPeriod.water, color: COLORS[3] }
+    { name: language === 'ru' ? 'Электричество' : language === 'kk' ? 'Электр' : 'Electricity', value: currentPeriod.electricity, color: COLORS[0] },
+    { name: language === 'ru' ? 'Газ' : language === 'kk' ? 'Газ' : 'Gas', value: currentPeriod.gas, color: COLORS[1] },
+    { name: language === 'ru' ? 'Отопление' : language === 'kk' ? 'Жылыту' : 'Heating', value: currentPeriod.heating, color: COLORS[2] },
+    { name: language === 'ru' ? 'Вода' : language === 'kk' ? 'Су' : 'Water', value: currentPeriod.water, color: COLORS[3] }
   ].filter(item => item.value > 0) : [];
 
   const barData = currentPeriod ? [
-    { name: 'Electricity', value: currentPeriod.electricity, color: COLORS[0] },
-    { name: 'Gas', value: currentPeriod.gas, color: COLORS[1] },
-    { name: 'Heating', value: currentPeriod.heating, color: COLORS[2] },
-    { name: 'Water', value: currentPeriod.water, color: COLORS[3] }
+    { name: language === 'ru' ? 'Электричество' : language === 'kk' ? 'Электр' : 'Electricity', value: currentPeriod.electricity, color: COLORS[0] },
+    { name: language === 'ru' ? 'Газ' : language === 'kk' ? 'Газ' : 'Gas', value: currentPeriod.gas, color: COLORS[1] },
+    { name: language === 'ru' ? 'Отопление' : language === 'kk' ? 'Жылыту' : 'Heating', value: currentPeriod.heating, color: COLORS[2] },
+    { name: language === 'ru' ? 'Вода' : language === 'kk' ? 'Су' : 'Water', value: currentPeriod.water, color: COLORS[3] }
   ].filter(item => item.value > 0) : [];
 
   // Render the selected chart
@@ -181,7 +197,7 @@ export default function Footprint() {
           <CardContent className="flex items-center justify-center h-64">
             <div className="text-center">
               <Factory className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">No consumption data available</p>
+              <p className="text-gray-500 dark:text-gray-400">{t('footprint.noDataAvailable')}</p>
               <p className="text-sm text-gray-400">Add your consumption readings to see CO₂ analysis</p>
             </div>
           </CardContent>
@@ -193,7 +209,7 @@ export default function Footprint() {
       return (
         <Card>
           <CardHeader>
-            <CardTitle>Monthly CO₂ Trend</CardTitle>
+            <CardTitle>{t('charts.emissions')} Trend</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={400}>
@@ -214,7 +230,7 @@ export default function Footprint() {
       return (
         <Card>
           <CardHeader>
-            <CardTitle>CO₂ Emissions by Service</CardTitle>
+            <CardTitle>{language === 'ru' ? 'Выбросы по типам услуг' : language === 'kk' ? 'Қызметтер түрлері бойынша шығарындылар' : 'Emissions by Service'}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={400}>
@@ -271,10 +287,10 @@ export default function Footprint() {
         {/* Header */}
         <div className="text-center mb-6">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            CO₂ Footprint Analysis
+            {language === 'ru' ? 'Анализ углеродного следа CO₂' : language === 'kk' ? 'CO₂ көміртек ізін талдау' : 'CO₂ Footprint Analysis'}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Track your carbon emissions by service type
+            {language === 'ru' ? 'Отслеживайте выбросы углерода по типам услуг' : language === 'kk' ? 'Қызмет түрлері бойынша көміртек шығарындыларын бақылаңыз' : 'Track your carbon emissions by service type'}
           </p>
         </div>
 
@@ -283,13 +299,13 @@ export default function Footprint() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Factory className="h-5 w-5" />
-            CO₂ Analysis Settings
+            {language === 'ru' ? 'Настройки анализа CO₂' : language === 'kk' ? 'CO₂ талдау параметрлері' : 'CO₂ Analysis Settings'}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Period Selection */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Time Period</label>
+            <label className="text-sm font-medium mb-2 block">{language === 'ru' ? 'Период времени' : language === 'kk' ? 'Уақыт кезеңі' : 'Time Period'}</label>
             <div className="flex gap-2">
               <Button
                 variant={periodType === 'month' ? 'default' : 'outline'}
@@ -300,7 +316,7 @@ export default function Footprint() {
                 className="flex items-center gap-2"
               >
                 <Calendar className="h-4 w-4" />
-                Current Month
+                {language === 'ru' ? 'Текущий месяц' : language === 'kk' ? 'Ағымдағы ай' : 'Current Month'}
               </Button>
               <Button
                 variant={periodType === 'year' ? 'default' : 'outline'}
@@ -311,14 +327,14 @@ export default function Footprint() {
                 className="flex items-center gap-2"
               >
                 <CalendarRange className="h-4 w-4" />
-                Full Year
+                {language === 'ru' ? 'Полный год' : language === 'kk' ? 'Толық жыл' : 'Full Year'}
               </Button>
             </div>
           </div>
 
           {/* Chart Type Selection */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Chart Type</label>
+            <label className="text-sm font-medium mb-2 block">{language === 'ru' ? 'Тип графика' : language === 'kk' ? 'Диаграмма түрі' : 'Chart Type'}</label>
             <div className="flex gap-2">
               {periodType === 'year' && (
                 <Button
@@ -327,7 +343,7 @@ export default function Footprint() {
                   className="flex items-center gap-2"
                 >
                   <TrendingUp className="h-4 w-4" />
-                  Monthly Trend
+                  {language === 'ru' ? 'Месячная тенденция' : language === 'kk' ? 'Айлық тенденция' : 'Monthly Trend'}
                 </Button>
               )}
               <Button
@@ -336,7 +352,7 @@ export default function Footprint() {
                 className="flex items-center gap-2"
               >
                 <BarChart3 className="h-4 w-4" />
-                Bar Chart
+                {language === 'ru' ? 'Столбчатая диаграмма' : language === 'kk' ? 'Бағанды диаграмма' : 'Bar Chart'}
               </Button>
               <Button
                 variant={chartType === 'pie' ? 'default' : 'outline'}
@@ -344,7 +360,7 @@ export default function Footprint() {
                 className="flex items-center gap-2"
               >
                 <PieChartIcon className="h-4 w-4" />
-                Pie Chart
+                {language === 'ru' ? 'Круговая диаграмма' : language === 'kk' ? 'Дөңгелек диаграмма' : 'Pie Chart'}
               </Button>
             </div>
           </div>
@@ -362,7 +378,7 @@ export default function Footprint() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-green-600">
                 <Factory className="h-5 w-5" />
-                Total CO₂ Emissions
+                {language === 'ru' ? 'Общие выбросы CO₂' : language === 'kk' ? 'Жалпы CO₂ шығарындылары' : 'Total CO₂ Emissions'}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -370,7 +386,7 @@ export default function Footprint() {
                 {currentPeriod.total.toFixed(1)} kg
               </div>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                {periodType === 'month' ? 'Current month' : 'Full year'} emissions
+                {periodType === 'month' ? t('footprint.currentMonthEmissions') : `${t('Full year')} ${t('emissions')}`}
               </p>
             </CardContent>
           </Card>
@@ -378,35 +394,35 @@ export default function Footprint() {
           {/* Service Percentages */}
           <Card className="lg:col-span-1">
             <CardHeader>
-              <CardTitle>Service Breakdown</CardTitle>
+              <CardTitle>{language === 'ru' ? 'Разбивка по услугам' : language === 'kk' ? 'Қызметтер бойынша бөлу' : 'Service Breakdown'}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{backgroundColor: COLORS[0]}}></div>
-                    Electricity
+                    {t('charts.electricity')}
                   </span>
                   <span className="font-medium">{percentages.electricity}%</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{backgroundColor: COLORS[1]}}></div>
-                    Gas
+                    {t('charts.gas')}
                   </span>
                   <span className="font-medium">{percentages.gas}%</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{backgroundColor: COLORS[2]}}></div>
-                    Heating
+                    {t('charts.heating')}
                   </span>
                   <span className="font-medium">{percentages.heating}%</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{backgroundColor: COLORS[3]}}></div>
-                    Water
+                    {t('charts.water')}
                   </span>
                   <span className="font-medium">{percentages.water}%</span>
                 </div>
@@ -419,7 +435,7 @@ export default function Footprint() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-green-600">
                 <TreePine className="h-5 w-5" />
-                Trees for Compensation
+                {language === 'ru' ? 'Деревья для компенсации' : language === 'kk' ? 'Өтемақы үшін ағаштар' : 'Trees for Compensation'}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -427,7 +443,7 @@ export default function Footprint() {
                 {treesNeeded}
               </div>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Trees needed to offset your {periodType === 'month' ? 'monthly' : 'yearly'} CO₂ emissions
+                {t('footprint.treesNeededOffset')} {periodType === 'month' ? t('footprint.monthlyCO2Emissions') : `${t('footprint.yearly')} CO₂ ${t('emissions')}`}
               </p>
             </CardContent>
           </Card>
@@ -435,21 +451,35 @@ export default function Footprint() {
       )}
 
       {/* AI Footprint Assistant */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
-                <Bot className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <CardTitle className="text-lg">Footprint Assistant</CardTitle>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  AI-powered insights about your environmental impact
-                </p>
+      <Card className="border-l-4 border-l-green-500">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+            <div className="flex gap-3 sm:gap-4 flex-1">
+              <Avatar className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500/10 flex-shrink-0">
+                <AvatarFallback className="bg-green-500/10 text-green-600">
+                  <Bot className="w-4 h-4 sm:w-5 sm:h-5" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">
+                    {t('footprint.footprintAssistant')}
+                  </span>
+                  <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                    {formatTimestamp(new Date())}
+                  </span>
+                </div>
+                <div className="text-gray-700 dark:text-gray-300">
+                  <p className="mb-3 text-sm sm:text-base">
+                    {t('footprint.footprintBotHello')}, {user?.firstName || 'User'}!
+                  </p>
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                    {t('footprint.footprintBotDescription')}
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+            <div className="flex flex-col sm:flex-row gap-2 mt-4 sm:mt-0">
               <Button
                 onClick={(e) => {
                   e.preventDefault();
@@ -458,6 +488,7 @@ export default function Footprint() {
                 }}
                 disabled={generateInsightsMutation.isPending}
                 className="gap-2 w-full sm:w-auto"
+                size="sm"
                 type="button"
               >
                 {generateInsightsMutation.isPending ? (
@@ -465,7 +496,8 @@ export default function Footprint() {
                 ) : (
                   <Sparkles className="h-4 w-4" />
                 )}
-                {generateInsightsMutation.isPending ? "Analyzing..." : "Get AI Insights"}
+                <span className="hidden sm:inline">{generateInsightsMutation.isPending ? t('footprint.analyzing') : t('footprint.getAIInsights')}</span>
+                <span className="sm:hidden">{generateInsightsMutation.isPending ? t('footprint.analyzing') : t('footprint.getAIInsights')}</span>
               </Button>
               <Button
                 onClick={(e) => {
@@ -485,17 +517,16 @@ export default function Footprint() {
                 ) : (
                   <Trash2 className="h-4 w-4" />
                 )}
-                {clearInsightsMutation.isPending ? "Clearing..." : "Clear"}
+                <span className="hidden sm:inline">{clearInsightsMutation.isPending ? t('footprint.clearing') : t('footprint.clear')}</span>
+                <span className="sm:hidden">{clearInsightsMutation.isPending ? t('footprint.clearing') : t('footprint.clear')}</span>
               </Button>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
           {(insightsLoading || generateInsightsMutation.isPending) && (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               <span className="ml-3 text-gray-600 dark:text-gray-400">
-                {generateInsightsMutation.isPending ? "Generating AI insights..." : "Loading..."}
+                {generateInsightsMutation.isPending ? t('footprint.generatingInsights') : t('footprint.loading')}
               </span>
             </div>
           )}
@@ -532,7 +563,7 @@ export default function Footprint() {
                       </p>
                       {insight.potentialSavings && (
                         <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
-                          💡 Potential impact: {insight.potentialSavings}
+                          💡 {t('footprint.potentialImpact')}: {insight.potentialSavings}
                         </div>
                       )}
                     </div>
@@ -543,8 +574,8 @@ export default function Footprint() {
           ) : !insightsLoading && !generateInsightsMutation.isPending && (
             <div className="text-center py-8 text-gray-500 dark:text-gray-400">
               <Bot className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p className="mb-2">No AI insights available yet</p>
-              <p className="text-sm">Click "Get AI Insights" to analyze your environmental impact</p>
+              <p className="mb-2">{t('footprint.noInsightsYet')}</p>
+              <p className="text-sm">{t('footprint.clickToAnalyze')}</p>
             </div>
           )}
         </CardContent>

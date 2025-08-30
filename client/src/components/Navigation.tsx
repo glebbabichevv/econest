@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Leaf, Palette, Menu, X } from "lucide-react";
+import { Leaf, Palette, Menu, X, Globe } from "lucide-react";
 import { useI18n } from "@/hooks/useI18n";
 import { useTheme } from "@/components/ThemeProvider";
 import { Link } from "wouter";
@@ -13,14 +13,14 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export function Navigation() {
-  const { t } = useI18n();
+  const { t, currentLanguage, availableLanguages, changeLanguage } = useI18n();
   const { theme, setTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const themes = [
-    { value: "light", label: "Light" },
-    { value: "dark", label: "Dark" },
-    { value: "ocean", label: "Ocean" }
+    { value: "light", label: t("navigation.light") },
+    { value: "dark", label: t("navigation.dark") },
+    { value: "ocean", label: t("navigation.ocean") }
   ];
 
   const navigationLinks = [
@@ -59,12 +59,33 @@ export function Navigation() {
 
           {/* Desktop Right side controls */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* Language Selector */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary">
+                  <Globe className="h-4 w-4" />
+                  {currentLanguage.flag} {currentLanguage.name}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {availableLanguages.map((lang) => (
+                  <DropdownMenuItem 
+                    key={lang.code}
+                    onClick={() => changeLanguage(lang.code)}
+                    className={currentLanguage.code === lang.code ? "bg-primary/10" : ""}
+                  >
+                    {lang.flag} {lang.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {/* Theme Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary">
                   <Palette className="h-4 w-4" />
-                  {themes.find(t => t.value === theme)?.label || "Theme"}
+                  {themes.find(themeItem => themeItem.value === theme)?.label || t("navigation.theme")}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -90,6 +111,26 @@ export function Navigation() {
 
           {/* Mobile menu */}
           <div className="md:hidden flex items-center space-x-2">
+            {/* Mobile Language Selector */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="p-2">
+                  <Globe className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {availableLanguages.map((lang) => (
+                  <DropdownMenuItem 
+                    key={lang.code}
+                    onClick={() => changeLanguage(lang.code)}
+                    className={currentLanguage.code === lang.code ? "bg-primary/10" : ""}
+                  >
+                    {lang.flag} {lang.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {/* Mobile Theme Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

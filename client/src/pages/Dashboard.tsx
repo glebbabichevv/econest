@@ -20,7 +20,7 @@ import { Link } from "wouter";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading: authLoading, refetch: refetchUser } = useAuth();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const { toast } = useToast();
   const [period, setPeriod] = useState<"month" | "year">("month");
   const [category, setCategory] = useState<"water-gas" | "electricity" | "heating">("water-gas");
@@ -125,7 +125,7 @@ export default function Dashboard() {
               {t("dashboard.welcome")}, {user?.firstName || 'User'}!
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">
-              {t("dashboard.overview")}
+              {language === 'ru' ? 'Обзор вашего экологического воздействия за этот месяц' : language === 'kk' ? 'Осы айдағы экологиялық әсеріңіздің шолуы' : 'Here is your environmental impact overview for this month'}
             </p>
           </div>
           
@@ -142,7 +142,7 @@ export default function Dashboard() {
             unit={t("units.cubicMeters")}
             change={changes.coldWater || 0}
             period={t("dashboard.thisMonth")}
-            title="Cold Water"
+            title={t('utilities.coldWater')}
           />
           <ConsumptionCard
             type="water"
@@ -150,7 +150,7 @@ export default function Dashboard() {
             unit={t("units.cubicMeters")}
             change={changes.hotWater || 0}
             period={t("dashboard.thisMonth")}
-            title="Hot Water"
+            title={t('utilities.hotWater')}
           />
           <ConsumptionCard
             type="water"
@@ -158,7 +158,7 @@ export default function Dashboard() {
             unit={t("units.cubicMeters")}
             change={changes.sewage || 0}
             period={t("dashboard.thisMonth")}
-            title="Sewage"
+            title={t('utilities.sewage')}
           />
           <ConsumptionCard
             type="heating"
@@ -166,7 +166,7 @@ export default function Dashboard() {
             unit="Gcal"
             change={changes.heating || 0}
             period={t("dashboard.thisMonth")}
-            title="Heating"
+            title={t('utilities.heating')}
           />
           <ConsumptionCard
             type="electricity"
@@ -174,7 +174,7 @@ export default function Dashboard() {
             unit={t("units.kilowattHours")}
             change={changes.electricity}
             period={t("dashboard.thisMonth")}
-            title="Electricity"
+            title={t('utilities.electricity')}
           />
           <ConsumptionCard
             type="gas"
@@ -182,7 +182,7 @@ export default function Dashboard() {
             unit={t("units.cubicMeters")}
             change={changes.gas}
             period={t("dashboard.thisMonth")}
-            title="Gas"
+            title={t('utilities.gas')}
           />
         </div>
 
@@ -233,10 +233,10 @@ export default function Dashboard() {
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <MapPin className="h-5 w-5 text-blue-500" />
-                  Regional CO₂ Statistics - {new Date(currentYear, currentMonth - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  {t('quickActions.regionalStats')} - {new Date(currentYear, currentMonth - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                 </CardTitle>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Click to view full leaderboard
+                  {t('quickActions.clickToViewLeaderboard')}
                 </p>
               </div>
               <ExternalLink className="h-4 w-4 text-gray-400" />
@@ -247,10 +247,10 @@ export default function Dashboard() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b">
-                        <th className="text-left p-2">Rank</th>
-                        <th className="text-left p-2">Region</th>
-                        <th className="text-right p-2">Total CO₂ (kg)</th>
-                        <th className="text-right p-2">Users</th>
+                        <th className="text-left p-2">{t('quickActions.rank')}</th>
+                        <th className="text-left p-2">{t('quickActions.region')}</th>
+                        <th className="text-right p-2">{t('quickActions.totalCO2')}</th>
+                        <th className="text-right p-2">{t('quickActions.users')}</th>
                       </tr>
                     </thead>
                     <tbody>

@@ -29,9 +29,13 @@ export default function AIAssistant() {
     enabled: isAuthenticated,
   });
 
+  // Type for recommendations array
+  const typedRecommendations = recommendations as any[];
+
   // Generate new AI recommendations mutation
+  const { language } = useI18n();
   const generateRecommendations = useMutation({
-    mutationFn: () => apiRequest("POST", "/api/recommendations/generate"),
+    mutationFn: () => apiRequest("POST", "/api/recommendations/generate", { language }),
     onSuccess: () => {
       // Clear cache first, then invalidate to force fresh data
       queryClient.removeQueries({ queryKey: ["/api/recommendations"] });
@@ -105,10 +109,10 @@ export default function AIAssistant() {
                   </div>
                   <div className="text-gray-700 dark:text-gray-300">
                     <p className="mb-3 text-sm sm:text-base">
-                      Hello, {user?.firstName || 'User'}!
+                      {t('ai.hello')}, {user?.firstName || 'User'}!
                     </p>
                     <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                      I analyze your consumption patterns and current weather to provide personalized recommendations for reducing your environmental impact.
+                      {t('ai.analysisDescription')}
                     </p>
                   </div>
                 </div>
@@ -125,8 +129,8 @@ export default function AIAssistant() {
                   ) : (
                     <Sparkles className="w-4 h-4" />
                   )}
-                  <span className="hidden sm:inline">Generate New Insights</span>
-                  <span className="sm:hidden">Generate</span>
+                  <span className="hidden sm:inline">{t('ai.generateInsights')}</span>
+                  <span className="sm:hidden">{t('ai.generate')}</span>
                 </Button>
                 <Button
                   onClick={() => clearRecommendations.mutate()}
@@ -140,8 +144,8 @@ export default function AIAssistant() {
                   ) : (
                     <Trash2 className="w-4 h-4" />
                   )}
-                  <span className="hidden sm:inline">Clear Recommendations</span>
-                  <span className="sm:hidden">Clear</span>
+                  <span className="hidden sm:inline">{t('ai.clearRecommendations')}</span>
+                  <span className="sm:hidden">{t('ai.clear')}</span>
                 </Button>
               </div>
             </div>
@@ -161,9 +165,9 @@ export default function AIAssistant() {
               </Card>
             ))}
           </div>
-        ) : recommendations.length > 0 ? (
+        ) : typedRecommendations.length > 0 ? (
           <div className="space-y-4">
-            {recommendations.map((rec: any, index: number) => (
+            {typedRecommendations.map((rec: any, index: number) => (
               <Card key={rec.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-3">
@@ -175,7 +179,7 @@ export default function AIAssistant() {
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge variant={getPriorityColor(rec.priority)}>
-                            {rec.priority} priority
+                            {rec.priority} {t('ai.priority')}
                           </Badge>
                           <span className="text-sm text-gray-500 dark:text-gray-400 capitalize">
                             {rec.category}
@@ -185,7 +189,7 @@ export default function AIAssistant() {
                     </div>
                     {rec.potentialSavings && (
                       <div className="text-right">
-                        <div className="text-sm text-gray-500 dark:text-gray-400">Potential savings</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">{t('ai.potentialSavings')}</div>
                         <div className="font-semibold text-green-600 dark:text-green-400">
                           {rec.potentialSavings}₸/month
                         </div>
@@ -198,7 +202,7 @@ export default function AIAssistant() {
                   <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                       <Lightbulb className="w-4 h-4" />
-                      AI-generated recommendation
+                      {t('ai.aiGenerated')}
                     </div>
                     <div className="text-xs text-gray-400">
                       {formatTimestamp(new Date(rec.createdAt))}
@@ -215,10 +219,10 @@ export default function AIAssistant() {
                 <Bot className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                No AI insights yet
+                {t('ai.noInsights')}
               </h3>
               <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-4">
-                Add your consumption data on the Dashboard, then click "Generate New Insights" to get personalized AI recommendations.
+                {t('ai.addDataFirst')}
               </p>
               <Button
                 onClick={() => generateRecommendations.mutate()}
@@ -230,7 +234,7 @@ export default function AIAssistant() {
                 ) : (
                   <Sparkles className="w-4 h-4" />
                 )}
-                Get AI Insights
+                {t('getAIInsights')}
               </Button>
             </CardContent>
           </Card>

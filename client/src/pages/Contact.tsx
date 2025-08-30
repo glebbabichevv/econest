@@ -8,7 +8,7 @@ import {
 import { Navigation } from "@/components/Navigation";
 
 export default function Contact() {
-  const { language } = useI18n();
+  const { t } = useI18n();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -17,13 +17,6 @@ export default function Contact() {
     }, 100);
     return () => clearTimeout(timer);
   }, []);
-
-  const isRussian = language === 'ru';
-
-  const contactData = {
-    title: isRussian ? "Свяжитесь с нами" : "Contact Us",
-    subtitle: isRussian ? "Мы готовы помочь вам с любыми вопросами или отзывами" : "We're here to help you with any questions or feedback"
-  };
 
 
   return (
@@ -46,10 +39,10 @@ export default function Contact() {
           <Mail className="h-8 w-8 text-white group-hover:rotate-12 transition-transform duration-300" />
         </div>
         <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-          {contactData.title}
+          {t('contact.title')}
         </h1>
         <p className="text-gray-600 dark:text-gray-400 max-w-3xl mx-auto text-lg">
-          {contactData.subtitle}
+          {t('contact.subtitle')}
         </p>
       </div>
 
@@ -79,7 +72,7 @@ export default function Contact() {
               </div>
             </div>
             <p className="text-lg text-gray-600 dark:text-gray-300">
-              {isRussian ? "Телефон офиса:" : "Office Phone:"}
+              Office Phone:
             </p>
             <a href="tel:+77073287707" className="text-xl font-semibold text-gray-800 dark:text-gray-200 hover:text-primary transition-colors">
               +7 707 328 77 07
@@ -95,7 +88,7 @@ export default function Contact() {
         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <CardHeader className="relative">
           <CardTitle className="text-center bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-2xl">
-            {isRussian ? 'Как помочь проекту' : 'How to Help'}
+            {t('contact.howToHelp')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -107,13 +100,13 @@ export default function Contact() {
                 </div>
               </div>
               <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                {isRussian ? 'Сообщить об ошибке' : 'Report Bug'}
+                  {t('contact.reportBug')}
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                {isRussian ? 'Помогите нам улучшиться' : 'Help us improve'}
+                {t('contact.helpImprove')}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {isRussian ? 'Нашли проблему? Сообщите нам!' : 'Found an issue? Let us know!'}
+                Found an issue? Let us know!
               </p>
             </div>
             
@@ -124,13 +117,13 @@ export default function Contact() {
                 </div>
               </div>
               <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                {isRussian ? 'Предложить идею' : 'Suggest Feature'}
+                {t('contact.suggestFeature')}
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                {isRussian ? 'Поделитесь своими идеями' : 'Share your ideas'}
+                {t('contact.shareIdeas')}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {isRussian ? 'Есть идея для улучшения? Напишите нам!' : 'Have an idea for improvement? Write to us!'}
+                Have an idea for improvement? Write to us!
               </p>
             </div>
 
@@ -141,13 +134,13 @@ export default function Contact() {
                 </div>
               </div>
               <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                {isRussian ? 'Обратная связь' : 'Feedback'}
+                {t('contact.feedback')}
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                {isRussian ? 'Поделитесь впечатлениями' : 'Share your experience'}
+                {t('contact.shareExperience')}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {isRussian ? 'Ваше мнение важно для нас!' : 'Your opinion matters to us!'}
+                Your opinion matters to us!
               </p>
             </div>
           </div>

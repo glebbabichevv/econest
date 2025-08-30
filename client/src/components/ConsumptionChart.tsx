@@ -32,7 +32,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<Chart | null>(null);
   const { theme } = useTheme();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -107,7 +107,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
           datasets: [
             ...(category === "water-gas" ? [
               {
-                label: 'Cold Water (m³)',
+                label: t('charts.coldWaterUnit'),
                 data: sortedMonthKeys.map(monthKey => groupedData[monthKey].coldWater),
                 borderColor: theme === "dark" || theme === "spooky" ? "#22D3EE" : "#0891B2",
                 backgroundColor: theme === "dark" || theme === "spooky" ? "rgba(34, 211, 238, 0.2)" : "rgba(8, 145, 178, 0.15)",
@@ -115,7 +115,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
                 fill: false,
               },
               {
-                label: 'Hot Water (m³)',
+                label: t('charts.hotWaterUnit'),
                 data: sortedMonthKeys.map(monthKey => groupedData[monthKey].hotWater),
                 borderColor: theme === "dark" || theme === "spooky" ? "#F87171" : "#DC2626",
                 backgroundColor: theme === "dark" || theme === "spooky" ? "rgba(248, 113, 113, 0.2)" : "rgba(220, 38, 38, 0.15)",
@@ -123,7 +123,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
                 fill: false,
               },
               {
-                label: 'Sewage (m³)',
+                label: t('charts.sewageUnit'),
                 data: sortedMonthKeys.map(monthKey => groupedData[monthKey].sewage),
                 borderColor: theme === "dark" || theme === "spooky" ? "#9CA3AF" : "#6B7280",
                 backgroundColor: theme === "dark" || theme === "spooky" ? "rgba(156, 163, 175, 0.2)" : "rgba(107, 114, 128, 0.15)",
@@ -131,7 +131,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
                 fill: false,
               },
               {
-                label: 'Gas (m³)',
+                label: t('charts.gasUnit'),
                 data: sortedMonthKeys.map(monthKey => groupedData[monthKey].gas),
                 borderColor: theme === "dark" || theme === "spooky" ? "#FB923C" : "#EA580C",
                 backgroundColor: theme === "dark" || theme === "spooky" ? "rgba(251, 146, 60, 0.2)" : "rgba(234, 88, 12, 0.15)",
@@ -141,7 +141,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
             ] : []),
             ...(category === "electricity" ? [
               {
-                label: 'Electricity (kWh)',
+                label: t('charts.electricityUnit'),
                 data: sortedMonthKeys.map(monthKey => groupedData[monthKey].electricity),
                 borderColor: theme === "dark" || theme === "spooky" ? "#A78BFA" : "#7C3AED",
                 backgroundColor: theme === "dark" || theme === "spooky" ? "rgba(167, 139, 250, 0.2)" : "rgba(124, 58, 237, 0.15)",
@@ -151,7 +151,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
             ] : []),
             ...(category === "heating" ? [
               {
-                label: 'Heating (Gcal)',
+                label: t('charts.heatingUnit'),
                 data: sortedMonthKeys.map(monthKey => groupedData[monthKey].heating),
                 borderColor: theme === "dark" || theme === "spooky" ? "#FBBF24" : "#F59E0B",
                 backgroundColor: theme === "dark" || theme === "spooky" ? "rgba(251, 191, 36, 0.2)" : "rgba(245, 158, 11, 0.15)",
@@ -188,9 +188,9 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
         const previousLabel = period === "month" ? t('chart.previousMonth') : t('chart.previousWeek');
         
         const getLabelsForCategory = () => {
-          if (category === "water-gas") return ['Cold Water', 'Hot Water', 'Sewage', 'Gas'];
-          if (category === "electricity") return ['Electricity'];
-          if (category === "heating") return ['Heating'];
+          if (category === "water-gas") return [t('charts.coldWater'), t('charts.hotWater'), t('charts.sewage'), t('charts.gas')];
+          if (category === "electricity") return [t('charts.electricity')];
+          if (category === "heating") return [t('charts.heating')];
           return [];
         };
         
@@ -300,7 +300,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
                 onClick={() => onCategoryChange?.("water-gas")}
                 className="text-xs px-2 flex-1 sm:flex-none min-w-0"
               >
-                Water
+                {language === 'ru' ? 'Вода' : language === 'kk' ? 'Су' : 'Water'}
               </Button>
               <Button
                 variant={category === "electricity" ? "default" : "outline"}
@@ -308,7 +308,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
                 onClick={() => onCategoryChange?.("electricity")}
                 className="text-xs px-2 flex-1 sm:flex-none min-w-0"
               >
-                Electric
+                {language === 'ru' ? 'Электр' : language === 'kk' ? 'Электр' : 'Electric'}
               </Button>
               <Button
                 variant={category === "heating" ? "default" : "outline"}
@@ -316,7 +316,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
                 onClick={() => onCategoryChange?.("heating")}
                 className="text-xs px-2 flex-1 sm:flex-none min-w-0"
               >
-                Heat
+                {language === 'ru' ? 'Отопление' : language === 'kk' ? 'Жылыту' : 'Heat'}
               </Button>
             </div>
             {showPeriodControls && (
@@ -327,7 +327,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
                   onClick={() => onPeriodChange?.("month")}
                   className="text-xs px-3"
                 >
-                  Month
+                  {language === 'ru' ? 'Месяц' : language === 'kk' ? 'Ай' : 'Month'}
                 </Button>
                 <Button
                   variant={period === "year" ? "default" : "outline"}
@@ -335,7 +335,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
                   onClick={() => onPeriodChange?.("year")}
                   className="text-xs px-3"
                 >
-                  Year
+                  {language === 'ru' ? 'Год' : language === 'kk' ? 'Жыл' : 'Year'}
                 </Button>
               </div>
             )}

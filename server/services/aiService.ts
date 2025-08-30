@@ -155,7 +155,7 @@ class AIService {
   }
 
   // Generate AI-powered recommendations using OpenAI
-  async generateAIRecommendations(userId: string): Promise<any[]> {
+  async generateAIRecommendations(userId: string, language: string = 'en'): Promise<any[]> {
     try {
       // Get user's consumption data
       const readings = await storage.getUserConsumptionReadings(userId, undefined, 6);
@@ -217,9 +217,9 @@ class AIService {
       };
 
       const prompt = `
-        IMPORTANT: Respond ONLY in English. Use formal, professional advisory patterns.
+        IMPORTANT: ${language === 'ru' ? 'Отвечай ТОЛЬКО на русском языке. Используй формальные, профессиональные консультативные паттерны.' : language === 'kk' ? 'Жауапты ТЕКСЕН қазақ тілінде беріңіз. Ресми, кәсіби кеңес беру үлгілерін қолданыңыз.' : 'Respond ONLY in English. Use formal, professional advisory patterns.'}
 
-        Analyze the user's resource consumption data and provide 3-5 formal recommendations for cost optimization.
+        ${language === 'ru' ? 'Проанализируйте данные о потреблении ресурсов пользователя и предоставьте 3-5 формальных рекомендаций по оптимизации затрат.' : language === 'kk' ? 'Пайдаланушының ресурс тұтыну деректерін талдап, шығындарды оңтайландыру бойынша 3-5 ресми ұсыныс беріңіз.' : 'Analyze the user\'s resource consumption data and provide 3-5 formal recommendations for cost optimization.'}
 
         User's monthly consumption and costs:
         - Cold Water: ${avgConsumption.coldWater.toFixed(1)} m³ (${(avgConsumption.coldWater * this.UTILITY_RATES.coldWater).toFixed(0)} ₸)
@@ -241,23 +241,12 @@ class AIService {
 
         MANDATORY: Copy EXACTLY these formal structures. NO creative variations allowed.
 
-        EXAMPLE 1 (PRECISE CALCULATION):
-        Title: "Electricity Consumption Optimization"
-        Description: "You consumed 274.0 kWh of electricity, totaling 3617 ₸. Reducing consumption by 27.4 kWh would save 362 ₸ monthly."
-
-        EXAMPLE 2 (REGIONAL COMPARISON):
-        Title: "Cold Water Usage Assessment" 
-        Description: "Average Almaty resident consumes 8.5 m³, your usage is 5.9 m³. This represents 31% below average. Current efficiency demonstrates effective resource management."
-
-        EXAMPLE 3 (PRACTICAL ADVICE):
-        Title: "Heating System Optimization"
-        Description: "Analysis indicates optimization potential through thermostat adjustment. This adjustment would benefit both your budget and environmental impact."
-
-        EXAMPLE 4 (COST EQUIVALENTS):
-        Title: "Hot Water Reduction Strategy"
-        Description: "Reducing 0.8 m³ hot water saves 277 ₸ monthly, equivalent to approximately 13 cups of coffee."
-
-        COPY these structures EXACTLY. NO emojis, NO exclamations, NO casual language.
+        ${language === 'ru' ? 
+          'ПРИМЕР 1 (ТОЧНЫЙ РАСЧЕТ):\nНазвание: "Оптимизация потребления электроэнергии"\nОписание: "Вы потребили 274.0 кВт⋅ч электроэнергии общей стоимостью 3617 ₸. Снижение потребления на 27.4 кВт⋅ч сэкономит 362 ₸ ежемесячно."\n\nПРИМЕР 2 (РЕГИОНАЛЬНОЕ СРАВНЕНИЕ):\nНазвание: "Оценка потребления холодной воды"\nОписание: "Средний житель Алматы потребляет 8.5 м³, ваше потребление составляет 5.9 м³. Это на 31% ниже среднего. Текущая эффективность демонстрирует грамотное управление ресурсами."\n\nКОПИРУЙТЕ эти структуры ТОЧНО. БЕЗ эмодзи, БЕЗ восклицаний, БЕЗ разговорного языка.' 
+          : language === 'kk' ? 
+          'МЫСАЛ 1 (ДӘЛЬ ЕСЕПТЕУ):\nАтауы: "Электр энергиясын тұтынуды оңтайландыру"\nСипаттамасы: "Сіз 274.0 кВт⋅сағ электр энергиясын 3617 ₸ жалпы құнға тұтындыңыз. Тұтынуды 27.4 кВт⋅сағға азайту айына 362 ₸ үнемдейді."\n\nМЫСАЛ 2 (АЙМАҚТЫҚ САЛЫСТЫРУ):\nАтауы: "Суық су тұтынуын бағалау"\nСипаттамасы: "Алматының орташа тұрғыны 8.5 м³ тұтынады, сіздің тұтынуыңыз 5.9 м³. Бұл орташадан 31% төмен."\n\nОСЫ құрылымдарды ДӘЛЕ көшіріңіз. Эмодзи ЖОҚ, леп ЖОҚ, сөйлесу тілі ЖОҚ.' 
+          : 
+          'EXAMPLE 1 (PRECISE CALCULATION):\nTitle: "Electricity Consumption Optimization"\nDescription: "You consumed 274.0 kWh of electricity, totaling 3617 ₸. Reducing consumption by 27.4 kWh would save 362 ₸ monthly."\n\nEXAMPLE 2 (REGIONAL COMPARISON):\nTitle: "Cold Water Usage Assessment"\nDescription: "Average Almaty resident consumes 8.5 m³, your usage is 5.9 m³. This represents 31% below average. Current efficiency demonstrates effective resource management."\n\nCOPY these structures EXACTLY. NO emojis, NO exclamations, NO casual language.'}
 
         Respond in JSON format with these recommendations:
         {
@@ -279,7 +268,7 @@ class AIService {
         messages: [
           {
             role: "system",
-            content: "You are a formal business advisor for utility cost optimization in Kazakhstan. CRITICAL REQUIREMENTS:\n\n1. Write ONLY in professional business English\n2. NO emojis, NO exclamations, NO casual language\n3. Use ONLY the 5 patterns provided in the prompt\n4. Every recommendation MUST start with one of these patterns\n5. Provide exact calculations and specific numbers\n6. Maintain formal business tone throughout\n\nIf you use ANY emojis or casual language, the response will be rejected. Use formal business communication exclusively."
+            content: language === 'ru' ? "Вы формальный бизнес-консультант по оптимизации коммунальных расходов в Казахстане. КРИТИЧЕСКИЕ ТРЕБОВАНИЯ:\n\n1. Пишите ТОЛЬКО на профессиональном русском языке\n2. НЕТ эмодзи, НЕТ восклицаний, НЕТ разговорного языка\n3. Используйте ТОЛЬКО 5 паттернов из промпта\n4. Каждая рекомендация ДОЛЖНА начинаться с одного из этих паттернов\n5. Предоставляйте точные расчеты и конкретные цифры\n6. Поддерживайте формальный деловой тон\n\nЕсли используете эмодзи или разговорный язык, ответ будет отклонен." : language === 'kk' ? "Сіз Қазақстандағы коммуналдық шығындарды оңтайландыру бойынша ресми бизнес-кеңесшісіз. МАҢЫЗДЫ ТАЛАПТАР:\n\n1. Тек кәсіби қазақ тілінде жазыңыз\n2. Эмодзи ЖОҚ, леп ЖОҚ, сөйлесу тілі ЖОҚ\n3. Промпттағы тек 5 үлгіні қолданыңыз\n4. Әр ұсыныс осы үлгілердің бірінен басталуы КЕРЕК\n5. Дәл есептеулер мен нақты сандарды беріңіз\n6. Ресми іскерлік үнді сақтаңыз\n\nЕгер эмодзи немесе сөйлесу тілін қолдансаңыз, жауап қабылданбайды." : "You are a formal business advisor for utility cost optimization in Kazakhstan. CRITICAL REQUIREMENTS:\n\n1. Write ONLY in professional business English\n2. NO emojis, NO exclamations, NO casual language\n3. Use ONLY the 5 patterns provided in the prompt\n4. Every recommendation MUST start with one of these patterns\n5. Provide exact calculations and specific numbers\n6. Maintain formal business tone throughout\n\nIf you use ANY emojis or casual language, the response will be rejected. Use formal business communication exclusively."
           },
           {
             role: "user",
@@ -571,7 +560,7 @@ class AIService {
   }
 
   // New Footprint Assistant with emotional patterns
-  async generateFootprintInsights(userId: string): Promise<any[]> {
+  async generateFootprintInsights(userId: string, language: string = 'en'): Promise<any[]> {
     try {
       // Get user's consumption data
       const readings = await storage.getUserConsumptionReadings(userId, undefined, 6);
@@ -680,7 +669,7 @@ REQUIREMENTS:
 - Combine: sometimes numbers + emotion, sometimes just metaphor
 - Be vivid and visual
 - Use emojis for emotions
-- Speak in English
+- ${language === 'ru' ? 'Отвечай на русском языке' : language === 'kk' ? 'Жауапты қазақ тілінде беріңіз' : 'Respond in English'}
 - Give EXACTLY 3-4 insights
 
 Respond ONLY with valid JSON format. No markdown, no backticks, no extra text:
@@ -702,7 +691,7 @@ Respond ONLY with valid JSON format. No markdown, no backticks, no extra text:
         messages: [
           {
             role: "system",
-            content: "You are the Footprint Assistant (Impact). You are an expert on environmental influence. Your task is to explain environmental impact through images and emotions. Always respond in English. Use random communication styles for variety."
+            content: language === 'ru' ? "Вы Помощник по Экологическому Следу. Вы эксперт по воздействию на окружающую среду. Ваша задача - объяснять экологические воздействие через образы и эмоции. Всегда отвечайте на русском языке. Используйте различные стили общения для разнообразия." : language === 'kk' ? "Сіз Экологиялық Із жөніндегі Көмекшісіз. Сіз қоршаған ортаға әсер ету жөніндегі сарапшысыз. Сіздің міндетіңіз - экологиялық әсерді бейнелер мен эмоциялар арқылы түсіндіру. Әрқашан қазақ тілінде жауап беріңіз. Әртүрлілік үшін әр түрлі қатынас стильдерін қолданыңыз." : "You are the Footprint Assistant (Impact). You are an expert on environmental influence. Your task is to explain environmental impact through images and emotions. Always respond in English. Use random communication styles for variety."
           },
           {
             role: "user",
@@ -888,7 +877,7 @@ For each insight, provide:
 - priority: high, medium, or low
 - potentialSavings: Estimated CO2 reduction potential (e.g., "15kg CO2 per month")
 
-Respond in JSON format as an array of insights. Use ONLY English language.`;
+Respond in JSON format as an array of insights. Use ONLY ${language === 'ru' ? 'Russian' : language === 'kk' ? 'Kazakh' : 'English'} language.`;
 
       
       const response = await this.openai.chat.completions.create({
@@ -896,7 +885,7 @@ Respond in JSON format as an array of insights. Use ONLY English language.`;
         messages: [
           {
             role: "system",
-            content: "You are an environmental AI assistant. Always respond in English only. Use the exact patterns provided to create insights with specific environmental equivalents and emotional metaphors."
+            content: `You are an environmental AI assistant. Always respond in ${language === 'ru' ? 'Russian' : language === 'kk' ? 'Kazakh' : 'English'} only. Use the exact patterns provided to create insights with specific environmental equivalents and emotional metaphors.`
           },
           {
             role: "user", 

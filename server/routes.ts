@@ -412,7 +412,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/recommendations/generate', requireAuth, async (req: any, res) => {
     try {
       const userId = req.session.userId;
-      const recommendations = await aiService.generateAIRecommendations(userId);
+      const { language = 'en' } = req.body;
+      const recommendations = await aiService.generateAIRecommendations(userId, language);
       res.json(recommendations);
     } catch (error) {
       console.error("Error generating recommendations:", error);
@@ -460,7 +461,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/footprint-insights/generate', requireAuth, async (req: any, res) => {
     try {
       const userId = req.session.userId;
-      const insights = await aiService.generateFootprintInsights(userId);
+      const { language = 'en' } = req.body;
+      const insights = await aiService.generateFootprintInsights(userId, language);
       res.json(insights);
     } catch (error) {
       console.error("Error generating footprint insights:", error);

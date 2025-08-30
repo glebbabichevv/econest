@@ -45,7 +45,7 @@ interface HistoryEntry {
 export default function History() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const [selectedEntry, setSelectedEntry] = useState<HistoryEntry | null>(null);
   const [chartCategory, setChartCategory] = useState<"water-gas" | "electricity" | "heating">("water-gas");
   const [detailChartCategory, setDetailChartCategory] = useState<"water-gas" | "electricity" | "heating">("water-gas");
@@ -59,7 +59,7 @@ export default function History() {
   const historyData: HistoryEntry[] = consumptionData ? 
     (consumptionData as any[]).map((reading: any, index: number) => ({
       id: `${reading.year}-${reading.month.toString().padStart(2, '0')}`,
-      month: new Date(reading.year, reading.month - 1).toLocaleString('en-US', { month: 'long' }),
+      month: new Date(reading.year, reading.month - 1).toLocaleString(language === 'ru' ? 'ru-RU' : language === 'kk' ? 'kk-KZ' : 'en-US', { month: 'long' }),
       year: reading.year,
       consumption: {
         coldWater: parseFloat(reading.coldWater) || 0,
@@ -194,10 +194,10 @@ export default function History() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="text-center md:text-left">
             <h1 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight">
-              Consumption History
+              {language === 'ru' ? 'История потребления' : language === 'kk' ? 'Тұтыну тарихы' : 'Consumption History'}
             </h1>
             <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base">
-              View and analyze your historical consumption patterns by month
+              {language === 'ru' ? 'Просматривайте и анализируйте исторические данные потребления по месяцам' : language === 'kk' ? 'Айлық тұтыну деректерін қарап талдаңыз' : 'View and analyze your historical consumption patterns by month'}
             </p>
           </div>
         </div>
@@ -206,7 +206,7 @@ export default function History() {
         {historyData.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>Annual Consumption Overview</CardTitle>
+              <CardTitle>{language === 'ru' ? 'Обзор годового потребления' : language === 'kk' ? 'Жылдық тұтыну шолуы' : 'Annual Consumption Overview'}</CardTitle>
             </CardHeader>
             <CardContent>
               <ConsumptionChart 
@@ -241,13 +241,13 @@ export default function History() {
             <Card className="p-12 text-center">
               <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                No consumption history found
+                {language === 'ru' ? 'История потребления не найдена' : language === 'kk' ? 'Тұтыну тарихы табылмады' : 'No consumption history found'}
               </h3>
               <p className="text-gray-500 dark:text-gray-500 mb-4">
-                Start by adding your first consumption readings to see your history here.
+                {language === 'ru' ? 'Добавьте первые показания потребления, чтобы увидеть историю здесь.' : language === 'kk' ? 'Тарихты мұнда көру үшін алғашқы тұтыну көрсеткіштерін қосыңыз.' : 'Start by adding your first consumption readings to see your history here.'}
               </p>
               <Button onClick={() => window.location.href = '/dashboard'}>
-                Add First Reading
+                {language === 'ru' ? 'Добавить первые показания' : language === 'kk' ? 'Алғашқы көрсеткішті қосу' : 'Add First Reading'}
               </Button>
             </Card>
           ) : (
@@ -273,37 +273,37 @@ export default function History() {
                   {/* Consumption Summary - Hidden on mobile, show only on desktop */}
                   <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center">
                     <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Cold</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{language === 'ru' ? 'Холод' : language === 'kk' ? 'Суық' : 'Cold'}</div>
                       <div className="font-semibold text-gray-900 dark:text-white text-xs">
                         {entry.consumption.coldWater.toFixed(1)} m³
                       </div>
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Hot</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{language === 'ru' ? 'Горяч' : language === 'kk' ? 'Ыстық' : 'Hot'}</div>
                       <div className="font-semibold text-gray-900 dark:text-white text-xs">
                         {entry.consumption.hotWater.toFixed(1)} m³
                       </div>
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Sewage</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{language === 'ru' ? 'Канал' : language === 'kk' ? 'Кәріз' : 'Sewage'}</div>
                       <div className="font-semibold text-gray-900 dark:text-white text-xs">
                         {entry.consumption.sewage.toFixed(1)} m³
                       </div>
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Heat</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{language === 'ru' ? 'Отопл' : language === 'kk' ? 'Жылыт' : 'Heat'}</div>
                       <div className="font-semibold text-gray-900 dark:text-white text-xs">
                         {entry.consumption.heating.toFixed(1)} Gcal
                       </div>
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Electric</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{language === 'ru' ? 'Электр' : language === 'kk' ? 'Электр' : 'Electric'}</div>
                       <div className="font-semibold text-gray-900 dark:text-white text-xs">
                         {entry.consumption.electricity.toFixed(1)} kWh
                       </div>
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Gas</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{language === 'ru' ? 'Газ' : language === 'kk' ? 'Газ' : 'Gas'}</div>
                       <div className="font-semibold text-gray-900 dark:text-white text-sm">
                         {entry.consumption.gas.toFixed(1)} m³
                       </div>
@@ -319,7 +319,7 @@ export default function History() {
                       className="gap-2"
                     >
                       <Eye className="w-4 h-4" />
-                      View Details
+                      {language === 'ru' ? 'Подробнее' : language === 'kk' ? 'Толығырақ' : 'View Details'}
                     </Button>
                     <Button
                       variant="destructive"
@@ -328,7 +328,7 @@ export default function History() {
                       className="gap-2"
                     >
                       <Trash2 className="w-4 h-4" />
-                      Delete
+                      {t('quickActions.delete')}
                     </Button>
                   </div>
                 </div>
@@ -343,7 +343,7 @@ export default function History() {
           <Card className="border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>Detailed View - {selectedEntry.month} {selectedEntry.year}</span>
+                <span>{t('quickActions.detailedView')} - {selectedEntry.month} {selectedEntry.year}</span>
                 <Button 
                   variant="ghost" 
                   size="sm"
@@ -357,7 +357,7 @@ export default function History() {
               {/* Monthly Chart */}
               <div>
                 <h4 className="font-medium text-gray-900 dark:text-white mb-4">
-                  Monthly Consumption Breakdown
+                  {t('quickActions.monthlyConsumptionBreakdown')}
                 </h4>
                 <ConsumptionChart 
                   data={[{
@@ -384,7 +384,7 @@ export default function History() {
               <div className="grid grid-cols-1 gap-6">
                 <div>
                   <h4 className="font-medium text-gray-900 dark:text-white mb-3">
-                    Consumption Details
+                    {t('quickActions.consumptionDetails')}
                   </h4>
                   <div className="space-y-3">
                     <div className="flex justify-between">

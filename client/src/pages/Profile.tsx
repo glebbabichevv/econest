@@ -31,7 +31,7 @@ import {
 
 export default function Profile() {
   const { user, logout } = useAuth();
-  const { t, language: currentLanguage, changeLanguage } = useI18n();
+  const { t, language, changeLanguage, availableLanguages } = useI18n();
   const { theme, setTheme, toggleTheme } = useTheme();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -43,7 +43,7 @@ export default function Profile() {
     lastName: user?.lastName || '',
     email: user?.email || '',
     role: user?.role || 'adult',
-    language: currentLanguage,
+    language: language,
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
@@ -190,7 +190,7 @@ export default function Profile() {
   };
 
   const handleLanguageChange = (newLanguage: string) => {
-    changeLanguage();
+    changeLanguage(newLanguage);
     setFormData(prev => ({ ...prev, language: newLanguage }));
   };
 
@@ -199,7 +199,7 @@ export default function Profile() {
       case 'student':
         return <Badge variant="default" className="bg-blue-100 text-blue-800">Student</Badge>;
       case 'adult':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Adult</Badge>;
+        return <Badge variant="default" className="bg-green-100 text-green-800">{language === 'ru' ? 'Взрослый' : language === 'kk' ? 'Ересек' : 'Adult'}</Badge>;
       case 'company':
         return <Badge variant="default" className="bg-purple-100 text-purple-800">Company</Badge>;
       default:
@@ -213,10 +213,10 @@ export default function Profile() {
         {/* Header - Mobile Optimized */}
         <div className="text-center md:text-left">
           <h1 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight">
-            Profile Settings
+            {language === 'ru' ? 'Настройки профиля' : language === 'kk' ? 'Профиль баптаулары' : 'Profile Settings'}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base mt-2">
-            Manage your account settings and preferences
+            {language === 'ru' ? 'Управляйте настройками аккаунта и предпочтениями' : language === 'kk' ? 'Тіркелгі баптауларын және қалауларын басқарыңыз' : 'Manage your account settings and preferences'}
           </p>
         </div>
 
@@ -225,13 +225,13 @@ export default function Profile() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="w-5 h-5" />
-              Personal Information
+              {language === 'ru' ? 'Личная информация' : language === 'kk' ? 'Жеке ақпарат' : 'Personal Information'}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName">{language === 'ru' ? 'Имя' : language === 'kk' ? 'Аты' : 'First Name'}</Label>
                 <Input
                   id="firstName"
                   type="text"
@@ -242,7 +242,7 @@ export default function Profile() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName">{language === 'ru' ? 'Фамилия' : language === 'kk' ? 'Тегі' : 'Last Name'}</Label>
                 <Input
                   id="lastName"
                   type="text"
@@ -253,7 +253,7 @@ export default function Profile() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
+                <Label htmlFor="email">{language === 'ru' ? 'Адрес электронной почты' : language === 'kk' ? 'Электронды пошта мекенжайы' : 'Email Address'}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -265,13 +265,13 @@ export default function Profile() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="role">Account Type</Label>
+              <Label htmlFor="role">{language === 'ru' ? 'Тип аккаунта' : language === 'kk' ? 'Тіркелгі түрі' : 'Account Type'}</Label>
               <Select value={formData.role} onValueChange={(value) => setFormData(prev => ({ ...prev, role: value }))} disabled={!isEditing}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="adult">Adult</SelectItem>
+                  <SelectItem value="adult">{language === 'ru' ? 'Взрослый' : language === 'kk' ? 'Ересек' : 'Adult'}</SelectItem>
                   <SelectItem value="student">Student</SelectItem>
                   <SelectItem value="company">Company</SelectItem>
                 </SelectContent>
@@ -287,11 +287,11 @@ export default function Profile() {
                       onClick={() => {
                         setIsEditing(false);
                         setFormData({
-                          firstName: user?.firstName || '',
-                          lastName: user?.lastName || '',
+                          firstName: user?.first_name || '',
+                          lastName: user?.last_name || '',
                           email: user?.email || '',
                           role: user?.role || 'adult',
-                          language: currentLanguage,
+                          language: language,
                           currentPassword: '',
                           newPassword: '',
                           confirmPassword: ''
@@ -311,7 +311,7 @@ export default function Profile() {
                   </div>
                 ) : (
                   <Button onClick={() => setIsEditing(true)}>
-                    Edit Profile
+                    {language === 'ru' ? 'Редактировать профиль' : language === 'kk' ? 'Профильді өңдеу' : 'Edit Profile'}
                   </Button>
                 )}
               </div>
@@ -328,19 +328,23 @@ export default function Profile() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Globe className="w-5 h-5" />
-                Language & Region
+                {language === 'ru' ? 'Язык и регион' : language === 'kk' ? 'Тіл және аймақ' : 'Language & Region'}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="language">Interface Language</Label>
+                  <Label htmlFor="language">{language === 'ru' ? 'Язык интерфейса' : language === 'kk' ? 'Интерфейс тілі' : 'Interface Language'}</Label>
                   <Select value={formData.language} onValueChange={handleLanguageChange}>
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="en">🇬🇧 English</SelectItem>
+                      {availableLanguages.map((lang) => (
+                        <SelectItem key={lang.code} value={lang.code}>
+                          {lang.flag} {lang.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -353,19 +357,19 @@ export default function Profile() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Palette className="w-5 h-5" />
-                Appearance
+                {language === 'ru' ? 'Внешний вид' : language === 'kk' ? 'Көрініс' : 'Appearance'}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="theme">Color Theme</Label>
+                  <Label htmlFor="theme">{language === 'ru' ? 'Цветовая тема' : language === 'kk' ? 'Түсті тақырып' : 'Color Theme'}</Label>
                   <Select value={theme} onValueChange={setTheme}>
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="light">🌙 Light Mode</SelectItem>
+                      <SelectItem value="light">🌙 {language === 'ru' ? 'Светлая тема' : language === 'kk' ? 'Жарық режим' : 'Light Mode'}</SelectItem>
                       <SelectItem value="dark">☀️ Dark Mode</SelectItem>
                       <SelectItem value="ocean">🌊 Ocean Blue</SelectItem>
                       <SelectItem value="spooky">👻 Spooky Gothic</SelectItem>
@@ -382,20 +386,20 @@ export default function Profile() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="w-5 h-5" />
-              Security Settings
+              {language === 'ru' ? 'Настройки безопасности' : language === 'kk' ? 'Қауіпсіздік параметрлері' : 'Security Settings'}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="currentPassword">Current Password</Label>
+                <Label htmlFor="currentPassword">{language === 'ru' ? 'Текущий пароль' : language === 'kk' ? 'Қазіргі күйтіңіз' : 'Current Password'}</Label>
                 <div className="relative">
                   <Input
                     id="currentPassword"
                     type={showPassword ? "text" : "password"}
                     value={formData.currentPassword}
                     onChange={(e) => setFormData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                    placeholder="Enter current password"
+                    placeholder={t('profile.enterCurrentPassword')}
                   />
                   <Button
                     type="button"
@@ -409,23 +413,23 @@ export default function Profile() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="newPassword">New Password</Label>
+                <Label htmlFor="newPassword">{language === 'ru' ? 'Новый пароль' : language === 'kk' ? 'Жаңа күйтіңіз' : 'New Password'}</Label>
                 <Input
                   id="newPassword"
                   type={showPassword ? "text" : "password"}
                   value={formData.newPassword}
                   onChange={(e) => setFormData(prev => ({ ...prev, newPassword: e.target.value }))}
-                  placeholder="Enter new password"
+                  placeholder={t('profile.enterNewPassword')}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword">{language === 'ru' ? 'Подтвердить пароль' : language === 'kk' ? 'Күйтіңізді растаңыз' : 'Confirm Password'}</Label>
                 <Input
                   id="confirmPassword"
                   type={showPassword ? "text" : "password"}
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                  placeholder="Confirm new password"
+                  placeholder={t('profile.confirmNewPassword')}
                 />
               </div>
             </div>
@@ -435,7 +439,7 @@ export default function Profile() {
               className="gap-2"
             >
               <Shield className="w-4 h-4" />
-              Change Password
+              {language === 'ru' ? 'Изменить пароль' : language === 'kk' ? 'Күйтіңізді өзгерту' : 'Change Password'}
             </Button>
           </CardContent>
         </Card>
@@ -447,7 +451,7 @@ export default function Profile() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Mail className="w-5 h-5" />
-              Support & Contact
+              {t('profile.supportContact')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -458,12 +462,12 @@ export default function Profile() {
                     <Mail className="h-6 w-6 text-white" />
                   </div>
                 </div>
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Email Support</h4>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{t('profile.emailSupport')}</h4>
                 <a href="mailto:econest_future@gmail.com" className="text-purple-600 dark:text-purple-400 font-medium hover:underline">
                   econest_future@gmail.com
                 </a>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                  We respond within 24 hours
+                  {t('profile.responseTime')}
                 </p>
               </div>
               
@@ -473,12 +477,12 @@ export default function Profile() {
                     <Phone className="h-6 w-6 text-white" />
                   </div>
                 </div>
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Office Phone</h4>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{t('profile.officePhone')}</h4>
                 <a href="tel:+77073287707" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
                   +7 707 328 77 07
                 </a>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                  Office hours only
+                  {t('profile.officeHours')}
                 </p>
               </div>
             </div>
@@ -490,46 +494,45 @@ export default function Profile() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
               <Trash2 className="w-5 h-5" />
-              Danger Zone
+              {t('profile.dangerZone')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div>
-                <h3 className="font-medium text-gray-900 dark:text-white">Delete Account</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white">{t('profile.deleteAccount')}</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Permanently delete your account and all associated data. This action cannot be undone.
+                  {t('profile.deleteAccountDescription')}
                 </p>
               </div>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive" className="gap-2">
                     <Trash2 className="w-4 h-4" />
-                    Delete Account
+                    {t('profile.deleteAccount')}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogTitle>{t('profile.deleteConfirmTitle')}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete your account
-                      and remove all your data from our servers, including:
+                      {t('profile.deleteConfirmDesc')}
                       <ul className="list-disc list-inside mt-2 space-y-1">
-                        <li>All consumption readings and history</li>
-                        <li>AI recommendations and insights</li>
-                        <li>Leaderboard rankings and achievements</li>
-                        <li>Account settings and preferences</li>
+                        <li>{t('profile.deleteDataList1')}</li>
+                        <li>{t('profile.deleteDataList2')}</li>
+                        <li>{t('profile.deleteDataList3')}</li>
+                        <li>{t('profile.deleteDataList4')}</li>
                       </ul>
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>{t('profile.cancel')}</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => deleteAccountMutation.mutate()}
                       disabled={deleteAccountMutation.isPending}
                       className="bg-red-600 hover:bg-red-700"
                     >
-                      Yes, delete my account
+                      {t('profile.confirmDelete')}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>

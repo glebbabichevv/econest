@@ -102,8 +102,8 @@ export default function Auth() {
     e.preventDefault();
     if (!loginData.email || !loginData.password) {
       toast({
-        title: "Error",
-        description: "Please fill in all fields",
+        title: t('auth.error'),
+        description: t('auth.fillAllFields'),
         variant: "destructive",
       });
       return;
@@ -116,8 +116,8 @@ export default function Auth() {
     if (!registerData.firstName || !registerData.lastName || !registerData.email || 
         !registerData.password || !registerData.confirmPassword || !registerData.role) {
       toast({
-        title: "Error",
-        description: "Please fill in all fields",
+        title: t('auth.error'),
+        description: t('auth.fillAllFields'),
         variant: "destructive",
       });
       return;
@@ -136,7 +136,7 @@ export default function Auth() {
         onClick={() => setLocation("/")}
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to Home
+        {t('navigation.home')}
       </Button>
       
       <div className="max-w-4xl w-full space-y-8">
@@ -145,7 +145,7 @@ export default function Auth() {
             {t('auth.welcome')}
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300">
-            AI-powered platform for resource consumption optimization
+            {t('auth.subtitle')}
           </p>
         </div>
 
