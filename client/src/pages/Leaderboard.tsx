@@ -25,6 +25,7 @@ import {
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { translateCityName } from "@/lib/i18n";
 
 // Helper function to get available months (June 2025 to December 2025)
 const getAvailableMonths = () => {
@@ -168,7 +169,7 @@ export default function Leaderboard() {
                 {(regionsData || []).map((region: any, index: number) => (
                   <tr key={region.region} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
                     <td className="p-2 font-bold">#{index + 1}</td>
-                    <td className="p-2">{region.region}</td>
+                    <td className="p-2">{translateCityName(region.region, language)}</td>
                     <td className="p-2 text-right font-semibold">{region.totalCO2}</td>
                     <td className="p-2 text-right">{region.averageCO2}</td>
                     <td className="p-2 text-right">{region.userCount}</td>

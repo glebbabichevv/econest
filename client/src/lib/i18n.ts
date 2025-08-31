@@ -264,6 +264,22 @@ export const translations = {
       subtitle: "AI-powered platform for resource consumption optimization",
       error: "Error",
       fillAllFields: "Please fill in all fields",
+      regionOptional: "Region (Optional)",
+      selectRegion: "Select your region",
+      regionWarning: "⚠️ Note: If no region is selected, your data will not appear in the regional leaderboard",
+      whyEconest: "Why Econest?",
+      aiAnalysis: "AI-powered resource consumption analysis",
+      personalizedRecommendations: "Personalized savings recommendations",
+      carbonAssessment: "Carbon footprint assessment",
+      schoolRegionalRankings: "School and regional rankings",
+      userRoles: "User Roles",
+      studentRole: "Student",
+      adultRole: "Adult",
+      companyRole: "Company",
+      studentDescription: "School rankings and class competitions",
+      adultDescription: "Family consumption and personal goals",
+      companyDescription: "Corporate resource optimization",
+      emailPlaceholder: "your@email.com",
       "Full year": "Full year",
       emissions: "emissions",
       "Trees needed to offset your": "Trees needed to offset your",
@@ -325,7 +341,8 @@ export const translations = {
       noInsightsYet: "No AI insights available yet",
       clickToAnalyze: "Click \"Get AI Insights\" to analyze your environmental impact",
       generatingInsights: "Generating AI insights",
-      clearing: "Clearing"
+      clearing: "Clearing",
+      noDataAvailable: "No consumption data available"
     },
     leaderboard: {
       title: "Regional CO₂ Leaderboard",
@@ -390,6 +407,22 @@ export const translations = {
       pavlodar: "Pavlodar",
       "ust-kamenogorsk": "Ust-Kamenogorsk",
       semey: "Semey"
+    },
+    cities: {
+      "Almaty": "Almaty",
+      "Nur-Sultan": "Nur-Sultan",
+      "Shymkent": "Shymkent",
+      "Aktobe": "Aktobe",
+      "Taraz": "Taraz",
+      "Pavlodar": "Pavlodar",
+      "Ust-Kamenogorsk": "Ust-Kamenogorsk",
+      "Semey": "Semey",
+      "Kostanay": "Kostanay",
+      "Kyzylorda": "Kyzylorda",
+      "Atyrau": "Atyrau",
+      "Aktau": "Aktau",
+      "Petropavlovsk": "Petropavlovsk",
+      "Turkistan": "Turkistan"
     },
     weather: {
       selectRegion: "Select your region to get personalized weather insights",
@@ -958,6 +991,22 @@ export const translations = {
       subtitle: "ИИ-платформа для оптимизации потребления ресурсов",
       error: "Ошибка", 
       fillAllFields: "Пожалуйста, заполните все поля",
+      regionOptional: "Регион (Опционально)",
+      selectRegion: "Выберите свой регион",
+      regionWarning: "⚠️ Примечание: Если регион не выбран, ваши данные не будут отображаться в региональном рейтинге",
+      whyEconest: "Почему Econest?",
+      aiAnalysis: "ИИ-анализ потребления ресурсов",
+      personalizedRecommendations: "Персонализированные рекомендации по экономии",
+      carbonAssessment: "Оценка углеродного следа",
+      schoolRegionalRankings: "Школьные и региональные рейтинги",
+      userRoles: "Роли пользователей",
+      studentRole: "Студент",
+      adultRole: "Взрослый",
+      companyRole: "Компания",
+      studentDescription: "Школьные рейтинги и классовые соревнования",
+      adultDescription: "Семейное потребление и личные цели",
+      companyDescription: "Корпоративная оптимизация ресурсов",
+      emailPlaceholder: "ваш@email.com",
       dateRequired: "Дата обязательна",
       addReadingDescription: "Добавьте данные месячного потребления для отслеживания",
       dataSourcesTitle: "Источники данных",
@@ -1020,7 +1069,8 @@ export const translations = {
       noInsightsYet: "ИИ анализ пока недоступен",
       clickToAnalyze: "Нажмите \"Получить ИИ анализ\" для анализа воздействия на окружающую среду",
       generatingInsights: "Генерация ИИ анализа",
-      clearing: "Очистка"
+      clearing: "Очистка",
+      noDataAvailable: "Нет данных о потреблении"
     },
     leaderboard: {
       title: "Региональный рейтинг CO₂",
@@ -1050,6 +1100,22 @@ export const translations = {
       pavlodar: "Павлодар",
       "ust-kamenogorsk": "Усть-Каменогорск",
       semey: "Семей"
+    },
+    cities: {
+      "Almaty": "Алматы",
+      "Nur-Sultan": "Нур-Султан",
+      "Shymkent": "Шымкент",
+      "Aktobe": "Актобе",
+      "Taraz": "Тараз",
+      "Pavlodar": "Павлодар",
+      "Ust-Kamenogorsk": "Усть-Каменогорск",
+      "Semey": "Семей",
+      "Kostanay": "Костанай",
+      "Kyzylorda": "Кызылорда",
+      "Atyrau": "Атырау",
+      "Aktau": "Актау",
+      "Petropavlovsk": "Петропавловск",
+      "Turkistan": "Туркестан"
     },
     weather: {
       selectRegion: "Выберите ваш регион для получения персональных погодных инсайтов",
@@ -1381,6 +1447,22 @@ export const translations = {
       subtitle: "Ресурс тұтынуды оңтайландыруға арналған ЖИ платформасы",
       error: "Қате",
       fillAllFields: "Барлық өрістерді толтырыңыз",
+      regionOptional: "Өңір (Міндетті емес)",
+      selectRegion: "Өңіріңізді таңдаңыз",
+      regionWarning: "⚠️ Ескерту: Өңір таңдалмаса, сіздің деректеріңіз аймақтық рейтингте көрсетілмейді",
+      whyEconest: "Неліктен Econest?",
+      aiAnalysis: "ЖИ-ресурстарды тұтыну талдауы",
+      personalizedRecommendations: "Дербестендірілген үнемдеу ұсыныстары",
+      carbonAssessment: "Көміртегі ізінің бағалауы",
+      schoolRegionalRankings: "Мектеп және өңірлік рейтингтер",
+      userRoles: "Пайдаланушы рөлдері",
+      studentRole: "Студент",
+      adultRole: "Ересек",
+      companyRole: "Компания",
+      studentDescription: "Мектеп рейтингтері және сынып жарыстары",
+      adultDescription: "Отбасылық тұтыну және жеке мақсаттар",
+      companyDescription: "Корпоративтік ресурстарды оңтайландыру",
+      emailPlaceholder: "сіздің@email.com",
       dateRequired: "Күн міндетті",
       addReadingDescription: "Қадағалау үшін айлық тұтыну деректерін қосыңыз",
       dataSourcesTitle: "Деректер көздері",
@@ -1443,7 +1525,8 @@ export const translations = {
       noInsightsYet: "ЖИ талдауы әзірше қолжетімді емес",
       clickToAnalyze: "Қоршаған ортаға әсерді талдау үшін \"ЖИ талдауын алу\" түймесін басыңыз",
       generatingInsights: "ЖИ талдауы жасалып жатыр",
-      clearing: "Тазаланып жатыр"
+      clearing: "Тазаланып жатыр",
+      noDataAvailable: "Тұтыну деректері жоқ"
     },
     leaderboard: {
       title: "Аймақтық CO₂ рейтингі",
@@ -1473,6 +1556,22 @@ export const translations = {
       pavlodar: "Павлодар",
       "ust-kamenogorsk": "Өскемен",
       semey: "Семей"
+    },
+    cities: {
+      "Almaty": "Алматы",
+      "Nur-Sultan": "Нұр-Сұлтан",
+      "Shymkent": "Шымкент",
+      "Aktobe": "Ақтөбе",
+      "Taraz": "Тараз",
+      "Pavlodar": "Павлодар",
+      "Ust-Kamenogorsk": "Өскемен",
+      "Semey": "Семей",
+      "Kostanay": "Қостанай",
+      "Kyzylorda": "Қызылорда",
+      "Atyrau": "Атырау",
+      "Aktau": "Ақтау",
+      "Petropavlovsk": "Петропавл",
+      "Turkistan": "Түркістан"
     },
     weather: {
       selectRegion: "Жеке ауа-райы инсайттарын алу үшін өңіріңізді таңдаңыз",
@@ -1526,4 +1625,10 @@ export const translations = {
 
 export const getLanguageFromCode = (code: string): Language => {
   return languages.find(lang => lang.code === code) || languages[0];
+};
+
+export const translateCityName = (cityName: string, language: string): string => {
+  const langKey = language === 'ru' ? 'ru' : language === 'kk' ? 'kk' : 'en';
+  const cityTranslations = translations[langKey].cities;
+  return cityTranslations[cityName] || cityName;
 };

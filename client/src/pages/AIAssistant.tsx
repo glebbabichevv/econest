@@ -234,7 +234,7 @@ export default function AIAssistant() {
                 ) : (
                   <Sparkles className="w-4 h-4" />
                 )}
-                {t('getAIInsights')}
+                {t('footprint.getAIInsights')}
               </Button>
             </CardContent>
           </Card>

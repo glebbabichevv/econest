@@ -17,6 +17,7 @@ import { AlertTriangle, TrendingUp, TrendingDown, ExternalLink, MapPin } from "l
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
+import { translateCityName } from "@/lib/i18n";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading: authLoading, refetch: refetchUser } = useAuth();
@@ -260,7 +261,7 @@ export default function Dashboard() {
                           <td className="p-2">
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4 text-gray-500" />
-                              {region.region}
+                              {translateCityName(region.region, language)}
                             </div>
                           </td>
                           <td className="p-2 text-right font-semibold">{region.totalCO2}</td>

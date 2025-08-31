@@ -171,7 +171,7 @@ export default function Auth() {
                         <Input
                           id="login-email"
                           type="email"
-                          placeholder="your@email.com"
+                          placeholder={t('auth.emailPlaceholder')}
                           className="pl-10"
                           value={loginData.email}
                           onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
@@ -253,7 +253,7 @@ export default function Auth() {
                         <Input
                           id="register-email"
                           type="email"
-                          placeholder="your@email.com"
+                          placeholder={t('auth.emailPlaceholder')}
                           className="pl-10"
                           value={registerData.email}
                           onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
@@ -294,7 +294,7 @@ export default function Auth() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="region">Region (Optional)</Label>
+                      <Label htmlFor="region">{t('auth.regionOptional')}</Label>
                       <div className="relative">
                         <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                         <Select 
@@ -302,7 +302,7 @@ export default function Auth() {
                           onValueChange={(value) => setRegisterData({ ...registerData, region: value })}
                         >
                           <SelectTrigger className="pl-10">
-                            <SelectValue placeholder="Select your region" />
+                            <SelectValue placeholder={t('auth.selectRegion')} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="Almaty">Almaty</SelectItem>
@@ -323,7 +323,7 @@ export default function Auth() {
                         </Select>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        ⚠️ Note: If no region is selected, your data will not appear in the regional leaderboard
+                        {t('auth.regionWarning')}
                       </p>
                     </div>
                     
@@ -387,24 +387,24 @@ export default function Auth() {
             <Card className="bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-green-200 dark:border-green-800">
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold text-green-800 dark:text-green-200 mb-4">
-                  Why Econest?
+                  {t('auth.whyEconest')}
                 </h3>
                 <ul className="space-y-3 text-green-700 dark:text-green-300">
                   <li className="flex items-start gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <span>AI-powered resource consumption analysis</span>
+                    <span>{t('auth.aiAnalysis')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <span>Personalized savings recommendations</span>
+                    <span>{t('auth.personalizedRecommendations')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <span>Carbon footprint assessment</span>
+                    <span>{t('auth.carbonAssessment')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <span>School and regional rankings</span>
+                    <span>{t('auth.schoolRegionalRankings')}</span>
                   </li>
                 </ul>
               </CardContent>
@@ -412,27 +412,27 @@ export default function Auth() {
 
             <Card>
               <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">User Roles</h3>
+                <h3 className="text-lg font-semibold mb-4">{t('auth.userRoles')}</h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                     <User className="h-5 w-5 text-blue-600" />
                     <div>
-                      <p className="font-medium">Student</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">School rankings and class competitions</p>
+                      <p className="font-medium">{t('auth.studentRole')}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{t('auth.studentDescription')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                     <User className="h-5 w-5 text-green-600" />
                     <div>
-                      <p className="font-medium">Adult</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Family consumption and personal goals</p>
+                      <p className="font-medium">{t('auth.adultRole')}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{t('auth.adultDescription')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                     <Building2 className="h-5 w-5 text-purple-600" />
                     <div>
-                      <p className="font-medium">Company</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Corporate resource optimization</p>
+                      <p className="font-medium">{t('auth.companyRole')}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{t('auth.companyDescription')}</p>
                     </div>
                   </div>
                 </div>
