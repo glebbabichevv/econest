@@ -386,7 +386,7 @@ export default function Footprint() {
                 {currentPeriod.total.toFixed(1)} kg
               </div>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                {periodType === 'month' ? t('footprint.currentMonthEmissions') : `${t('Full year')} ${t('emissions')}`}
+                {periodType === 'month' ? t('footprint.currentMonthEmissions') : t('fullYearEmissions')}
               </p>
             </CardContent>
           </Card>
@@ -443,7 +443,7 @@ export default function Footprint() {
                 {treesNeeded}
               </div>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                {t('footprint.treesNeededOffset')} {periodType === 'month' ? t('footprint.monthlyCO2Emissions') : `${t('footprint.yearly')} CO₂ ${t('emissions')}`}
+                {t('footprint.treesNeededOffset')} {periodType === 'month' ? t('footprint.monthlyCO2Emissions') : `${t('yearly')} CO₂ ${t('emissions')}`}
               </p>
             </CardContent>
           </Card>

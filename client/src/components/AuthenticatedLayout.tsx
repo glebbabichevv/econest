@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { ThemeSelector } from "@/components/ThemeSelector";
 
 interface AuthenticatedLayoutProps {
   children: React.ReactNode;
@@ -128,6 +129,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
             <div className="flex items-center space-x-1 flex-shrink-0 animate-in slide-in-from-right-5 duration-500">
               
               {/* Theme toggle - Desktop only */}
+              <ThemeSelector />
 
               {/* User Menu - Desktop */}
               <Button
@@ -176,13 +178,18 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
                 
                 {/* Mobile actions */}
                 <div className="pt-2 space-y-2 border-t border-gray-200 dark:border-gray-700">
+                  {/* Theme selector for mobile */}
+                  <div className="px-2">
+                    <ThemeSelector />
+                  </div>
+                  
                   <Button
                     variant="ghost"
                     onClick={handleLogout}
                     className="w-full justify-start space-x-3 h-12 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                   >
                     <LogOut className="w-5 h-5" />
-                    <span>Logout</span>
+                    <span>{t('sidebar.logout')}</span>
                   </Button>
                 </div>
               </div>
@@ -232,7 +239,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
             className="flex flex-col items-center space-y-1 p-2 h-auto min-h-[60px] text-gray-600 dark:text-gray-400"
           >
             <Menu className="w-5 h-5" />
-            <span className="text-xs font-medium">More</span>
+            <span className="text-xs font-medium">{t('actions.more')}</span>
           </Button>
         </div>
       </div>

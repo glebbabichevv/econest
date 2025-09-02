@@ -169,11 +169,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserRecommendations(userId: string, unreadOnly = false): Promise<Recommendation[]> {
-    let whereClause = eq(recommendations.userId, userId);
-    
-    if (unreadOnly) {
-      whereClause = and(eq(recommendations.userId, userId), eq(recommendations.isRead, false));
-    }
+    const whereClause = unreadOnly 
+      ? and(eq(recommendations.userId, userId), eq(recommendations.isRead, false))
+      : eq(recommendations.userId, userId);
     
     return await db.select().from(recommendations)
       .where(whereClause)
@@ -195,11 +193,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserCO2Insights(userId: string, unreadOnly = false): Promise<CO2Insight[]> {
-    let whereClause = eq(co2Insights.userId, userId);
-    
-    if (unreadOnly) {
-      whereClause = and(eq(co2Insights.userId, userId), eq(co2Insights.isRead, false));
-    }
+    const whereClause = unreadOnly 
+      ? and(eq(co2Insights.userId, userId), eq(co2Insights.isRead, false))
+      : eq(co2Insights.userId, userId);
     
     return await db.select().from(co2Insights)
       .where(whereClause)

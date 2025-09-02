@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/hooks/useI18n";
+import { useTheme } from "@/hooks/useTheme";
 import { AuthenticatedLayout } from "@/components/AuthenticatedLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,13 +24,15 @@ import {
   Save,
   Eye,
   EyeOff,
-  Phone
+  Phone,
+  Palette
 } from "lucide-react";
 
 
 export default function Profile() {
   const { user, logout } = useAuth();
   const { t, language, changeLanguage, availableLanguages } = useI18n();
+  const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -344,6 +347,44 @@ export default function Profile() {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Theme Settings */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Palette className="w-5 h-5" />
+                {language === 'ru' ? 'Тема оформления' : language === 'kk' ? 'Сурет темасы' : 'Appearance Theme'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="theme">{language === 'ru' ? 'Цветовая схема' : language === 'kk' ? 'Түс схемасы' : 'Color Scheme'}</Label>
+                  <Select value={theme} onValueChange={setTheme}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="light">
+                        {language === 'ru' ? '☀️ Солнечная' : language === 'kk' ? '☀️ Күнді' : '☀️ Light'}
+                      </SelectItem>
+                      <SelectItem value="dark">
+                        {language === 'ru' ? '🌙 Темная' : language === 'kk' ? '🌙 Қараңғы' : '🌙 Dark'}
+                      </SelectItem>
+                      <SelectItem value="ocean">
+                        {language === 'ru' ? '🌊 Океан' : language === 'kk' ? '🌊 Мұхит' : '🌊 Ocean'}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {theme === 'light' && (language === 'ru' ? 'Чистый и яркий интерфейс' : language === 'kk' ? 'Таза және жарық интерфейс' : 'Clean and bright interface')}
+                  {theme === 'dark' && (language === 'ru' ? 'Приятно для глаз' : language === 'kk' ? 'Көзге жағымды' : 'Easy on your eyes')}
+                  {theme === 'ocean' && (language === 'ru' ? 'Прохладная океаническая тема' : language === 'kk' ? 'Мұхиттың салқын темасы' : 'Cool ocean blue theme')}
                 </div>
               </div>
             </CardContent>

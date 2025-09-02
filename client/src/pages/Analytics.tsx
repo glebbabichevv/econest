@@ -80,12 +80,12 @@ export default function Analytics() {
             <XAxis dataKey="month" />
             <YAxis />
             <Tooltip />
-            <Bar dataKey="coldWater" fill={COLORS[0]} name="Cold Water (m³)" />
-            <Bar dataKey="hotWater" fill={COLORS[1]} name="Hot Water (m³)" />
-            <Bar dataKey="sewage" fill={COLORS[2]} name="Sewage (m³)" />
-            <Bar dataKey="electricity" fill={COLORS[3]} name="Electricity (kWh)" />
-            <Bar dataKey="gas" fill={COLORS[4]} name="Gas (m³)" />
-            <Bar dataKey="heating" fill={COLORS[5]} name="Heating (Gcal)" />
+            <Bar dataKey="coldWater" fill={COLORS[0]} name={`${t('consumption.coldWater')} (${t('units.cubicMeters')})`} />
+            <Bar dataKey="hotWater" fill={COLORS[1]} name={`${t('consumption.hotWater')} (${t('units.cubicMeters')})`} />
+            <Bar dataKey="sewage" fill={COLORS[2]} name={`${t('consumption.sewage')} (${t('units.cubicMeters')})`} />
+            <Bar dataKey="electricity" fill={COLORS[3]} name={`${t('consumption.electricity')} (${t('units.kilowattHours')})`} />
+            <Bar dataKey="gas" fill={COLORS[4]} name={`${t('consumption.gas')} (${t('units.cubicMeters')})`} />
+            <Bar dataKey="heating" fill={COLORS[5]} name={`${t('consumption.heating')} (${t('units.gcal')})`} />
           </BarChart>
         </ResponsiveContainer>
       );
@@ -99,12 +99,12 @@ export default function Analytics() {
             <XAxis dataKey="month" />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey="coldWater" stroke={COLORS[0]} name="Cold Water (m³)" />
-            <Line type="monotone" dataKey="hotWater" stroke={COLORS[1]} name="Hot Water (m³)" />
-            <Line type="monotone" dataKey="sewage" stroke={COLORS[2]} name="Sewage (m³)" />
-            <Line type="monotone" dataKey="electricity" stroke={COLORS[3]} name="Electricity (kWh)" />
-            <Line type="monotone" dataKey="gas" stroke={COLORS[4]} name="Gas (m³)" />
-            <Line type="monotone" dataKey="heating" stroke={COLORS[5]} name="Heating (Gcal)" />
+            <Line type="monotone" dataKey="coldWater" stroke={COLORS[0]} name={`${t('consumption.coldWater')} (${t('units.cubicMeters')})`} />
+            <Line type="monotone" dataKey="hotWater" stroke={COLORS[1]} name={`${t('consumption.hotWater')} (${t('units.cubicMeters')})`} />
+            <Line type="monotone" dataKey="sewage" stroke={COLORS[2]} name={`${t('consumption.sewage')} (${t('units.cubicMeters')})`} />
+            <Line type="monotone" dataKey="electricity" stroke={COLORS[3]} name={`${t('consumption.electricity')} (${t('units.kilowattHours')})`} />
+            <Line type="monotone" dataKey="gas" stroke={COLORS[4]} name={`${t('consumption.gas')} (${t('units.cubicMeters')})`} />
+            <Line type="monotone" dataKey="heating" stroke={COLORS[5]} name={`${t('consumption.heating')} (${t('units.gcal')})`} />
           </LineChart>
         </ResponsiveContainer>
       );
@@ -121,12 +121,12 @@ export default function Analytics() {
     }), { coldWater: 0, hotWater: 0, sewage: 0, heating: 0, electricity: 0, gas: 0 });
 
     const pieData = [
-      { name: 'Cold Water', value: totalConsumption.coldWater, color: COLORS[0] },
-      { name: 'Hot Water', value: totalConsumption.hotWater, color: COLORS[1] },
-      { name: 'Sewage', value: totalConsumption.sewage, color: COLORS[2] },
-      { name: 'Electricity', value: totalConsumption.electricity, color: COLORS[3] },
-      { name: 'Gas', value: totalConsumption.gas, color: COLORS[4] },
-      { name: 'Heating', value: totalConsumption.heating, color: COLORS[5] },
+      { name: t('consumption.coldWater'), value: totalConsumption.coldWater, color: COLORS[0] },
+      { name: t('consumption.hotWater'), value: totalConsumption.hotWater, color: COLORS[1] },
+      { name: t('consumption.sewage'), value: totalConsumption.sewage, color: COLORS[2] },
+      { name: t('consumption.electricity'), value: totalConsumption.electricity, color: COLORS[3] },
+      { name: t('consumption.gas'), value: totalConsumption.gas, color: COLORS[4] },
+      { name: t('consumption.heating'), value: totalConsumption.heating, color: COLORS[5] },
     ].filter(item => item.value > 0);
 
     return (

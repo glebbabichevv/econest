@@ -275,37 +275,37 @@ export default function History() {
                     <div className="p-2 bg-gray-50 rounded">
                       <div className="text-xs text-gray-500">{t('consumption.coldShort')}</div>
                       <div className="font-semibold text-gray-900 text-xs">
-                        {entry.consumption.coldWater.toFixed(1)} m³
+                        {entry.consumption.coldWater.toFixed(1)} {t('units.cubicMeters')}
                       </div>
                     </div>
                     <div className="p-2 bg-gray-50 rounded">
                       <div className="text-xs text-gray-500">{t('consumption.hotShort')}</div>
                       <div className="font-semibold text-gray-900 text-xs">
-                        {entry.consumption.hotWater.toFixed(1)} m³
+                        {entry.consumption.hotWater.toFixed(1)} {t('units.cubicMeters')}
                       </div>
                     </div>
                     <div className="p-2 bg-gray-50 rounded">
                       <div className="text-xs text-gray-500">{t('consumption.sewageShort')}</div>
                       <div className="font-semibold text-gray-900 text-xs">
-                        {entry.consumption.sewage.toFixed(1)} m³
+                        {entry.consumption.sewage.toFixed(1)} {t('units.cubicMeters')}
                       </div>
                     </div>
                     <div className="p-2 bg-gray-50 rounded">
                       <div className="text-xs text-gray-500">{t('consumption.heatShort')}</div>
                       <div className="font-semibold text-gray-900 text-xs">
-                        {entry.consumption.heating.toFixed(1)} Gcal
+                        {entry.consumption.heating.toFixed(1)} {t('units.gcal')}
                       </div>
                     </div>
                     <div className="p-2 bg-gray-50 rounded">
                       <div className="text-xs text-gray-500">{t('consumption.electricShort')}</div>
                       <div className="font-semibold text-gray-900 text-xs">
-                        {entry.consumption.electricity.toFixed(1)} kWh
+                        {entry.consumption.electricity.toFixed(1)} {t('units.kilowattHours')}
                       </div>
                     </div>
                     <div className="p-2 bg-gray-50 rounded">
                       <div className="text-xs text-gray-500">{t('consumption.gasShort')}</div>
                       <div className="font-semibold text-gray-900 text-sm">
-                        {entry.consumption.gas.toFixed(1)} m³
+                        {entry.consumption.gas.toFixed(1)} {t('units.cubicMeters')}
                       </div>
                     </div>
                   </div>
@@ -389,27 +389,27 @@ export default function History() {
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-gray-600">💧 {t('consumption.coldWater')}:</span>
-                      <span className="font-medium">{selectedEntry.consumption.coldWater.toFixed(1)} m³</span>
+                      <span className="font-medium">{selectedEntry.consumption.coldWater.toFixed(1)} {t('units.cubicMeters')}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">🌊 {t('consumption.hotWater')}:</span>
-                      <span className="font-medium">{selectedEntry.consumption.hotWater.toFixed(1)} m³</span>
+                      <span className="font-medium">{selectedEntry.consumption.hotWater.toFixed(1)} {t('units.cubicMeters')}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">🚰 {t('consumption.sewage')}:</span>
-                      <span className="font-medium">{selectedEntry.consumption.sewage.toFixed(1)} m³</span>
+                      <span className="font-medium">{selectedEntry.consumption.sewage.toFixed(1)} {t('units.cubicMeters')}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">🔥 {t('consumption.heating')}:</span>
-                      <span className="font-medium">{selectedEntry.consumption.heating.toFixed(1)} Gcal</span>
+                      <span className="font-medium">{selectedEntry.consumption.heating.toFixed(1)} {t('units.gcal')}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">⚡ {t('consumption.electricity')}:</span>
-                      <span className="font-medium">{selectedEntry.consumption.electricity.toFixed(1)} kWh</span>
+                      <span className="font-medium">{selectedEntry.consumption.electricity.toFixed(1)} {t('units.kilowattHours')}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">🔥 {t('consumption.gas')}:</span>
-                      <span className="font-medium">{selectedEntry.consumption.gas.toFixed(1)} m³</span>
+                      <span className="font-medium">{selectedEntry.consumption.gas.toFixed(1)} {t('units.cubicMeters')}</span>
                     </div>
                   </div>
                 </div>

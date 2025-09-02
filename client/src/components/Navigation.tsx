@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ThemeSelector } from "@/components/ThemeSelector";
 
 export function Navigation() {
   const { t, currentLanguage, availableLanguages, changeLanguage } = useI18n();
@@ -52,6 +53,9 @@ export function Navigation() {
 
           {/* Desktop Right side controls */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* Theme Selector */}
+            <ThemeSelector />
+            
             {/* Language Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -73,7 +77,6 @@ export function Navigation() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-
             {/* Auth Button */}
             <Link href="/auth">
               <Button className="bg-gradient-to-r from-primary to-primary-dark hover:opacity-90 transition-opacity">
@@ -84,6 +87,9 @@ export function Navigation() {
 
           {/* Mobile menu */}
           <div className="md:hidden flex items-center space-x-2">
+            {/* Mobile Theme Selector */}
+            <ThemeSelector />
+            
             {/* Mobile Language Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -103,7 +109,6 @@ export function Navigation() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-
 
             {/* Mobile Menu Button */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>

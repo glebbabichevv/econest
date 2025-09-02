@@ -46,7 +46,9 @@ export const translations = {
     actions: {
       tryNow: "Try Now",
       login: "Login",
-      logout: "Logout"
+      logout: "Logout",
+      viewDetails: "View Details",
+      more: "More"
     },
     common: {
       week: "Week",
@@ -301,6 +303,8 @@ export const translations = {
       clearing: "Clearing...",
       generatingInsights: "Generating AI insights...",
       loading: "Loading...",
+      fullYearEmissions: "Full year emissions",
+      yearly: "Yearly",
       clickToAnalyze: "Click \"Get AI Insights\" to analyze your environmental impact",
       noInsightsYet: "No AI insights available yet",
       dateRequired: "Date is required",
@@ -721,6 +725,14 @@ export const translations = {
       detailedView: "Detailed View",
       monthlyConsumptionBreakdown: "Monthly Consumption Breakdown",
       consumptionDetails: "Consumption Details"
+    },
+    themes: {
+      light: "Light",
+      dark: "Dark", 
+      ocean: "Ocean",
+      lightDescription: "Clean and bright interface",
+      darkDescription: "Easy on your eyes",
+      oceanDescription: "Cool ocean blue theme"
     }
   },
   ru: {
@@ -746,6 +758,14 @@ export const translations = {
       dark: "Темная",
       ocean: "Океан"
     },
+    themes: {
+      light: "Солнечная",
+      dark: "Темная",
+      ocean: "Океан",
+      lightDescription: "Чистый и яркий интерфейс",
+      darkDescription: "Приятно для глаз",
+      oceanDescription: "Прохладная океаническая тема"
+    },
     sidebar: {
       dashboard: "Панель управления",
       aiAssistant: "ИИ-помощник",
@@ -758,7 +778,9 @@ export const translations = {
     actions: {
       tryNow: "Попробовать",
       login: "Войти",
-      logout: "Выйти"
+      logout: "Выйти",
+      viewDetails: "Подробнее",
+      more: "Ещё"
     },
     common: {
       week: "Неделя",
@@ -1035,6 +1057,8 @@ export const translations = {
       clearing: "Очистка...",
       generatingInsights: "Генерация ИИ анализа...",
       loading: "Загрузка...",
+      fullYearEmissions: "Выбросы за полный год",
+      yearly: "Годовой",
       clickToAnalyze: "Нажмите \"Получить ИИ анализ\" для анализа воздействия на окружающую среду",
       noInsightsYet: "ИИ анализ пока недоступен",
     },
@@ -1190,7 +1214,13 @@ export const translations = {
       month: "Месяц",
       year: "Год",
       kgCO2: "кг CO₂",
-      noData: "Данные недоступны"
+      noData: "Данные недоступны",
+      coldWaterUnit: "Холодная вода (м³)",
+      hotWaterUnit: "Горячая вода (м³)",
+      sewageUnit: "Канализация (м³)",
+      electricityUnit: "Электричество (кВт⋅ч)",
+      gasUnit: "Газ (м³)",
+      heatingUnit: "Отопление (Гкал)"
     }
   },
   kk: {
@@ -1228,7 +1258,9 @@ export const translations = {
     actions: {
       tryNow: "Қазір сынап көру",
       login: "Кіру",
-      logout: "Шығу"
+      logout: "Шығу",
+      viewDetails: "Толығырақ",
+      more: "Көбірек"
     },
     common: {
       week: "Апта",
@@ -1505,6 +1537,8 @@ export const translations = {
       clearing: "Тазаланып жатыр...",
       generatingInsights: "ЖИ талдауы жасалып жатыр...",
       loading: "Жүктелуде...",
+      fullYearEmissions: "Толық жылғы шығарындылар",
+      yearly: "Жылдық",
       clickToAnalyze: "Қоршаған ортаға әсерді талдау үшін \"ЖИ талдауын алу\" түймесін басыңыз",
       noInsightsYet: "ЖИ талдауы әзірше қолжетімді емес"
     },
@@ -1660,7 +1694,13 @@ export const translations = {
       month: "Ай",
       year: "Жыл",
       kgCO2: "кг CO₂",
-      noData: "Деректер қолжетімді емес"
+      noData: "Деректер қолжетімді емес",
+      coldWaterUnit: "Суық су (м³)",
+      hotWaterUnit: "Ыстық су (м³)",
+      sewageUnit: "Кәріз (м³)",
+      electricityUnit: "Электр (кВт⋅сағ)",
+      gasUnit: "Газ (м³)",
+      heatingUnit: "Жылыту (Гкал)"
     }
   }
 };
@@ -1671,6 +1711,6 @@ export const getLanguageFromCode = (code: string): Language => {
 
 export const translateCityName = (cityName: string, language: string): string => {
   const langKey = language === 'ru' ? 'ru' : language === 'kk' ? 'kk' : 'en';
-  const cityTranslations = translations[langKey].cities;
-  return cityTranslations[cityName] || cityName;
+  const cityTranslations = translations[langKey as keyof typeof translations].cities;
+  return (cityTranslations as any)?.[cityName] || cityName;
 };

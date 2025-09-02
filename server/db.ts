@@ -41,16 +41,24 @@ if (!databaseUrl.startsWith('postgresql://')) {
   );
 }
 
-// Test database connection
-try {
-  const testPool = new Pool({ connectionString: databaseUrl });
-  await testPool.query('SELECT NOW()');
-  console.log('✅ Database connection test successful');
-  testPool.end();
-} catch (error) {
-  console.error('❌ Database connection test failed:', error.message);
-  throw new Error(`Database connection failed: ${error.message}`);
+// Test database connection (async initialization)
+async function testDatabaseConnection() {
+  try {
+    const testPool = new Pool({ connectionString: databaseUrl });
+    await testPool.query('SELECT NOW()');
+    console.log('✅ Database connection test successful');
+    testPool.end();
+  } catch (error: any) {
+    console.error('❌ Database connection test failed:', error.message);
+    throw new Error(`Database connection failed: ${error.message}`);
+  }
 }
+
+// Initialize database connection test
+testDatabaseConnection().catch((error) => {
+  console.error('Failed to initialize database connection:', error.message);
+  process.exit(1);
+});
 
 export const pool = new Pool({ connectionString: databaseUrl });
 export const db = drizzle({ client: pool, schema });

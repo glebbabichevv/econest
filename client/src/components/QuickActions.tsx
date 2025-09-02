@@ -194,7 +194,7 @@ export function QuickActions() {
                           <FormLabel>
                             <div className="flex items-center gap-2">
                               <Droplets className="h-4 w-4 text-blue-500" />
-                              {t('utilities.coldWater')} (m³)
+                              {t('utilities.coldWater')} ({t('units.cubicMeters')})
                             </div>
                           </FormLabel>
                           <FormControl>
@@ -218,7 +218,7 @@ export function QuickActions() {
                           <FormLabel>
                             <div className="flex items-center gap-2">
                               <Droplets className="h-4 w-4 text-red-500" />
-                              {t('utilities.hotWater')} (m³)
+                              {t('utilities.hotWater')} ({t('units.cubicMeters')})
                             </div>
                           </FormLabel>
                           <FormControl>
@@ -244,7 +244,7 @@ export function QuickActions() {
                           <FormLabel>
                             <div className="flex items-center gap-2">
                               <Droplets className="h-4 w-4 text-gray-500" />
-                              {t('utilities.sewage')} (m³)
+                              {t('utilities.sewage')} ({t('units.cubicMeters')})
                             </div>
                           </FormLabel>
                           <FormControl>
@@ -268,7 +268,7 @@ export function QuickActions() {
                           <FormLabel>
                             <div className="flex items-center gap-2">
                               <Thermometer className="h-4 w-4 text-orange-600" />
-                              {t('utilities.heating')} (Gcal)
+                              {t('utilities.heating')} ({t('units.gcal')})
                             </div>
                           </FormLabel>
                           <FormControl>
@@ -294,7 +294,7 @@ export function QuickActions() {
                           <FormLabel>
                             <div className="flex items-center gap-2">
                               <Zap className="h-4 w-4 text-yellow-500" />
-                              {t('utilities.electricity')} (kWh)
+                              {t('utilities.electricity')} ({t('units.kilowattHours')})
                             </div>
                           </FormLabel>
                           <FormControl>
@@ -318,7 +318,7 @@ export function QuickActions() {
                           <FormLabel>
                             <div className="flex items-center gap-2">
                               <Flame className="h-4 w-4 text-orange-500" />
-                              {t('utilities.gas')} (m³)
+                              {t('utilities.gas')} ({t('units.cubicMeters')})
                             </div>
                           </FormLabel>
                           <FormControl>
