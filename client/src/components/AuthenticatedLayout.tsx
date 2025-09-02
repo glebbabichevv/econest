@@ -14,7 +14,6 @@ import {
   X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "@/components/ThemeProvider";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -25,7 +24,6 @@ interface AuthenticatedLayoutProps {
 export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   const { user, logout } = useAuth();
   const { t } = useI18n();
-  const { toggleTheme, theme } = useTheme();
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -130,16 +128,6 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
             <div className="flex items-center space-x-1 flex-shrink-0 animate-in slide-in-from-right-5 duration-500">
               
               {/* Theme toggle - Desktop only */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleTheme}
-                className="hidden sm:flex w-8 h-8 transition-all duration-300 hover:scale-110 hover:rotate-12"
-              >
-                <span className="text-sm transition-transform duration-500">
-                  {theme === 'light' ? '☀️' : theme === 'dark' ? '🌙' : theme === 'ocean' ? '🌊' : '👻'}
-                </span>
-              </Button>
 
               {/* User Menu - Desktop */}
               <Button

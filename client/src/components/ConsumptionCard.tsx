@@ -104,7 +104,7 @@ export function ConsumptionCard({ type, value, unit, change, period = "This mont
           </div>
           {change !== undefined && (
             <span className={`text-xs sm:text-sm font-medium ${getChangeColor()}`}>
-              {getChangeIcon()} {Math.abs(change)}%
+              {getChangeIcon()} {Math.abs(change).toFixed(1)}%
             </span>
           )}
         </div>

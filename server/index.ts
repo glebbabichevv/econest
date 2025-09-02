@@ -11,11 +11,13 @@ const execAsync = promisify(exec);
 
 const app = express();
 
-// 1. CORS - разрешаем кросс-доменные запросы ПЕРВЫМ
+
 const allowedOrigins = [
-  "https://econest-q3hj.onrender.com", // frontend origin
-  "http://localhost:5173",             // для локальной разработки
-  "http://localhost:5000",             // для Replit
+  "https://econestplatform.app",
+  "https://www.econestplatform.app",
+  "https://econest-q3hj.onrender.com", 
+  "http://localhost:5173",             
+  "http://localhost:5000",             
   "http://127.0.0.1:5000"
 ];
 

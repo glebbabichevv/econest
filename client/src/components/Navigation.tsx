@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Leaf, Palette, Menu, X, Globe } from "lucide-react";
+import { Leaf, Menu, X, Globe } from "lucide-react";
 import { useI18n } from "@/hooks/useI18n";
-import { useTheme } from "@/components/ThemeProvider";
 import { Link } from "wouter";
 import { useState } from "react";
 import {
@@ -14,14 +13,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export function Navigation() {
   const { t, currentLanguage, availableLanguages, changeLanguage } = useI18n();
-  const { theme, setTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const themes = [
-    { value: "light", label: t("navigation.light") },
-    { value: "dark", label: t("navigation.dark") },
-    { value: "ocean", label: t("navigation.ocean") }
-  ];
 
   const navigationLinks = [
     { href: "/about", label: t('navigation.about') },
@@ -31,7 +24,7 @@ export function Navigation() {
   ];
 
   return (
-    <nav className="relative z-50 border-b border-gray-200/20 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80 w-full">
+    <nav className="relative z-50 border-b border-gray-200/20 backdrop-blur-sm bg-white/80 w-full">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center h-16 justify-between">
           {/* Logo */}
@@ -50,7 +43,7 @@ export function Navigation() {
               <Link 
                 key={link.href}
                 href={link.href} 
-                className="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+                className="text-gray-600 hover:text-primary transition-colors"
               >
                 {link.label}
               </Link>
@@ -62,7 +55,7 @@ export function Navigation() {
             {/* Language Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary">
+                <Button variant="ghost" size="sm" className="gap-2 text-gray-600 hover:text-primary">
                   <Globe className="h-4 w-4" />
                   {currentLanguage.flag} {currentLanguage.name}
                 </Button>
@@ -80,26 +73,6 @@ export function Navigation() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Theme Selector */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary">
-                  <Palette className="h-4 w-4" />
-                  {themes.find(themeItem => themeItem.value === theme)?.label || t("navigation.theme")}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {themes.map((themeOption) => (
-                  <DropdownMenuItem 
-                    key={themeOption.value}
-                    onClick={() => setTheme(themeOption.value as any)}
-                    className={theme === themeOption.value ? "bg-primary/10" : ""}
-                  >
-                    {themeOption.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
 
             {/* Auth Button */}
             <Link href="/auth">
@@ -115,7 +88,7 @@ export function Navigation() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="p-2">
-                  <Globe className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                  <Globe className="h-4 w-4 text-gray-600" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -131,31 +104,12 @@ export function Navigation() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Mobile Theme Selector */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="p-2">
-                  <Palette className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {themes.map((themeOption) => (
-                  <DropdownMenuItem 
-                    key={themeOption.value}
-                    onClick={() => setTheme(themeOption.value as any)}
-                    className={theme === themeOption.value ? "bg-primary/10" : ""}
-                  >
-                    {themeOption.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
 
             {/* Mobile Menu Button */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="sm" className="p-2">
-                  <Menu className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                  <Menu className="h-5 w-5 text-gray-600" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[280px] sm:w-[300px]">
@@ -167,7 +121,7 @@ export function Navigation() {
                         key={link.href}
                         href={link.href}
                         onClick={() => setMobileMenuOpen(false)}
-                        className="block px-3 py-2 text-lg font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+                        className="block px-3 py-2 text-lg font-medium text-gray-600 hover:text-primary transition-colors rounded-lg hover:bg-gray-50"
                       >
                         {link.label}
                       </Link>
@@ -175,7 +129,7 @@ export function Navigation() {
                   </div>
 
                   {/* Mobile Auth Button */}
-                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="pt-4 border-t border-gray-200">
                     <Link href="/auth" onClick={() => setMobileMenuOpen(false)}>
                       <Button className="w-full bg-gradient-to-r from-primary to-primary-dark hover:opacity-90 transition-opacity">
                         {t('actions.login')}

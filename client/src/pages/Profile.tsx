@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/hooks/useI18n";
-import { useTheme } from "@/components/ThemeProvider";
 import { AuthenticatedLayout } from "@/components/AuthenticatedLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,6 @@ import {
   Save,
   Eye,
   EyeOff,
-  Palette,
   Phone
 } from "lucide-react";
 
@@ -32,7 +30,6 @@ import {
 export default function Profile() {
   const { user, logout } = useAuth();
   const { t, language, changeLanguage, availableLanguages } = useI18n();
-  const { theme, setTheme, toggleTheme } = useTheme();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -197,11 +194,11 @@ export default function Profile() {
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'student':
-        return <Badge variant="default" className="bg-blue-100 text-blue-800">Student</Badge>;
+        return <Badge variant="default" className="bg-blue-100 text-blue-800">{t('auth.student')}</Badge>;
       case 'adult':
-        return <Badge variant="default" className="bg-green-100 text-green-800">{language === 'ru' ? 'Взрослый' : language === 'kk' ? 'Ересек' : 'Adult'}</Badge>;
+        return <Badge variant="default" className="bg-green-100 text-green-800">{t('auth.adult')}</Badge>;
       case 'company':
-        return <Badge variant="default" className="bg-purple-100 text-purple-800">Company</Badge>;
+        return <Badge variant="default" className="bg-purple-100 text-purple-800">{t('auth.company')}</Badge>;
       default:
         return <Badge variant="outline">Unknown</Badge>;
     }
@@ -271,9 +268,9 @@ export default function Profile() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="adult">{language === 'ru' ? 'Взрослый' : language === 'kk' ? 'Ересек' : 'Adult'}</SelectItem>
-                  <SelectItem value="student">Student</SelectItem>
-                  <SelectItem value="company">Company</SelectItem>
+                  <SelectItem value="adult">{t('auth.adult')}</SelectItem>
+                  <SelectItem value="student">{t('auth.student')}</SelectItem>
+                  <SelectItem value="company">{t('auth.company')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -352,33 +349,6 @@ export default function Profile() {
             </CardContent>
           </Card>
 
-          {/* Theme Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="w-5 h-5" />
-                {language === 'ru' ? 'Внешний вид' : language === 'kk' ? 'Көрініс' : 'Appearance'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="theme">{language === 'ru' ? 'Цветовая тема' : language === 'kk' ? 'Түсті тақырып' : 'Color Theme'}</Label>
-                  <Select value={theme} onValueChange={setTheme}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="light">🌙 {language === 'ru' ? 'Светлая тема' : language === 'kk' ? 'Жарық режим' : 'Light Mode'}</SelectItem>
-                      <SelectItem value="dark">☀️ Dark Mode</SelectItem>
-                      <SelectItem value="ocean">🌊 Ocean Blue</SelectItem>
-                      <SelectItem value="spooky">👻 Spooky Gothic</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Security Settings */}

@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Chart, registerables } from 'chart.js';
-import { useTheme } from "@/components/ThemeProvider";
 import { useI18n } from "@/hooks/useI18n";
 
 Chart.register(...registerables);
@@ -31,7 +30,6 @@ interface ConsumptionChartProps {
 export function ConsumptionChart({ data = [], period = "month", category = "water-gas", onPeriodChange, onCategoryChange, showPeriodControls = false }: ConsumptionChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<Chart | null>(null);
-  const { theme } = useTheme();
   const { t, language } = useI18n();
 
   useEffect(() => {
@@ -47,8 +45,8 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
     }
 
     const loadChart = () => {
-      const textColor = theme === "dark" || theme === "spooky" ? "#FFFFFF" : "#111827";
-      const gridColor = theme === "dark" || theme === "spooky" ? "#6B7280" : "#E5E7EB";
+      const textColor = "#111827";
+      const gridColor = "#E5E7EB";
 
       // Show empty state when no data
       if (!data || data.length === 0) {
@@ -109,32 +107,32 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
               {
                 label: t('charts.coldWaterUnit'),
                 data: sortedMonthKeys.map(monthKey => groupedData[monthKey].coldWater),
-                borderColor: theme === "dark" || theme === "spooky" ? "#22D3EE" : "#0891B2",
-                backgroundColor: theme === "dark" || theme === "spooky" ? "rgba(34, 211, 238, 0.2)" : "rgba(8, 145, 178, 0.15)",
+                borderColor: "#0891B2",
+                backgroundColor: "rgba(8, 145, 178, 0.15)",
                 tension: 0.4,
                 fill: false,
               },
               {
                 label: t('charts.hotWaterUnit'),
                 data: sortedMonthKeys.map(monthKey => groupedData[monthKey].hotWater),
-                borderColor: theme === "dark" || theme === "spooky" ? "#F87171" : "#DC2626",
-                backgroundColor: theme === "dark" || theme === "spooky" ? "rgba(248, 113, 113, 0.2)" : "rgba(220, 38, 38, 0.15)",
+                borderColor: "#DC2626",
+                backgroundColor: "rgba(220, 38, 38, 0.15)",
                 tension: 0.4,
                 fill: false,
               },
               {
                 label: t('charts.sewageUnit'),
                 data: sortedMonthKeys.map(monthKey => groupedData[monthKey].sewage),
-                borderColor: theme === "dark" || theme === "spooky" ? "#9CA3AF" : "#6B7280",
-                backgroundColor: theme === "dark" || theme === "spooky" ? "rgba(156, 163, 175, 0.2)" : "rgba(107, 114, 128, 0.15)",
+                borderColor: "#6B7280",
+                backgroundColor: "rgba(107, 114, 128, 0.15)",
                 tension: 0.4,
                 fill: false,
               },
               {
                 label: t('charts.gasUnit'),
                 data: sortedMonthKeys.map(monthKey => groupedData[monthKey].gas),
-                borderColor: theme === "dark" || theme === "spooky" ? "#FB923C" : "#EA580C",
-                backgroundColor: theme === "dark" || theme === "spooky" ? "rgba(251, 146, 60, 0.2)" : "rgba(234, 88, 12, 0.15)",
+                borderColor: "#EA580C",
+                backgroundColor: "rgba(234, 88, 12, 0.15)",
                 tension: 0.4,
                 fill: false,
               }
@@ -143,8 +141,8 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
               {
                 label: t('charts.electricityUnit'),
                 data: sortedMonthKeys.map(monthKey => groupedData[monthKey].electricity),
-                borderColor: theme === "dark" || theme === "spooky" ? "#A78BFA" : "#7C3AED",
-                backgroundColor: theme === "dark" || theme === "spooky" ? "rgba(167, 139, 250, 0.2)" : "rgba(124, 58, 237, 0.15)",
+                borderColor: "#7C3AED",
+                backgroundColor: "rgba(124, 58, 237, 0.15)",
                 tension: 0.4,
                 fill: false,
               }
@@ -153,8 +151,8 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
               {
                 label: t('charts.heatingUnit'),
                 data: sortedMonthKeys.map(monthKey => groupedData[monthKey].heating),
-                borderColor: theme === "dark" || theme === "spooky" ? "#FBBF24" : "#F59E0B",
-                backgroundColor: theme === "dark" || theme === "spooky" ? "rgba(251, 191, 36, 0.2)" : "rgba(245, 158, 11, 0.15)",
+                borderColor: "#F59E0B",
+                backgroundColor: "rgba(245, 158, 11, 0.15)",
                 tension: 0.4,
                 fill: false,
               }
@@ -211,8 +209,8 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
           {
             label: currentLabel,
             data: getDataForCategory(currentPeriod),
-            borderColor: theme === "dark" || theme === "spooky" ? "#34D399" : "#059669",
-            backgroundColor: theme === "dark" || theme === "spooky" ? "rgba(52, 211, 153, 0.8)" : "rgba(5, 150, 105, 0.7)",
+            borderColor: "#059669",
+            backgroundColor: "rgba(5, 150, 105, 0.7)",
             tension: 0.4,
             fill: true,
           }
@@ -223,8 +221,8 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
           datasets.push({
             label: previousLabel,
             data: getDataForCategory(previousPeriod),
-            borderColor: theme === "dark" || theme === "spooky" ? "#CBD5E1" : "#64748B",
-            backgroundColor: theme === "dark" || theme === "spooky" ? "rgba(203, 213, 225, 0.6)" : "rgba(100, 116, 139, 0.5)",
+            borderColor: "#64748B",
+            backgroundColor: "rgba(100, 116, 139, 0.5)",
             tension: 0.4,
             fill: true,
           });
@@ -283,7 +281,7 @@ export function ConsumptionChart({ data = [], period = "month", category = "wate
     };
 
     loadChart();
-  }, [data, theme, t, period, category]);
+  }, [data, t, period, category]);
 
   return (
     <Card className="h-full">

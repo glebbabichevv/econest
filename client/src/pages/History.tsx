@@ -264,7 +264,7 @@ export default function History() {
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                         {entry.month} {entry.year}
                       </h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-gray-500">
                         CO₂ Emissions: {entry.co2Footprint.toFixed(1)} kg
                       </p>
                     </div>
@@ -272,39 +272,39 @@ export default function History() {
 
                   {/* Consumption Summary - Hidden on mobile, show only on desktop */}
                   <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center">
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{language === 'ru' ? 'Холод' : language === 'kk' ? 'Суық' : 'Cold'}</div>
-                      <div className="font-semibold text-gray-900 dark:text-white text-xs">
+                    <div className="p-2 bg-gray-50 rounded">
+                      <div className="text-xs text-gray-500">{t('consumption.coldShort')}</div>
+                      <div className="font-semibold text-gray-900 text-xs">
                         {entry.consumption.coldWater.toFixed(1)} m³
                       </div>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{language === 'ru' ? 'Горяч' : language === 'kk' ? 'Ыстық' : 'Hot'}</div>
-                      <div className="font-semibold text-gray-900 dark:text-white text-xs">
+                    <div className="p-2 bg-gray-50 rounded">
+                      <div className="text-xs text-gray-500">{t('consumption.hotShort')}</div>
+                      <div className="font-semibold text-gray-900 text-xs">
                         {entry.consumption.hotWater.toFixed(1)} m³
                       </div>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{language === 'ru' ? 'Канал' : language === 'kk' ? 'Кәріз' : 'Sewage'}</div>
-                      <div className="font-semibold text-gray-900 dark:text-white text-xs">
+                    <div className="p-2 bg-gray-50 rounded">
+                      <div className="text-xs text-gray-500">{t('consumption.sewageShort')}</div>
+                      <div className="font-semibold text-gray-900 text-xs">
                         {entry.consumption.sewage.toFixed(1)} m³
                       </div>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{language === 'ru' ? 'Отопл' : language === 'kk' ? 'Жылыт' : 'Heat'}</div>
-                      <div className="font-semibold text-gray-900 dark:text-white text-xs">
+                    <div className="p-2 bg-gray-50 rounded">
+                      <div className="text-xs text-gray-500">{t('consumption.heatShort')}</div>
+                      <div className="font-semibold text-gray-900 text-xs">
                         {entry.consumption.heating.toFixed(1)} Gcal
                       </div>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{language === 'ru' ? 'Электр' : language === 'kk' ? 'Электр' : 'Electric'}</div>
-                      <div className="font-semibold text-gray-900 dark:text-white text-xs">
+                    <div className="p-2 bg-gray-50 rounded">
+                      <div className="text-xs text-gray-500">{t('consumption.electricShort')}</div>
+                      <div className="font-semibold text-gray-900 text-xs">
                         {entry.consumption.electricity.toFixed(1)} kWh
                       </div>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{language === 'ru' ? 'Газ' : language === 'kk' ? 'Газ' : 'Gas'}</div>
-                      <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                    <div className="p-2 bg-gray-50 rounded">
+                      <div className="text-xs text-gray-500">{t('consumption.gasShort')}</div>
+                      <div className="font-semibold text-gray-900 text-sm">
                         {entry.consumption.gas.toFixed(1)} m³
                       </div>
                     </div>
@@ -319,7 +319,7 @@ export default function History() {
                       className="gap-2"
                     >
                       <Eye className="w-4 h-4" />
-                      {language === 'ru' ? 'Подробнее' : language === 'kk' ? 'Толығырақ' : 'View Details'}
+{t('actions.viewDetails')}
                     </Button>
                     <Button
                       variant="destructive"
@@ -383,32 +383,32 @@ export default function History() {
               {/* Detailed Metrics */}
               <div className="grid grid-cols-1 gap-6">
                 <div>
-                  <h4 className="font-medium text-gray-900 dark:text-white mb-3">
+                  <h4 className="font-medium text-gray-900 mb-3">
                     {t('quickActions.consumptionDetails')}
                   </h4>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">💧 Cold Water:</span>
+                      <span className="text-gray-600">💧 {t('consumption.coldWater')}:</span>
                       <span className="font-medium">{selectedEntry.consumption.coldWater.toFixed(1)} m³</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">🌊 Hot Water:</span>
+                      <span className="text-gray-600">🌊 {t('consumption.hotWater')}:</span>
                       <span className="font-medium">{selectedEntry.consumption.hotWater.toFixed(1)} m³</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">🚰 Sewage:</span>
+                      <span className="text-gray-600">🚰 {t('consumption.sewage')}:</span>
                       <span className="font-medium">{selectedEntry.consumption.sewage.toFixed(1)} m³</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">🔥 Heating:</span>
+                      <span className="text-gray-600">🔥 {t('consumption.heating')}:</span>
                       <span className="font-medium">{selectedEntry.consumption.heating.toFixed(1)} Gcal</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">⚡ Electricity:</span>
+                      <span className="text-gray-600">⚡ {t('consumption.electricity')}:</span>
                       <span className="font-medium">{selectedEntry.consumption.electricity.toFixed(1)} kWh</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">🔥 Gas:</span>
+                      <span className="text-gray-600">🔥 {t('consumption.gas')}:</span>
                       <span className="font-medium">{selectedEntry.consumption.gas.toFixed(1)} m³</span>
                     </div>
                   </div>

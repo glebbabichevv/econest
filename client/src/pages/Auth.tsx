@@ -127,24 +127,24 @@ export default function Auth() {
 
 
   return (
-    <div className="auth-page min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="auth-page min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       {/* Back button */}
       <Button 
         variant="ghost" 
         size="sm"
-        className="absolute top-8 left-8 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+        className="absolute top-4 left-4 sm:top-8 sm:left-8 text-gray-600 hover:text-gray-900 z-10"
         onClick={() => setLocation("/")}
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
-        {t('navigation.home')}
+        <span className="hidden sm:inline">{t('navigation.home')}</span>
       </Button>
       
       <div className="max-w-4xl w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2 mt-12 sm:mt-0">
             {t('auth.welcome')}
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
+          <p className="text-lg text-gray-600">
             {t('auth.subtitle')}
           </p>
         </div>

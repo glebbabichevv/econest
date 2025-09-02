@@ -75,6 +75,20 @@ export const translations = {
       forViewing: "for viewing",
       dataUnavailable: "Data unavailable"
     },
+    consumption: {
+      coldWater: "Cold Water",
+      hotWater: "Hot Water", 
+      sewage: "Sewage",
+      heating: "Heating",
+      electricity: "Electricity",
+      gas: "Gas",
+      coldShort: "Cold",
+      hotShort: "Hot",
+      sewageShort: "Sewage",
+      heatShort: "Heat",
+      electricShort: "Electric",
+      gasShort: "Gas"
+    },
     dashboard: {
       title: "Dashboard",
       welcome: "Welcome back",
@@ -1149,6 +1163,20 @@ export const translations = {
       monthlyConsumptionBreakdown: "Разбивка месячного потребления",
       consumptionDetails: "Подробности потребления"
     },
+    consumption: {
+      coldWater: "Холодная вода",
+      hotWater: "Горячая вода", 
+      sewage: "Канализация",
+      heating: "Отопление",
+      electricity: "Электричество",
+      gas: "Газ",
+      coldShort: "Холод",
+      hotShort: "Горяч",
+      sewageShort: "Канал",
+      heatShort: "Отопл",
+      electricShort: "Электр",
+      gasShort: "Газ"
+    },
     charts: {
       consumption: "Потребление",
       emissions: "Выбросы",
@@ -1604,6 +1632,20 @@ export const translations = {
       detailedView: "Толық көрініс",
       monthlyConsumptionBreakdown: "Айлық тұтыну бөлінісі",
       consumptionDetails: "Тұтыну толық мәліметтері"
+    },
+    consumption: {
+      coldWater: "Суық су",
+      hotWater: "Ыстық су", 
+      sewage: "Кәріз",
+      heating: "Жылыту",
+      electricity: "Электр",
+      gas: "Газ",
+      coldShort: "Суық",
+      hotShort: "Ыстық",
+      sewageShort: "Кәріз",
+      heatShort: "Жылыт",
+      electricShort: "Электр",
+      gasShort: "Газ"
     },
     charts: {
       consumption: "Тұтыну",
