@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/hooks/useI18n";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks/useTheme.tsx";
 import { AuthenticatedLayout } from "@/components/AuthenticatedLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ import {
 export default function Profile() {
   const { user, logout } = useAuth();
   const { t, language, changeLanguage, availableLanguages } = useI18n();
-  const { theme, setTheme } = useTheme();
+  const { theme, changeTheme } = useTheme();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -364,7 +364,7 @@ export default function Profile() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="theme">{language === 'ru' ? 'Цветовая схема' : language === 'kk' ? 'Түс схемасы' : 'Color Scheme'}</Label>
-                  <Select value={theme} onValueChange={setTheme}>
+                  <Select value={theme} onValueChange={changeTheme}>
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>

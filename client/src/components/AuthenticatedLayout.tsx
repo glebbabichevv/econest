@@ -82,7 +82,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
           <div className="flex items-center h-14 sm:h-16">
             {/* Logo and Brand - Compact with animations */}
             <div className="flex items-center space-x-2 flex-shrink-0 animate-in slide-in-from-left-5 duration-500">
-              <div className="w-7 h-7 bg-gradient-to-br from-green-400 to-blue-500 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:rotate-12 hover:shadow-lg">
+              <div className="hidden sm:flex w-7 h-7 bg-gradient-to-br from-green-400 to-blue-500 rounded-lg items-center justify-center transition-all duration-300 hover:scale-110 hover:rotate-12 hover:shadow-lg">
                 <Leaf className="w-4 h-4 text-white transition-transform duration-300" />
               </div>
               <Link href="/dashboard">
@@ -126,9 +126,9 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
             </nav>
 
             {/* Right side actions - Compact with animations */}
-            <div className="flex items-center space-x-1 flex-shrink-0 animate-in slide-in-from-right-5 duration-500">
+            <div className="flex items-center space-x-1 flex-shrink-0 animate-in slide-in-from-right-5 duration-500 ml-auto">
               
-              {/* Theme toggle - Desktop only */}
+              {/* Theme toggle - Always visible */}
               <ThemeSelector />
 
               {/* User Menu - Desktop */}
@@ -178,11 +178,6 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
                 
                 {/* Mobile actions */}
                 <div className="pt-2 space-y-2 border-t border-gray-200 dark:border-gray-700">
-                  {/* Theme selector for mobile */}
-                  <div className="px-2">
-                    <ThemeSelector />
-                  </div>
-                  
                   <Button
                     variant="ghost"
                     onClick={handleLogout}

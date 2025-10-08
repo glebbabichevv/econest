@@ -1,10 +1,18 @@
-import { useState, useEffect, useCallback } from 'react';
+import  React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 
 export type Theme = 'light' | 'dark' | 'ocean';
 
 const THEME_STORAGE_KEY = 'econest-theme';
 
-export function useTheme() {
+interface ThemeContextType {
+  theme: Theme;
+  changeTheme: (newTheme: Theme) => void;
+  themes: readonly Theme[];
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme;
@@ -38,9 +46,17 @@ export function useTheme() {
     applyTheme(theme);
   }, [theme, applyTheme]);
 
-  return {
-    theme,
-    changeTheme,
-    themes: ['light', 'dark', 'ocean'] as const,
-  };
+  return (
+    <ThemeContext.Provider value={{ theme, changeTheme, themes: ['light', 'dark', 'ocean'] as const }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
 }

@@ -84,14 +84,14 @@ export function QuickActions() {
       return response.json();
     },
     onSuccess: () => {
+      // Show success message
       toast({
         title: t("successTitle"),
         description: t("successDescription"),
       });
-      form.reset();
-      setIsAddReadingOpen(false);
+      
+      // Only invalidate dashboard to refresh data (consumption will be included)
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/consumption"] });
     },
     onError: (error: Error) => {
       toast({
@@ -103,6 +103,11 @@ export function QuickActions() {
   });
 
   const onSubmit = (data: ConsumptionFormData) => {
+    // Close dialog IMMEDIATELY for instant UX
+    form.reset();
+    setIsAddReadingOpen(false);
+    
+    // Then send data in background
     addReadingMutation.mutate(data);
   };
 

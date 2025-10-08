@@ -98,7 +98,7 @@ export default function Leaderboard() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6">
+    <div className="container mx-auto p-4 md:p-6 space-y-6 bg-white dark:bg-gray-900 min-h-screen">
       {/* Back Button */}
       <Button 
         variant="outline" 
@@ -149,30 +149,30 @@ export default function Leaderboard() {
       </div>
 
       {/* Regions Leaderboard */}
-      <Card>
+      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
         <CardHeader>
-          <CardTitle>{language === 'ru' ? `Выбросы CO₂ по регионам - ${new Date(selectedYear, selectedMonth - 1).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })}` : language === 'kk' ? `Аймақтар бойынша CO₂ шығарындылар - ${new Date(selectedYear, selectedMonth - 1).toLocaleDateString('kk-KZ', { month: 'long', year: 'numeric' })}` : `Regions CO₂ Emissions - ${new Date(selectedYear, selectedMonth - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`}</CardTitle>
+          <CardTitle className="text-gray-900 dark:text-white">{language === 'ru' ? `Выбросы CO₂ по регионам - ${new Date(selectedYear, selectedMonth - 1).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })}` : language === 'kk' ? `Аймақтар бойынша CO₂ шығарындылар - ${new Date(selectedYear, selectedMonth - 1).toLocaleDateString('kk-KZ', { month: 'long', year: 'numeric' })}` : `Regions CO₂ Emissions - ${new Date(selectedYear, selectedMonth - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="bg-white dark:bg-gray-800">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b">
-                  <th className="text-left p-2">{language === 'ru' ? 'Место' : language === 'kk' ? 'Орны' : 'Rank'}</th>
-                  <th className="text-left p-2">{language === 'ru' ? 'Регион' : language === 'kk' ? 'Аймақ' : 'Region'}</th>
-                  <th className="text-right p-2">{language === 'ru' ? 'Общие CO₂ (кг)' : language === 'kk' ? 'Жалпы CO₂ (кг)' : 'Total CO₂ (kg)'}</th>
-                  <th className="text-right p-2">{language === 'ru' ? 'Средние CO₂ (кг)' : language === 'kk' ? 'Орташа CO₂ (кг)' : 'Average CO₂ (kg)'}</th>
-                  <th className="text-right p-2">{language === 'ru' ? 'Пользователи' : language === 'kk' ? 'Пайдаланушылар' : 'Users'}</th>
+                <tr className="border-b border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800">
+                  <th className="text-left p-3 text-gray-700 dark:text-gray-200 font-semibold">{language === 'ru' ? 'Место' : language === 'kk' ? 'Орны' : 'Rank'}</th>
+                  <th className="text-left p-3 text-gray-700 dark:text-gray-200 font-semibold">{language === 'ru' ? 'Регион' : language === 'kk' ? 'Аймақ' : 'Region'}</th>
+                  <th className="text-right p-3 text-gray-700 dark:text-gray-200 font-semibold">{language === 'ru' ? 'Общие CO₂ (кг)' : language === 'kk' ? 'Жалпы CO₂ (кг)' : 'Total CO₂ (kg)'}</th>
+                  <th className="text-right p-3 text-gray-700 dark:text-gray-200 font-semibold">{language === 'ru' ? 'Средние CO₂ (кг)' : language === 'kk' ? 'Орташа CO₂ (кг)' : 'Average CO₂ (kg)'}</th>
+                  <th className="text-right p-3 text-gray-700 dark:text-gray-200 font-semibold">{language === 'ru' ? 'Пользователи' : language === 'kk' ? 'Пайдаланушылар' : 'Users'}</th>
                 </tr>
               </thead>
               <tbody>
                 {(regionsData || []).map((region: any, index: number) => (
-                  <tr key={region.region} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <td className="p-2 font-bold">#{index + 1}</td>
-                    <td className="p-2">{translateCityName(region.region, language)}</td>
-                    <td className="p-2 text-right font-semibold">{region.totalCO2}</td>
-                    <td className="p-2 text-right">{region.averageCO2}</td>
-                    <td className="p-2 text-right">{region.userCount}</td>
+                  <tr key={region.region} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <td className="p-3 font-bold text-gray-800 dark:text-gray-100">#{index + 1}</td>
+                    <td className="p-3 text-gray-800 dark:text-gray-100">{translateCityName(region.region, language)}</td>
+                    <td className="p-3 text-right font-semibold text-gray-800 dark:text-gray-100">{region.totalCO2}</td>
+                    <td className="p-3 text-right text-gray-800 dark:text-gray-100">{region.averageCO2}</td>
+                    <td className="p-3 text-right text-gray-800 dark:text-gray-100">{region.userCount}</td>
                   </tr>
                 ))}
               </tbody>

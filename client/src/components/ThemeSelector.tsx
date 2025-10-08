@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Palette, Sun, Moon, Waves } from "lucide-react";
-import { useTheme, type Theme } from "@/hooks/useTheme";
+import { useTheme, type Theme } from "@/hooks/useTheme.tsx";
 import { useI18n } from "@/hooks/useI18n";
 
 export function ThemeSelector() {
@@ -39,9 +39,15 @@ export function ThemeSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-2 text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary">
-          <Palette className="h-4 w-4" />
-          <span className="hidden sm:inline">{currentThemeData.label}</span>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="gap-2 transition-all hover:scale-105 hover:bg-gray-100 dark:hover:bg-gray-700"
+        >
+          {theme === 'light' && <Sun className="h-4 w-4 text-amber-500" />}
+          {theme === 'dark' && <Moon className="h-4 w-4 text-indigo-500" />}
+          {theme === 'ocean' && <Waves className="h-4 w-4 text-cyan-500" />}
+          <span className="hidden sm:inline text-gray-700 dark:text-gray-200 font-medium">{currentThemeData.label}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">

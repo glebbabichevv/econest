@@ -21,15 +21,15 @@ databaseUrl = databaseUrl
   .replace(/psql%20['"`]/, '') // Remove URL-encoded psql prefix
   .replace(/['"`]$/, '') // Remove trailing quotes again
   .replace(/^['"`]/, '') // Remove leading quotes
-  .replace(/['"`]$/, '') // Remove trailing quotes
+  .replace(/['"`]$/, '') 
   .trim();
 
-// Decode URL encoding if present
+
 if (databaseUrl.includes('%20')) {
   databaseUrl = decodeURIComponent(databaseUrl);
 }
 
-// Log for debugging (show more details for troubleshooting)
+
 console.log('Original DATABASE_URL length:', process.env.DATABASE_URL?.length);
 console.log('Cleaned DATABASE_URL starts with:', databaseUrl.substring(0, 50) + '...');
 console.log('Contains psql prefix:', process.env.DATABASE_URL?.includes('psql'));

@@ -127,12 +127,12 @@ export default function Auth() {
 
 
   return (
-    <div className="auth-page min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="auth-page min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       {/* Back button */}
       <Button 
         variant="ghost" 
         size="sm"
-        className="absolute top-4 left-4 sm:top-8 sm:left-8 text-gray-600 hover:text-gray-900 z-10"
+        className="absolute top-4 left-4 sm:top-8 sm:left-8 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 z-10"
         onClick={() => setLocation("/")}
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
@@ -141,17 +141,17 @@ export default function Auth() {
       
       <div className="max-w-4xl w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2 mt-12 sm:mt-0">
+          <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2 mt-12 sm:mt-0">
             {t('auth.welcome')}
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-600 dark:text-gray-400">
             {t('auth.subtitle')}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
           {/* Left side - Auth forms */}
-          <Card>
+          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardHeader>
               <CardTitle className="text-center">{t('auth.login')} & {t('auth.register')}</CardTitle>
             </CardHeader>
@@ -410,28 +410,28 @@ export default function Auth() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">{t('auth.userRoles')}</h3>
+                <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">{t('auth.userRoles')}</h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <User className="h-5 w-5 text-blue-600" />
+                    <User className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     <div>
-                      <p className="font-medium">{t('auth.studentRole')}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{t('auth.studentRole')}</p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">{t('auth.studentDescription')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                    <User className="h-5 w-5 text-green-600" />
+                    <User className="h-5 w-5 text-green-600 dark:text-green-400" />
                     <div>
-                      <p className="font-medium">{t('auth.adultRole')}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{t('auth.adultRole')}</p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">{t('auth.adultDescription')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                    <Building2 className="h-5 w-5 text-purple-600" />
+                    <Building2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                     <div>
-                      <p className="font-medium">{t('auth.companyRole')}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{t('auth.companyRole')}</p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">{t('auth.companyDescription')}</p>
                     </div>
                   </div>

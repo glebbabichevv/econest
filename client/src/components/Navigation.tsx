@@ -25,7 +25,7 @@ export function Navigation() {
   ];
 
   return (
-    <nav className="relative z-50 border-b border-gray-200/20 backdrop-blur-sm bg-white/80 w-full">
+    <nav className="relative z-50 border-b border-gray-200/20 dark:border-gray-700/30 backdrop-blur-sm bg-white/80 dark:bg-gray-800/90 w-full">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center h-16 justify-between">
           {/* Logo */}
@@ -44,7 +44,7 @@ export function Navigation() {
               <Link 
                 key={link.href}
                 href={link.href} 
-                className="text-gray-600 hover:text-primary transition-colors"
+                className="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
               >
                 {link.label}
               </Link>
@@ -59,7 +59,7 @@ export function Navigation() {
             {/* Language Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-2 text-gray-600 hover:text-primary">
+                <Button variant="ghost" size="sm" className="gap-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary">
                   <Globe className="h-4 w-4" />
                   {currentLanguage.flag} {currentLanguage.name}
                 </Button>
@@ -94,7 +94,7 @@ export function Navigation() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="p-2">
-                  <Globe className="h-4 w-4 text-gray-600" />
+                  <Globe className="h-4 w-4 text-gray-600 dark:text-gray-300" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -114,7 +114,7 @@ export function Navigation() {
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="sm" className="p-2">
-                  <Menu className="h-5 w-5 text-gray-600" />
+                  <Menu className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[280px] sm:w-[300px]">
@@ -126,7 +126,7 @@ export function Navigation() {
                         key={link.href}
                         href={link.href}
                         onClick={() => setMobileMenuOpen(false)}
-                        className="block px-3 py-2 text-lg font-medium text-gray-600 hover:text-primary transition-colors rounded-lg hover:bg-gray-50"
+                        className="block px-3 py-2 text-lg font-medium text-gray-600 dark:text-gray-200 hover:text-primary dark:hover:text-primary transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
                         {link.label}
                       </Link>

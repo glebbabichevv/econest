@@ -272,39 +272,39 @@ export default function History() {
 
                   {/* Consumption Summary - Hidden on mobile, show only on desktop */}
                   <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center">
-                    <div className="p-2 bg-gray-50 rounded">
-                      <div className="text-xs text-gray-500">{t('consumption.coldShort')}</div>
-                      <div className="font-semibold text-gray-900 text-xs">
+                    <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded">
+                      <div className="text-xs text-gray-600 dark:text-gray-400">{t('consumption.coldShort')}</div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100 text-xs">
                         {entry.consumption.coldWater.toFixed(1)} {t('units.cubicMeters')}
                       </div>
                     </div>
-                    <div className="p-2 bg-gray-50 rounded">
-                      <div className="text-xs text-gray-500">{t('consumption.hotShort')}</div>
-                      <div className="font-semibold text-gray-900 text-xs">
+                    <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded">
+                      <div className="text-xs text-gray-600 dark:text-gray-400">{t('consumption.hotShort')}</div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100 text-xs">
                         {entry.consumption.hotWater.toFixed(1)} {t('units.cubicMeters')}
                       </div>
                     </div>
-                    <div className="p-2 bg-gray-50 rounded">
-                      <div className="text-xs text-gray-500">{t('consumption.sewageShort')}</div>
-                      <div className="font-semibold text-gray-900 text-xs">
+                    <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded">
+                      <div className="text-xs text-gray-600 dark:text-gray-400">{t('consumption.sewageShort')}</div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100 text-xs">
                         {entry.consumption.sewage.toFixed(1)} {t('units.cubicMeters')}
                       </div>
                     </div>
-                    <div className="p-2 bg-gray-50 rounded">
-                      <div className="text-xs text-gray-500">{t('consumption.heatShort')}</div>
-                      <div className="font-semibold text-gray-900 text-xs">
+                    <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded">
+                      <div className="text-xs text-gray-600 dark:text-gray-400">{t('consumption.heatShort')}</div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100 text-xs">
                         {entry.consumption.heating.toFixed(1)} {t('units.gcal')}
                       </div>
                     </div>
-                    <div className="p-2 bg-gray-50 rounded">
-                      <div className="text-xs text-gray-500">{t('consumption.electricShort')}</div>
-                      <div className="font-semibold text-gray-900 text-xs">
+                    <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded">
+                      <div className="text-xs text-gray-600 dark:text-gray-400">{t('consumption.electricShort')}</div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100 text-xs">
                         {entry.consumption.electricity.toFixed(1)} {t('units.kilowattHours')}
                       </div>
                     </div>
-                    <div className="p-2 bg-gray-50 rounded">
-                      <div className="text-xs text-gray-500">{t('consumption.gasShort')}</div>
-                      <div className="font-semibold text-gray-900 text-sm">
+                    <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded">
+                      <div className="text-xs text-gray-600 dark:text-gray-400">{t('consumption.gasShort')}</div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100 text-xs">
                         {entry.consumption.gas.toFixed(1)} {t('units.cubicMeters')}
                       </div>
                     </div>

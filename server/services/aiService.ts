@@ -292,7 +292,10 @@ class AIService {
       
       const aiResult = JSON.parse(cleanResponse);
       
-      // Save AI recommendations to database
+      // Clear old recommendations first for streaming effect
+      await storage.clearUserRecommendations(userId);
+      
+      // Save AI recommendations to database ONE BY ONE for streaming effect
       const savedRecommendations = [];
       for (const rec of aiResult.recommendations) {
         const recommendation: InsertRecommendation = {
@@ -306,6 +309,9 @@ class AIService {
         
         const saved = await storage.createRecommendation(recommendation);
         savedRecommendations.push(saved);
+        
+        // Small delay between saves for streaming appearance
+        await new Promise(resolve => setTimeout(resolve, 300));
       }
 
       return savedRecommendations;

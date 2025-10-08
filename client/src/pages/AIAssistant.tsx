@@ -8,11 +8,14 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Bot, Lightbulb, RefreshCw, Sparkles, Trash2, TrendingDown, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 export default function AIAssistant() {
   const { user, isAuthenticated } = useAuth();
   const { t } = useI18n();
   const queryClient = useQueryClient();
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const formatTimestamp = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
@@ -37,11 +40,39 @@ export default function AIAssistant() {
   const generateRecommendations = useMutation({
     mutationFn: () => apiRequest("POST", "/api/recommendations/generate", { language }),
     onSuccess: () => {
-      // Clear cache first, then invalidate to force fresh data
-      queryClient.removeQueries({ queryKey: ["/api/recommendations"] });
+      // Stop polling when generation completes
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+      // Final refetch to ensure we have all data
       queryClient.invalidateQueries({ queryKey: ["/api/recommendations"] });
     },
+    onError: () => {
+      // Stop polling on error
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    }
   });
+
+  // Start polling when generation begins
+  useEffect(() => {
+    if (generateRecommendations.isPending) {
+      // Poll every 400ms during generation to show streaming effect
+      pollingIntervalRef.current = setInterval(() => {
+        queryClient.invalidateQueries({ queryKey: ["/api/recommendations"] });
+      }, 400);
+    }
+
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    };
+  }, [generateRecommendations.isPending, queryClient]);
 
   // Clear all recommendations mutation
   const clearRecommendations = useMutation({
@@ -109,7 +140,7 @@ export default function AIAssistant() {
                   </div>
                   <div className="text-gray-700 dark:text-gray-300">
                     <p className="mb-3 text-sm sm:text-base">
-                      {t('ai.hello')}, {user?.firstName || 'User'}!
+                      {t('ai.hello')}, {user?.email?.split('@')[0] || 'User'}!
                     </p>
                     <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                       {t('ai.analysisDescription')}
@@ -168,8 +199,14 @@ export default function AIAssistant() {
         ) : typedRecommendations.length > 0 ? (
           <div className="space-y-4">
             {typedRecommendations.map((rec: any, index: number) => (
-              <Card key={rec.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
+              <motion.div
+                key={rec.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+              >
+                <Card className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <div className="text-2xl">{getCategoryIcon(rec.category)}</div>
@@ -210,6 +247,7 @@ export default function AIAssistant() {
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
             ))}
           </div>
         ) : (

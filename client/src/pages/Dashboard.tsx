@@ -18,6 +18,7 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { translateCityName } from "@/lib/i18n";
+import { ThemeSelector } from "@/components/ThemeSelector";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading: authLoading, refetch: refetchUser } = useAuth();
