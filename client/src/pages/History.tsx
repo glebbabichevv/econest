@@ -20,6 +20,7 @@ import {
 
 interface HistoryEntry {
   id: string;
+  readingId: number; // Actual database ID for deletion
   month: string;
   year: number;
   consumption: {
@@ -59,6 +60,7 @@ export default function History() {
   const historyData: HistoryEntry[] = consumptionData ? 
     (consumptionData as any[]).map((reading: any, index: number) => ({
       id: `${reading.year}-${reading.month.toString().padStart(2, '0')}`,
+      readingId: reading.id, // Save actual database ID for deletion
       month: new Date(reading.year, reading.month - 1).toLocaleString(language === 'ru' ? 'ru-RU' : language === 'kk' ? 'kk-KZ' : 'en-US', { month: 'long' }),
       year: reading.year,
       consumption: {
@@ -137,43 +139,43 @@ export default function History() {
   };
 
   const handleDeleteEntry = async (entry: HistoryEntry) => {
-    if (!confirm(`Are you sure you want to delete the consumption data for ${entry.month} ${entry.year}? This action cannot be undone.`)) {
+    const confirmMessage = language === 'ru' 
+      ? `Вы уверены, что хотите удалить данные за ${entry.month} ${entry.year}? Это действие необратимо.`
+      : language === 'kk'
+      ? `${entry.month} ${entry.year} деректерін жойғыңыз келетініне сенімдісіз бе? Бұл әрекетті қайтару мүмкін емес.`
+      : `Are you sure you want to delete the consumption data for ${entry.month} ${entry.year}? This action cannot be undone.`;
+
+    if (!confirm(confirmMessage)) {
       return;
     }
 
     try {
-      // Find the actual consumption reading ID from the monthly data
-      const historyResponse = await fetch('/api/consumption');
-      const consumptionData = await historyResponse.json();
-      
-      // Find the reading that matches this month/year
-      const targetReading = consumptionData.find((reading: any) => {
-        const readingDate = new Date(reading.readingDate);
-        const readingYear = readingDate.getFullYear();
-        const readingMonth = readingDate.toLocaleString('default', { month: 'long' });
-        return readingYear === entry.year && readingMonth === entry.month;
-      });
-
-      if (!targetReading) {
-        alert('Could not find consumption reading to delete.');
-        return;
-      }
-
-      const response = await fetch(`/api/consumption/${targetReading.id}`, {
+      const response = await fetch(`/api/consumption/${entry.readingId}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
         // Refresh history data
         queryClient.invalidateQueries({ queryKey: ["/api/consumption"] });
+        
         // Show success message
-        alert('Consumption data deleted successfully.');
+        const successMessage = language === 'ru'
+          ? 'Данные о потреблении успешно удалены.'
+          : language === 'kk'
+          ? 'Тұтыну деректері сәтті жойылды.'
+          : 'Consumption data deleted successfully.';
+        alert(successMessage);
       } else {
         throw new Error('Failed to delete');
       }
     } catch (error) {
       console.error('Error deleting entry:', error);
-      alert('Failed to delete consumption data. Please try again.');
+      const errorMessage = language === 'ru'
+        ? 'Не удалось удалить данные о потреблении. Пожалуйста, попробуйте еще раз.'
+        : language === 'kk'
+        ? 'Тұтыну деректерін жою сәтсіз аяқталды. Қайталап көріңіз.'
+        : 'Failed to delete consumption data. Please try again.';
+      alert(errorMessage);
     }
   };
 
