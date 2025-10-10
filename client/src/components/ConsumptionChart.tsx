@@ -51,7 +51,8 @@ export function ConsumptionChart({
     if (!ctx) return;
 
     // Определяем цвета в зависимости от темы
-    const isDark = theme === 'dark' || theme === 'ocean';
+    const isDark = theme === 'dark';
+    const isOcean = theme === 'ocean';
     const textColor = isDark ? "#E5E7EB" : "#111827";
     const gridColor = isDark ? "rgba(75, 85, 99, 0.3)" : "rgba(229, 231, 235, 0.8)";
 
@@ -63,16 +64,28 @@ export function ConsumptionChart({
 
     const loadChart = () => {
 
-      // Цвета для линий/столбцов - ярче для темной темы
+      // Цвета для линий/столбцов
       const colors = {
-        coldWater: isDark ? "#06B6D4" : "#0891B2",
-        hotWater: isDark ? "#F87171" : "#DC2626",
-        sewage: isDark ? "#9CA3AF" : "#6B7280",
-        gas: isDark ? "#FB923C" : "#EA580C",
-        electricity: isDark ? "#A78BFA" : "#7C3AED",
-        heating: isDark ? "#FBBF24" : "#F59E0B",
-        current: isDark ? "#10B981" : "#059669",
-        previous: isDark ? "#94A3B8" : "#64748B"
+        coldWater: isOcean ? "#0891B2" : (isDark ? "#06B6D4" : "#0891B2"),
+        hotWater: isOcean ? "#DC2626" : (isDark ? "#F87171" : "#DC2626"),
+        sewage: isOcean ? "#6B7280" : (isDark ? "#9CA3AF" : "#6B7280"),
+        gas: isOcean ? "#EA580C" : (isDark ? "#FB923C" : "#EA580C"),
+        electricity: isOcean ? "#7C3AED" : (isDark ? "#A78BFA" : "#7C3AED"),
+        heating: isOcean ? "#F59E0B" : (isDark ? "#FBBF24" : "#F59E0B"),
+        current: isOcean ? "#059669" : (isDark ? "#10B981" : "#059669"),
+        previous: isOcean ? "#64748B" : (isDark ? "#94A3B8" : "#64748B")
+      };
+
+      // Фоновые цвета с прозрачностью
+      const bgColors = {
+        coldWater: isDark ? "rgba(6, 182, 212, 0.2)" : "rgba(8, 145, 178, 0.15)",
+        hotWater: isDark ? "rgba(248, 113, 113, 0.2)" : "rgba(220, 38, 38, 0.15)",
+        sewage: isDark ? "rgba(156, 163, 175, 0.2)" : "rgba(107, 114, 128, 0.15)",
+        gas: isDark ? "rgba(251, 146, 60, 0.2)" : "rgba(234, 88, 12, 0.15)",
+        electricity: isDark ? "rgba(167, 139, 250, 0.2)" : "rgba(124, 58, 237, 0.15)",
+        heating: isDark ? "rgba(251, 191, 36, 0.2)" : "rgba(245, 158, 11, 0.15)",
+        current: isDark ? "rgba(16, 185, 129, 0.7)" : "rgba(5, 150, 105, 0.7)",
+        previous: isDark ? "rgba(148, 163, 184, 0.5)" : "rgba(100, 116, 139, 0.5)"
       };
 
       // Show empty state when no data
@@ -160,7 +173,7 @@ export function ConsumptionChart({
                       (monthKey) => groupedData[monthKey].coldWater,
                     ),
                     borderColor: colors.coldWater,
-                    backgroundColor: isDark ? "rgba(6, 182, 212, 0.2)" : "rgba(8, 145, 178, 0.15)",
+                    backgroundColor: bgColors.coldWater,
                     tension: 0.4,
                     fill: false,
                   },
@@ -170,7 +183,7 @@ export function ConsumptionChart({
                       (monthKey) => groupedData[monthKey].hotWater,
                     ),
                     borderColor: colors.hotWater,
-                    backgroundColor: isDark ? "rgba(248, 113, 113, 0.2)" : "rgba(220, 38, 38, 0.15)",
+                    backgroundColor: bgColors.hotWater,
                     tension: 0.4,
                     fill: false,
                   },
@@ -180,7 +193,7 @@ export function ConsumptionChart({
                       (monthKey) => groupedData[monthKey].sewage,
                     ),
                     borderColor: colors.sewage,
-                    backgroundColor: isDark ? "rgba(156, 163, 175, 0.2)" : "rgba(107, 114, 128, 0.15)",
+                    backgroundColor: bgColors.sewage,
                     tension: 0.4,
                     fill: false,
                   },
@@ -190,7 +203,7 @@ export function ConsumptionChart({
                       (monthKey) => groupedData[monthKey].gas,
                     ),
                     borderColor: colors.gas,
-                    backgroundColor: isDark ? "rgba(251, 146, 60, 0.2)" : "rgba(234, 88, 12, 0.15)",
+                    backgroundColor: bgColors.gas,
                     tension: 0.4,
                     fill: false,
                   },
@@ -204,7 +217,7 @@ export function ConsumptionChart({
                       (monthKey) => groupedData[monthKey].electricity,
                     ),
                     borderColor: colors.electricity,
-                    backgroundColor: isDark ? "rgba(167, 139, 250, 0.2)" : "rgba(124, 58, 237, 0.15)",
+                    backgroundColor: bgColors.electricity,
                     tension: 0.4,
                     fill: false,
                   },
@@ -218,7 +231,7 @@ export function ConsumptionChart({
                       (monthKey) => groupedData[monthKey].heating,
                     ),
                     borderColor: colors.heating,
-                    backgroundColor: isDark ? "rgba(251, 191, 36, 0.2)" : "rgba(245, 158, 11, 0.15)",
+                    backgroundColor: bgColors.heating,
                     tension: 0.4,
                     fill: false,
                   },
@@ -289,7 +302,7 @@ export function ConsumptionChart({
             label: currentLabel,
             data: getDataForCategory(currentPeriod),
             borderColor: colors.current,
-            backgroundColor: isDark ? "rgba(16, 185, 129, 0.7)" : "rgba(5, 150, 105, 0.7)",
+            backgroundColor: bgColors.current,
             tension: 0.4,
             fill: true,
           },
@@ -301,7 +314,7 @@ export function ConsumptionChart({
             label: previousLabel,
             data: getDataForCategory(previousPeriod),
             borderColor: colors.previous,
-            backgroundColor: isDark ? "rgba(148, 163, 184, 0.5)" : "rgba(100, 116, 139, 0.5)",
+            backgroundColor: bgColors.previous,
             tension: 0.4,
             fill: true,
           });

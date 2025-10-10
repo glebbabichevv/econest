@@ -140,7 +140,7 @@ export default function AIAssistant() {
                   </div>
                   <div className="text-gray-700 dark:text-gray-300">
                     <p className="mb-3 text-sm sm:text-base">
-                      {t('ai.hello')}, {user?.email?.split('@')[0] || 'User'}!
+                      {t('ai.hello')}, {user?.firstName || 'User'}!
                     </p>
                     <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                       {t('ai.analysisDescription')}

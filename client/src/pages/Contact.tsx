@@ -8,7 +8,7 @@ import {
 import { Navigation } from "@/components/Navigation";
 
 export default function Contact() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -39,10 +39,10 @@ export default function Contact() {
           <Mail className="h-8 w-8 text-white group-hover:rotate-12 transition-transform duration-300" />
         </div>
         <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-          {t('contact.title')}
+          {language === 'ru' ? 'Свяжитесь с нами' : language === 'kk' ? 'Бізбен байланысыңыз' : 'Contact Us'}
         </h1>
         <p className="text-gray-600 dark:text-gray-400 max-w-3xl mx-auto text-lg">
-          {t('contact.subtitle')}
+          {language === 'ru' ? 'Мы здесь, чтобы помочь вам! Свяжитесь с нами любым удобным способом.' : language === 'kk' ? 'Біз сізге көмектесуге дайынбыз! Бізге ыңғайлы тәсілмен хабарласыңыз.' : 'We are here to help you! Contact us in any convenient way.'}
         </p>
       </div>
 
@@ -88,7 +88,7 @@ export default function Contact() {
         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <CardHeader className="relative">
           <CardTitle className="text-center bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-2xl">
-            {t('contact.howToHelp')}
+            {language === 'ru' ? 'Как вы можете помочь?' : language === 'kk' ? 'Сіз қалай көмектесе аласыз?' : 'How Can You Help?'}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -100,13 +100,13 @@ export default function Contact() {
                 </div>
               </div>
               <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  {t('contact.reportBug')}
+                {language === 'ru' ? 'Сообщить об ошибке' : language === 'kk' ? 'Қате туралы хабарлау' : 'Report a Bug'}
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                {t('contact.helpImprove')}
+                {language === 'ru' ? 'Помогите нам улучшить платформу' : language === 'kk' ? 'Платформаны жақсартуға көмектесіңіз' : 'Help us improve the platform'}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Found an issue? Let us know!
+                {language === 'ru' ? 'Нашли проблему? Сообщите нам!' : language === 'kk' ? 'Мәселе таптыңыз ба? Бізге хабарлаңыз!' : 'Found an issue? Let us know!'}
               </p>
             </div>
             
@@ -117,13 +117,13 @@ export default function Contact() {
                 </div>
               </div>
               <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                {t('contact.suggestFeature')}
+                {language === 'ru' ? 'Предложить функцию' : language === 'kk' ? 'Функция ұсыну' : 'Suggest a Feature'}
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                {t('contact.shareIdeas')}
+                {language === 'ru' ? 'Поделитесь своими идеями' : language === 'kk' ? 'Идеяларыңызбен бөлісіңіз' : 'Share your ideas'}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Have an idea for improvement? Write to us!
+                {language === 'ru' ? 'Есть идея для улучшения? Напишите нам!' : language === 'kk' ? 'Жақсарту идеясы бар ма? Бізге жазыңыз!' : 'Have an idea for improvement? Write to us!'}
               </p>
             </div>
 
@@ -134,13 +134,13 @@ export default function Contact() {
                 </div>
               </div>
               <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                {t('contact.feedback')}
+                {language === 'ru' ? 'Оставить отзыв' : language === 'kk' ? 'Пікір қалдыру' : 'Leave Feedback'}
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                {t('contact.shareExperience')}
+                {language === 'ru' ? 'Поделитесь своим опытом' : language === 'kk' ? 'Тәжірибеңізбен бөлісіңіз' : 'Share your experience'}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Your opinion matters to us!
+                {language === 'ru' ? 'Ваше мнение важно для нас!' : language === 'kk' ? 'Сіздің пікіріңіз біз үшін маңызды!' : 'Your opinion matters to us!'}
               </p>
             </div>
           </div>

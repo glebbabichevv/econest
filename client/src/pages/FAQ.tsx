@@ -3,6 +3,7 @@ import { useI18n } from "@/hooks/useI18n";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { HelpCircle, Calculator, Wifi, Database, Users, School } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 
@@ -34,11 +35,11 @@ export default function FAQ() {
             },
             {
               question: "Is Econest free to use?",
-              answer: "Yes, the basic version is completely free and includes consumption tracking, basic AI recommendations, and participation in regional leaderboards. Premium features include advanced analytics, detailed forecasts, and priority support."
+              answer: "Yes, Econest is a completely free service."
             },
             {
               question: "Which countries and regions are supported?",
-              answer: "Currently, we support Russia, Kazakhstan, and Belarus with plans to expand to other CIS countries. The system adapts to local tariffs, climatic conditions, and consumption standards."
+              answer: "Currently, we only support Kazakhstan, but we plan to expand to other regions in the future."
             }
           ]
         },
@@ -49,7 +50,7 @@ export default function FAQ() {
           questions: [
             {
               question: "Can I use the platform without internet?",
-              answer: "Basic functions are available offline through our mobile app. Data synchronizes when internet connection is restored. However, AI recommendations and real-time analytics require an internet connection."
+              answer: "No, the platform requires an internet connection to function."
             },
             {
               question: "Which devices are supported?",
@@ -78,11 +79,11 @@ export default function FAQ() {
             },
             {
               question: "Бесплатно ли использование Econest?",
-              answer: "Да, базовая версия полностью бесплатна и включает отслеживание потребления, базовые рекомендации ИИ и участие в региональных рейтингах. Премиум-функции включают расширенную аналитику, детальные прогнозы и приоритетную поддержку."
+              answer: "Да, Econest — это полностью бесплатный сервис."
             },
             {
               question: "Какие страны и регионы поддерживаются?",
-              answer: "В настоящее время мы поддерживаем Россию, Казахстан и Беларусь с планами расширения на другие страны СНГ. Система адаптируется к местным тарифам, климатическим условиям и стандартам потребления."
+              answer: "В настоящее время мы поддерживаем только Казахстан, но планируем расширяться на другие регионы."
             }
           ]
         },
@@ -93,7 +94,7 @@ export default function FAQ() {
           questions: [
             {
               question: "Можно ли использовать платформу без интернета?",
-              answer: "Основные функции доступны офлайн через наше мобильное приложение. Данные синхронизируются при восстановлении интернет-соединения. Однако рекомендации ИИ и аналитика в реальном времени требуют подключения к интернету."
+              answer: "Нет, для использования платформы требуется подключение к интернету."
             },
             {
               question: "Какие устройства поддерживаются?",
@@ -191,26 +192,25 @@ export default function FAQ() {
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <CardHeader className="relative">
           <CardTitle className="text-center bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent text-2xl">
-            {language === 'ru' ? 'Остались вопросы?' : 'Still have questions?'}
+            {language === 'ru' ? 'Остались вопросы?' : language === 'kk' ? 'Сұрақтар қалды ма?' : 'Still have questions?'}
           </CardTitle>
           <CardDescription className="text-center text-lg">
             {language === 'ru' 
               ? 'Не можете найти ответ на свой вопрос? Обратитесь к нашей дружной команде.'
+              : language === 'kk'
+              ? 'Сұрағыңызға жауап таба алмадыңыз ба? Біздің достық командаға хабарласыңыз.'
               : "Can't find the answer you're looking for? Please chat to our friendly team."
             }
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex justify-center">
-          <a 
-            href="/contact" 
-            className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.href = '/contact';
-            }}
+        <CardContent className="flex justify-center pb-8">
+          <Button 
+            onClick={() => window.location.href = '/contact'}
+            className="px-8 py-6 text-lg font-semibold bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            size="lg"
           >
-            {language === 'ru' ? 'Связаться с поддержкой' : 'Contact Support'}
-          </a>
+            {language === 'ru' ? 'Связаться с поддержкой' : language === 'kk' ? 'Қолдау қызметіне хабарласу' : 'Contact Support'}
+          </Button>
         </CardContent>
       </Card>
       </main>

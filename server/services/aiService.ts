@@ -264,7 +264,7 @@ class AIService {
 
       
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4-turbo", // Updated to support JSON format
+        model: "gpt-4o-mini", // Updated to support JSON format
         messages: [
           {
             role: "system",
@@ -693,7 +693,7 @@ Respond ONLY with valid JSON format. No markdown, no backticks, no extra text:
 
       
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4-turbo",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
@@ -887,7 +887,7 @@ Respond in JSON format as an array of insights. Use ONLY ${language === 'ru' ? '
 
       
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4-turbo", // Updated to support JSON format
+        model: "gpt-4o-mini", // Updated to support JSON format
         messages: [
           {
             role: "system",
