@@ -192,18 +192,36 @@ class AIService {
         gas: parseFloat(readings[1].gas || '0')
       }) : currentCost;
 
-      // Get weather context (simplified to avoid module issues)
+      // Get weather context (localized)
       let weatherContext = "";
       const currentMonth = new Date().getMonth();
       const isWinter = currentMonth < 3 || currentMonth > 10; // Dec, Jan, Feb, Nov
       const isSummer = currentMonth > 4 && currentMonth < 9; // May-Aug
       
-      if (isWinter) {
-        weatherContext = "Kazakhstan winter period: cold weather increases heating and electricity needs. Focus on insulation and efficient heating.";
-      } else if (isSummer) {
-        weatherContext = "Kazakhstan summer period: warmer weather reduces heating but may increase electricity for cooling. Good time for energy-saving upgrades.";
+      if (language === 'ru') {
+        if (isWinter) {
+          weatherContext = "Зимний период Казахстана: холодная погода увеличивает расходы на отопление и электричество. Фокус на утепление и эффективное отопление.";
+        } else if (isSummer) {
+          weatherContext = "Летний период Казахстана: теплая погода снижает отопление, но может увеличить расходы на охлаждение. Хорошее время для энергосберегающих улучшений.";
+        } else {
+          weatherContext = "Переходный сезон Казахстана: умеренная погода идеальна для внедрения энергосберегающих мер и улучшений дома.";
+        }
+      } else if (language === 'kk') {
+        if (isWinter) {
+          weatherContext = "Қазақстанның қыс кезеңі: суық ауа-райы жылыту мен электр шығындарын арттырады. Жылытқыш пен тиімді жылытуға назар аударыңыз.";
+        } else if (isSummer) {
+          weatherContext = "Қазақстанның жаз кезеңі: жылы ауа-райы жылытуды азайтады, бірақ салқындатуға шығындарды арттыруы мүмкін. Энергия үнемдеуге жақсы уақыт.";
+        } else {
+          weatherContext = "Қазақстанның өтпелі маусымы: қоңыржай ауа-райы энергия үнемдеу шараларын енгізуге өте қолайлы.";
+        }
       } else {
-        weatherContext = "Kazakhstan transition season: moderate weather is ideal for implementing energy-saving measures and home improvements.";
+        if (isWinter) {
+          weatherContext = "Kazakhstan winter period: cold weather increases heating and electricity needs. Focus on insulation and efficient heating.";
+        } else if (isSummer) {
+          weatherContext = "Kazakhstan summer period: warmer weather reduces heating but may increase electricity for cooling. Good time for energy-saving upgrades.";
+        } else {
+          weatherContext = "Kazakhstan transition season: moderate weather is ideal for implementing energy-saving measures and home improvements.";
+        }
       }
 
       // Calculate regional averages for comparison (mock data - in future from database)
@@ -216,12 +234,52 @@ class AIService {
         sewage: 12.7 // m³
       };
 
+      const percentChange = previousMonthCost > 0 ? ((currentCost - previousMonthCost) / previousMonthCost * 100).toFixed(1) : '0';
+
       const prompt = `
-        IMPORTANT: ${language === 'ru' ? 'Отвечай ТОЛЬКО на русском языке. Используй формальные, профессиональные консультативные паттерны.' : language === 'kk' ? 'Жауапты ТЕКСЕН қазақ тілінде беріңіз. Ресми, кәсіби кеңес беру үлгілерін қолданыңыз.' : 'Respond ONLY in English. Use formal, professional advisory patterns.'}
+        CRITICAL: ${language === 'ru' ? 'Отвечай ТОЛЬКО на русском языке.' : language === 'kk' ? 'Жауапты ТЕКСЕН қазақ тілінде беріңіз.' : 'Respond ONLY in English.'}
 
-        ${language === 'ru' ? 'Проанализируйте данные о потреблении ресурсов пользователя и предоставьте 3-5 формальных рекомендаций по оптимизации затрат.' : language === 'kk' ? 'Пайдаланушының ресурс тұтыну деректерін талдап, шығындарды оңтайландыру бойынша 3-5 ресми ұсыныс беріңіз.' : 'Analyze the user\'s resource consumption data and provide 3-5 formal recommendations for cost optimization.'}
+        ${language === 'ru' ? 'Проанализируй данные о потреблении и создай 4-5 РАЗНЫХ типов рекомендаций из списка ниже.' : language === 'kk' ? 'Тұтыну деректерін талдап, төмендегі тізімнен 4-5 ТҮРЛІ ұсыныс жасаңыз.' : 'Analyze consumption data and create 4-5 DIFFERENT types of recommendations from the list below.'}
 
-        User's monthly consumption and costs:
+        ${language === 'ru' ? `Данные пользователя за последние месяцы:
+        - Холодная вода: ${avgConsumption.coldWater.toFixed(1)} м³ (${(avgConsumption.coldWater * this.UTILITY_RATES.coldWater).toFixed(0)} ₸)
+        - Горячая вода: ${avgConsumption.hotWater.toFixed(1)} м³ (${(avgConsumption.hotWater * this.UTILITY_RATES.hotWater).toFixed(0)} ₸)
+        - Канализация: ${avgConsumption.sewage.toFixed(1)} м³ (${(avgConsumption.sewage * this.UTILITY_RATES.sewage).toFixed(0)} ₸)
+        - Отопление: ${avgConsumption.heating.toFixed(1)} Гкал (${(avgConsumption.heating * this.UTILITY_RATES.heating).toFixed(0)} ₸)
+        - Электричество: ${avgConsumption.electricity.toFixed(1)} кВт⋅ч (${this.calculateElectricityCost(avgConsumption.electricity).toFixed(0)} ₸)
+        - Газ: ${avgConsumption.gas.toFixed(1)} м³ (${(avgConsumption.gas * this.UTILITY_RATES.gas).toFixed(0)} ₸)
+        
+        Общая стоимость: ${currentCost.toFixed(0)} ₸
+        Прошлый месяц: ${previousMonthCost.toFixed(0)} ₸
+        Изменение: ${percentChange}%
+
+        Средние показатели Алматы:
+        - Холодная вода: ${almatyAverages.coldWater} м³, Горячая вода: ${almatyAverages.hotWater} м³
+        - Электричество: ${almatyAverages.electricity} кВт⋅ч, Газ: ${almatyAverages.gas} м³
+        - Отопление: ${almatyAverages.heating} Гкал, Канализация: ${almatyAverages.sewage} м³
+
+        Сезонный контекст: ${weatherContext}` 
+        : language === 'kk' ? 
+        `Соңғы айлар бойынша пайдаланушы деректері:
+        - Суық су: ${avgConsumption.coldWater.toFixed(1)} м³ (${(avgConsumption.coldWater * this.UTILITY_RATES.coldWater).toFixed(0)} ₸)
+        - Ыстық су: ${avgConsumption.hotWater.toFixed(1)} м³ (${(avgConsumption.hotWater * this.UTILITY_RATES.hotWater).toFixed(0)} ₸)
+        - Кәріз: ${avgConsumption.sewage.toFixed(1)} м³ (${(avgConsumption.sewage * this.UTILITY_RATES.sewage).toFixed(0)} ₸)
+        - Жылыту: ${avgConsumption.heating.toFixed(1)} Гкал (${(avgConsumption.heating * this.UTILITY_RATES.heating).toFixed(0)} ₸)
+        - Электр: ${avgConsumption.electricity.toFixed(1)} кВт⋅сағ (${this.calculateElectricityCost(avgConsumption.electricity).toFixed(0)} ₸)
+        - Газ: ${avgConsumption.gas.toFixed(1)} м³ (${(avgConsumption.gas * this.UTILITY_RATES.gas).toFixed(0)} ₸)
+        
+        Жалпы құн: ${currentCost.toFixed(0)} ₸
+        Өткен ай: ${previousMonthCost.toFixed(0)} ₸
+        Өзгеріс: ${percentChange}%
+
+        Алматы орташа көрсеткіштері:
+        - Суық су: ${almatyAverages.coldWater} м³, Ыстық су: ${almatyAverages.hotWater} м³
+        - Электр: ${almatyAverages.electricity} кВт⋅сағ, Газ: ${almatyAverages.gas} м³
+        - Жылыту: ${almatyAverages.heating} Гкал, Кәріз: ${almatyAverages.sewage} м³
+
+        Маусымдық контекст: ${weatherContext}` 
+        : 
+        `User's monthly consumption data:
         - Cold Water: ${avgConsumption.coldWater.toFixed(1)} m³ (${(avgConsumption.coldWater * this.UTILITY_RATES.coldWater).toFixed(0)} ₸)
         - Hot Water: ${avgConsumption.hotWater.toFixed(1)} m³ (${(avgConsumption.hotWater * this.UTILITY_RATES.hotWater).toFixed(0)} ₸)
         - Sewage: ${avgConsumption.sewage.toFixed(1)} m³ (${(avgConsumption.sewage * this.UTILITY_RATES.sewage).toFixed(0)} ₸)
@@ -230,32 +288,117 @@ class AIService {
         - Gas: ${avgConsumption.gas.toFixed(1)} m³ (${(avgConsumption.gas * this.UTILITY_RATES.gas).toFixed(0)} ₸)
         
         Total monthly cost: ${currentCost.toFixed(0)} ₸
-        Previous month cost: ${previousMonthCost.toFixed(0)} ₸
+        Previous month: ${previousMonthCost.toFixed(0)} ₸
+        Change: ${percentChange}%
 
         Almaty regional averages:
         - Cold Water: ${almatyAverages.coldWater} m³, Hot Water: ${almatyAverages.hotWater} m³
         - Electricity: ${almatyAverages.electricity} kWh, Gas: ${almatyAverages.gas} m³
         - Heating: ${almatyAverages.heating} Gcal, Sewage: ${almatyAverages.sewage} m³
 
-        Seasonal context: ${weatherContext}
+        Seasonal context: ${weatherContext}`}
 
-        MANDATORY: Copy EXACTLY these formal structures. NO creative variations allowed.
+        7 ТИПОВ РЕКОМЕНДАЦИЙ (используй РАЗНЫЕ типы каждый раз):
 
         ${language === 'ru' ? 
-          'ПРИМЕР 1 (ТОЧНЫЙ РАСЧЕТ):\nНазвание: "Оптимизация потребления электроэнергии"\nОписание: "Вы потребили 274.0 кВт⋅ч электроэнергии общей стоимостью 3617 ₸. Снижение потребления на 27.4 кВт⋅ч сэкономит 362 ₸ ежемесячно."\n\nПРИМЕР 2 (РЕГИОНАЛЬНОЕ СРАВНЕНИЕ):\nНазвание: "Оценка потребления холодной воды"\nОписание: "Средний житель Алматы потребляет 8.5 м³, ваше потребление составляет 5.9 м³. Это на 31% ниже среднего. Текущая эффективность демонстрирует грамотное управление ресурсами."\n\nКОПИРУЙТЕ эти структуры ТОЧНО. БЕЗ эмодзи, БЕЗ восклицаний, БЕЗ разговорного языка.' 
-          : language === 'kk' ? 
-          'МЫСАЛ 1 (ДӘЛЬ ЕСЕПТЕУ):\nАтауы: "Электр энергиясын тұтынуды оңтайландыру"\nСипаттамасы: "Сіз 274.0 кВт⋅сағ электр энергиясын 3617 ₸ жалпы құнға тұтындыңыз. Тұтынуды 27.4 кВт⋅сағға азайту айына 362 ₸ үнемдейді."\n\nМЫСАЛ 2 (АЙМАҚТЫҚ САЛЫСТЫРУ):\nАтауы: "Суық су тұтынуын бағалау"\nСипаттамасы: "Алматының орташа тұрғыны 8.5 м³ тұтынады, сіздің тұтынуыңыз 5.9 м³. Бұл орташадан 31% төмен."\n\nОСЫ құрылымдарды ДӘЛЕ көшіріңіз. Эмодзи ЖОҚ, леп ЖОҚ, сөйлесу тілі ЖОҚ.' 
-          : 
-          'EXAMPLE 1 (PRECISE CALCULATION):\nTitle: "Electricity Consumption Optimization"\nDescription: "You consumed 274.0 kWh of electricity, totaling 3617 ₸. Reducing consumption by 27.4 kWh would save 362 ₸ monthly."\n\nEXAMPLE 2 (REGIONAL COMPARISON):\nTitle: "Cold Water Usage Assessment"\nDescription: "Average Almaty resident consumes 8.5 m³, your usage is 5.9 m³. This represents 31% below average. Current efficiency demonstrates effective resource management."\n\nCOPY these structures EXACTLY. NO emojis, NO exclamations, NO casual language.'}
+          `1. ИНФОРМАЦИОННЫЕ (Descriptive) - констатация фактов:
+          Формат: [Период] + [тип ресурса] + [значение]
+          Пример: "В прошлом месяце ты израсходовал ${avgConsumption.electricity.toFixed(1)} кВт⋅ч электроэнергии"
 
-        Respond in JSON format with these recommendations:
+          2. РЕКОМЕНДАТЕЛЬНЫЕ (Advisory) - конкретные советы:
+          Формат: [Совет] + [ожидаемый эффект]
+          Пример: "Сократи время работы бойлера на 15 минут в день — расход газа снизится на 5%"
+
+          3. ДИНАМИЧЕСКИЕ (Progress Tracking) - показывают изменения:
+          Формат: [Изменение] + [процент] + [причина]
+          Пример: "По сравнению с прошлым месяцем расход электричества снизился на 12%"
+
+          4. ОБЪЯСНИТЕЛЬНО-АНАЛИТИЧЕСКИЕ (Causal/Insight) - анализ причин:
+          Формат: [Причина/наблюдение] + [доказательная часть]
+          Пример: "Пик потребления электричества пришёлся на первую неделю — возможно, из-за отопительных приборов"
+
+          5. МОТИВАЦИОННЫЕ (Engagement) - поощрение прогресса:
+          Формат: [Похвала] + [результат]
+          Пример: "Отличный результат — расход электричества снизился на 10%"
+
+          6. ОБЗОРНЫЕ (Summary) - месячные итоги:
+          Формат: [Изменение по каждому ресурсу] + [оценка]
+          Пример: "В этом месяце: электроэнергия −12%, газ +4%, вода стабильна. Общий баланс положительный"
+
+          7. ПЛАНИРОВОЧНЫЕ (Forecast) - прогноз и цели:
+          Формат: [Прогноз/цель] + [ожидаемый результат]
+          Пример: "При текущем темпе потребление электроэнергии снизится ещё на 10% к концу года"
+
+          ВАЖНО: Генерируй РАЗНЫЕ типы каждый раз! Используй РЕАЛЬНЫЕ данные пользователя из промпта!` 
+          : language === 'kk' ? 
+          `1. АҚПАРАТТЫҚ (Descriptive) - фактілерді баяндау:
+          Формат: [Кезең] + [ресурс түрі] + [мән]
+          Мысал: "Өткен айда ${avgConsumption.electricity.toFixed(1)} кВт⋅сағ электр энергиясын тұтындыңыз"
+
+          2. ҰСЫНЫМДЫҚ (Advisory) - нақты кеңестер:
+          Формат: [Кеңес] + [күтілетін әсер]
+          Мысал: "Бойлер жұмысын күніне 15 минутқа азайт — газ шығыны 5% төмендейді"
+
+          3. ДИНАМИКАЛЫҚ (Progress Tracking) - өзгерістерді көрсету:
+          Формат: [Өзгеріс] + [пайыз] + [себеп]
+          Мысал: "Өткен айға қарағанда электр шығыны 12% азайды"
+
+          4. ТҮСІНДІРМЕЛІ-ТАЛДАМАЛЫҚ (Causal/Insight) - себептерді талдау:
+          Формат: [Себеп/бақылау] + [дәлелдеу бөлігі]
+          Мысал: "Электр тұтынудың шыңы бірінші аптаға келді — жылыту құрылғылары себебінен"
+
+          5. МОТИВАЦИЯЛЫҚ (Engagement) - үдерісті мадақтау:
+          Формат: [Мадақтау] + [нәтиже]
+          Мысал: "Керемет нәтиже — электр шығыны 10% азайды"
+
+          6. ШОЛУ (Summary) - айлық қорытынды:
+          Формат: [Әр ресурс бойынша өзгеріс] + [баға]
+          Мысал: "Осы айда: электр −12%, газ +4%, су тұрақты. Жалпы баланс оң"
+
+          7. ЖОСПАРЛАУ (Forecast) - болжам және мақсаттар:
+          Формат: [Болжам/мақсат] + [күтілетін нәтиже]
+          Мысал: "Қазіргі қарқында электр тұтыну жыл соңына дейін тағы 10% азаяды"
+
+          МАҢЫЗДЫ: Әр рет ТҮРЛІ типтер қолдан! Промпттағы НАҚТЫ деректерді пайдалан!` 
+          : 
+          `1. DESCRIPTIVE (Informational) - state facts:
+          Format: [Period] + [resource type] + [value]
+          Example: "Last month you consumed ${avgConsumption.electricity.toFixed(1)} kWh of electricity"
+
+          2. ADVISORY (Recommendations) - specific advice:
+          Format: [Advice] + [expected effect]
+          Example: "Reduce boiler runtime by 15 minutes daily — gas consumption will decrease by 5%"
+
+          3. PROGRESS TRACKING (Dynamic) - show changes:
+          Format: [Change] + [percentage] + [reason]
+          Example: "Compared to last month, electricity consumption decreased by 12%"
+
+          4. CAUSAL/INSIGHT (Analytical) - analyze causes:
+          Format: [Cause/observation] + [evidence]
+          Example: "Peak electricity consumption occurred in the first week — likely due to heating devices"
+
+          5. ENGAGEMENT (Motivational) - encourage progress:
+          Format: [Praise] + [result]
+          Example: "Excellent result — electricity consumption decreased by 10%"
+
+          6. SUMMARY (Overview) - monthly recap:
+          Format: [Change per resource] + [assessment]
+          Example: "This month: electricity −12%, gas +4%, water stable. Overall balance positive"
+
+          7. FORECAST (Planning) - predictions and goals:
+          Format: [Forecast/goal] + [expected result]
+          Example: "At current pace, electricity consumption will decrease another 10% by year end"
+
+          IMPORTANT: Generate DIFFERENT types each time! Use REAL user data from the prompt!`}
+
+        Respond in JSON format:
         {
           "recommendations": [
             {
-              "title": "Formal advisory title (NO emojis)",
-              "description": "MUST use one of the 5 patterns above. Professional language only.",
-              "category": "coldWater/hotWater/electricity/gas/heating/sewage",
-              "potentialSavings": number,
+              "title": "${language === 'ru' ? 'Заголовок рекомендации' : language === 'kk' ? 'Ұсыныс тақырыбы' : 'Recommendation title'}",
+              "description": "${language === 'ru' ? 'Описание с РЕАЛЬНЫМИ данными пользователя' : language === 'kk' ? 'НАҚТЫ пайдаланушы деректерімен сипаттама' : 'Description with REAL user data'}",
+              "category": "coldWater/hotWater/electricity/gas/heating/sewage/general",
+              "potentialSavings": ${language === 'ru' ? 'число (экономия в тенге)' : language === 'kk' ? 'сан (теңгемен үнемдеу)' : 'number (savings in tenge)'},
               "priority": "high/medium/low"
             }
           ]
@@ -264,11 +407,15 @@ class AIService {
 
       
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4o-mini", // Updated to support JSON format
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
-            content: language === 'ru' ? "Вы формальный бизнес-консультант по оптимизации коммунальных расходов в Казахстане. КРИТИЧЕСКИЕ ТРЕБОВАНИЯ:\n\n1. Пишите ТОЛЬКО на профессиональном русском языке\n2. НЕТ эмодзи, НЕТ восклицаний, НЕТ разговорного языка\n3. Используйте ТОЛЬКО 5 паттернов из промпта\n4. Каждая рекомендация ДОЛЖНА начинаться с одного из этих паттернов\n5. Предоставляйте точные расчеты и конкретные цифры\n6. Поддерживайте формальный деловой тон\n\nЕсли используете эмодзи или разговорный язык, ответ будет отклонен." : language === 'kk' ? "Сіз Қазақстандағы коммуналдық шығындарды оңтайландыру бойынша ресми бизнес-кеңесшісіз. МАҢЫЗДЫ ТАЛАПТАР:\n\n1. Тек кәсіби қазақ тілінде жазыңыз\n2. Эмодзи ЖОҚ, леп ЖОҚ, сөйлесу тілі ЖОҚ\n3. Промпттағы тек 5 үлгіні қолданыңыз\n4. Әр ұсыныс осы үлгілердің бірінен басталуы КЕРЕК\n5. Дәл есептеулер мен нақты сандарды беріңіз\n6. Ресми іскерлік үнді сақтаңыз\n\nЕгер эмодзи немесе сөйлесу тілін қолдансаңыз, жауап қабылданбайды." : "You are a formal business advisor for utility cost optimization in Kazakhstan. CRITICAL REQUIREMENTS:\n\n1. Write ONLY in professional business English\n2. NO emojis, NO exclamations, NO casual language\n3. Use ONLY the 5 patterns provided in the prompt\n4. Every recommendation MUST start with one of these patterns\n5. Provide exact calculations and specific numbers\n6. Maintain formal business tone throughout\n\nIf you use ANY emojis or casual language, the response will be rejected. Use formal business communication exclusively."
+            content: language === 'ru' 
+              ? "Ты ИИ-консультант Econest по оптимизации потребления ресурсов. Твоя задача:\n\n1. Отвечать ТОЛЬКО на русском языке\n2. Генерировать РАЗНООБРАЗНЫЕ типы рекомендаций из 7 доступных типов\n3. Каждый раз использовать РАЗНЫЕ типы (не повторяться!)\n4. Использовать РЕАЛЬНЫЕ данные пользователя из промпта\n5. Делать точные расчеты с конкретными цифрами\n\nКаждая генерация должна содержать разные комбинации типов рекомендаций!" 
+              : language === 'kk' 
+              ? "Сіз Econest ресурстарды тұтынуды оңтайландыру бойынша ЖИ-кеңесшісіз. Сіздің міндетіңіз:\n\n1. Жауапты ТЕК қазақ тілінде беру\n2. 7 қолжетімді типтен ӘРТҮРЛІ ұсыныстар жасау\n3. Әр рет БАСҚА типтерді қолдану (қайталамау!)\n4. Промпттан пайдаланушының НАҚТЫ деректерін пайдалану\n5. Нақты сандармен дәл есептеулер жасау\n\nӘр генерация әртүрлі ұсыныс типтерінің комбинацияларын қамтуы керек!" 
+              : "You are Econest AI advisor for resource consumption optimization. Your task:\n\n1. Respond ONLY in English\n2. Generate DIVERSE types of recommendations from 7 available types\n3. Each time use DIFFERENT types (don't repeat!)\n4. Use REAL user data from the prompt\n5. Make precise calculations with specific numbers\n\nEach generation must contain different combinations of recommendation types!"
           },
           {
             role: "user",
@@ -276,8 +423,8 @@ class AIService {
           }
         ],
         response_format: { type: "json_object" },
-        temperature: 0.3, // Low creativity for formal business tone
-        max_tokens: 1000 // Reduced for faster generation
+        temperature: 0.8, // Higher creativity for diverse recommendations
+        max_tokens: 1200
       });
 
       // Clean and parse AI response
@@ -623,9 +770,9 @@ class AIService {
       const styles = ['точный', 'лайтовый', 'эквивалент', 'эмоциональный'];
       const selectedStyle = styles[Math.floor(Math.random() * styles.length)];
       
-      // Calculate percentage change
+      // Calculate percentage change with safety check
       let percentChange = 0;
-      if (previousCO2) {
+      if (previousCO2 && previousCO2.total > 0) {
         percentChange = ((currentCO2.total - previousCO2.total) / previousCO2.total) * 100;
       }
 
@@ -636,60 +783,159 @@ class AIService {
       const yearlyProjection = (currentCO2.total * 12 / 1000).toFixed(1); // in tonnes
       const households = (currentCO2.total * 12 / 2400).toFixed(1); // average household ≈ 2.4t/year
 
-      // Get weather context for seasonal recommendations
+      // Get weather context for seasonal recommendations (localized)
       let weatherContext = "";
       const currentMonth = new Date().getMonth();
       const isWinter = currentMonth < 3 || currentMonth > 10;
       
       if (isWinter) {
-        weatherContext = "Kazakhstan winter period: cold weather increases heating and electricity consumption.";
+        if (language === 'ru') {
+          weatherContext = "Зимний период Казахстана: холодная погода увеличивает расходы на отопление и электричество.";
+        } else if (language === 'kk') {
+          weatherContext = "Қазақстанның қыс кезеңі: суық ауа-райы жылыту мен электр шығындарын арттырады.";
+        } else {
+          weatherContext = "Kazakhstan winter period: cold weather increases heating and electricity consumption.";
+        }
       }
 
-      const prompt = `You are the Footprint Assistant (Impact), an expert on environmental influence. Your task: explain environmental impact and translate numbers into understandable images.
+      const prompt = `
+        CRITICAL: ${language === 'ru' ? 'Отвечай ТОЛЬКО на русском языке.' : language === 'kk' ? 'Жауапты ТЕКСЕН қазақ тілінде беріңіз.' : 'Respond ONLY in English.'}
 
-Style: ${selectedStyle} — serious but visual and emotional.
+        ${language === 'ru' ? 'Проанализируй углеродный след и создай 3-4 РАЗНЫХ типа инсайтов из списка ниже.' : language === 'kk' ? 'Көміртегі ізін талдап, төмендегі тізімнен 3-4 ТҮРЛІ түсініктеме жасаңыз.' : 'Analyze carbon footprint and create 3-4 DIFFERENT types of insights from the list below.'}
 
-USER DATA:
-- Total monthly CO₂ footprint: ${currentCO2.total.toFixed(1)} kg
-- Change from previous month: ${percentChange.toFixed(1)}%
-- Breakdown: electricity ${currentCO2.breakdown.electricity.toFixed(1)} kg (${((currentCO2.breakdown.electricity/currentCO2.total)*100).toFixed(1)}%), heating ${currentCO2.breakdown.heating.toFixed(1)} kg (${((currentCO2.breakdown.heating/currentCO2.total)*100).toFixed(1)}%), gas ${currentCO2.breakdown.gas.toFixed(1)} kg (${((currentCO2.breakdown.gas/currentCO2.total)*100).toFixed(1)}%), water ${(currentCO2.breakdown.coldWater + currentCO2.breakdown.hotWater + currentCO2.breakdown.sewage).toFixed(1)} kg (${(((currentCO2.breakdown.coldWater + currentCO2.breakdown.hotWater + currentCO2.breakdown.sewage)/currentCO2.total)*100).toFixed(1)}%)
-- Equivalents: ${fuelLiters} liters of gasoline, ${treesNeeded} trees, ${flights} Almaty-Astana flights
-- Yearly projection: ${yearlyProjection} tonnes CO₂ (= ${households} households)
-${shouldUseCityAverage ? `- Average for ${userRegion}: ${cityAverageCO2} kg` : ''}
-- Season: ${weatherContext}
+        ${language === 'ru' ? `Данные CO2 выбросов:
+        - Общий след: ${currentCO2.total.toFixed(1)} кг CO2
+        - Изменение: ${percentChange > 0 ? '+' : ''}${percentChange.toFixed(1)}% за месяц
+        - Электричество: ${currentCO2.breakdown.electricity.toFixed(1)} кг (${((currentCO2.breakdown.electricity/currentCO2.total)*100).toFixed(1)}%)
+        - Отопление: ${currentCO2.breakdown.heating.toFixed(1)} кг (${((currentCO2.breakdown.heating/currentCO2.total)*100).toFixed(1)}%)
+        - Газ: ${currentCO2.breakdown.gas.toFixed(1)} кг (${((currentCO2.breakdown.gas/currentCO2.total)*100).toFixed(1)}%)
+        - Вода: ${(currentCO2.breakdown.coldWater + currentCO2.breakdown.hotWater + currentCO2.breakdown.sewage).toFixed(1)} кг
+        
+        Эквиваленты:
+        - ${fuelLiters} л бензина
+        - ${treesNeeded} деревьев для компенсации
+        - ${flights} рейсов Алматы-Астана
+        - Годовой прогноз: ${yearlyProjection} т CO2
+        ${shouldUseCityAverage ? `- Средний по ${userRegion}: ${cityAverageCO2} кг` : ''}
+        ${weatherContext}` 
+        : language === 'kk' ? 
+        `CO2 шығарындылары деректері:
+        - Жалпы із: ${currentCO2.total.toFixed(1)} кг CO2
+        - Өзгеріс: ${percentChange > 0 ? '+' : ''}${percentChange.toFixed(1)}% ай бойы
+        - Электр: ${currentCO2.breakdown.electricity.toFixed(1)} кг (${((currentCO2.breakdown.electricity/currentCO2.total)*100).toFixed(1)}%)
+        - Жылыту: ${currentCO2.breakdown.heating.toFixed(1)} кг (${((currentCO2.breakdown.heating/currentCO2.total)*100).toFixed(1)}%)
+        - Газ: ${currentCO2.breakdown.gas.toFixed(1)} кг (${((currentCO2.breakdown.gas/currentCO2.total)*100).toFixed(1)}%)
+        - Су: ${(currentCO2.breakdown.coldWater + currentCO2.breakdown.hotWater + currentCO2.breakdown.sewage).toFixed(1)} кг
+        
+        Эквиваленттер:
+        - ${fuelLiters} л бензин
+        - ${treesNeeded} ағаш өтемақы үшін
+        - ${flights} Алматы-Астана рейсі
+        - Жылдық болжам: ${yearlyProjection} т CO2
+        ${shouldUseCityAverage ? `- ${userRegion} орташа: ${cityAverageCO2} кг` : ''}
+        ${weatherContext}` 
+        : 
+        `CO2 emissions data:
+        - Total footprint: ${currentCO2.total.toFixed(1)} kg CO2
+        - Change: ${percentChange > 0 ? '+' : ''}${percentChange.toFixed(1)}% per month
+        - Electricity: ${currentCO2.breakdown.electricity.toFixed(1)} kg (${((currentCO2.breakdown.electricity/currentCO2.total)*100).toFixed(1)}%)
+        - Heating: ${currentCO2.breakdown.heating.toFixed(1)} kg (${((currentCO2.breakdown.heating/currentCO2.total)*100).toFixed(1)}%)
+        - Gas: ${currentCO2.breakdown.gas.toFixed(1)} kg (${((currentCO2.breakdown.gas/currentCO2.total)*100).toFixed(1)}%)
+        - Water: ${(currentCO2.breakdown.coldWater + currentCO2.breakdown.hotWater + currentCO2.breakdown.sewage).toFixed(1)} kg
+        
+        Equivalents:
+        - ${fuelLiters}L gasoline
+        - ${treesNeeded} trees to offset
+        - ${flights} Almaty-Astana flights
+        - Yearly projection: ${yearlyProjection} t CO2
+        ${shouldUseCityAverage ? `- ${userRegion} average: ${cityAverageCO2} kg` : ''}
+        ${weatherContext}`}
 
-RESPONSE PATTERNS (use RANDOMLY):
+        7 ТИПОВ ИНСАЙТОВ (используй РАЗНЫЕ типы каждый раз):
 
-🔹 CO₂ calculation: "Your monthly carbon footprint was {CO2_total} kg CO₂. That's {percent}% more/less than last month."
+        ${language === 'ru' ? 
+          `1. ИНФОРМАЦИОННЫЕ - констатация фактов:
+          Пример: "Твой углеродный след составил ${currentCO2.total.toFixed(1)} кг CO2 за месяц"
 
-🔹 Category breakdown: "Main contributors: heating ({heat_CO2} kg CO₂, {share}%), electricity ({el_CO2} kg CO₂, {share}%), water and sewage ({water_CO2} kg CO₂, {share}%)."
+          2. РЕКОМЕНДАТЕЛЬНЫЕ - советы:
+          Пример: "Снижение электричества на 10% уменьшит выбросы на ${(currentCO2.breakdown.electricity * 0.1).toFixed(1)} кг CO2"
 
-🔹 Comparison: ${shouldUseCityAverage ? `"You have {CO2_total} kg CO₂, ${userRegion} average is {city_avg_CO2} kg. That's {percent_diff}% difference."` : '"Not enough data for city comparison yet (need 10+ users)."'}
+          3. ДИНАМИЧЕСКИЕ - изменения:
+          Пример: "Выбросы ${percentChange > 0 ? 'выросли на' : 'снизились на'} ${Math.abs(percentChange).toFixed(1)}% за месяц"
 
-🔹 Equivalents: "{CO2_total} kg CO₂ = {liters_fuel} liters of gasoline or {trees_needed} trees to plant 🌱. This footprint equals {flights} Almaty-Astana flights ✈️."
+          4. ОБЪЯСНИТЕЛЬНО-АНАЛИТИЧЕСКИЕ - анализ:
+          Пример: "Основной источник — ${currentCO2.breakdown.electricity > currentCO2.breakdown.gas ? 'электричество' : 'газ'} (${Math.max(currentCO2.breakdown.electricity, currentCO2.breakdown.gas).toFixed(1)} кг)"
 
-🔹 Emotional conclusion: "At this pace, your yearly footprint will be {CO2_year} tonnes CO₂. That's comparable to {households} households' carbon footprint."
+          5. МОТИВАЦИОННЫЕ - похвала:
+          Пример: "Отлично! ${currentCO2.total.toFixed(1)} кг CO2 — это ${shouldUseCityAverage ? 'ниже среднего по городу' : 'хороший результат'}"
 
-REQUIREMENTS:
-- DON'T always use the same style
-- Combine: sometimes numbers + emotion, sometimes just metaphor
-- Be vivid and visual
-- Use emojis for emotions
-- ${language === 'ru' ? 'Отвечай на русском языке' : language === 'kk' ? 'Жауапты қазақ тілінде беріңіз' : 'Respond in English'}
-- Give EXACTLY 3-4 insights
+          6. ОБЗОРНЫЕ - итоги с эквивалентами:
+          Пример: "${currentCO2.total.toFixed(1)} кг CO2 = ${fuelLiters} л бензина или ${treesNeeded} деревьев для компенсации 🌱"
 
-Respond ONLY with valid JSON format. No markdown, no backticks, no extra text:
-{
-  "insights": [
-    {
-      "title": "Brief title",
-      "description": "Emotional description with specific numbers and images",
-      "category": "electricity/gas/heating/water/environmental",
-      "priority": "high/medium/low",
-      "potentialSavings": "15kg CO2 per month"
-    }
-  ]
-}`;
+          7. ПЛАНИРОВОЧНЫЕ - прогноз:
+          Пример: "Годовой прогноз: ${yearlyProjection} т CO2 при текущем темпе"
+
+          ВАЖНО: Генерируй РАЗНЫЕ типы каждый раз! Используй РЕАЛЬНЫЕ данные из промпта! Добавляй эмодзи для эмоций.` 
+          : language === 'kk' ? 
+          `1. АҚПАРАТТЫҚ - фактілер:
+          Мысал: "Көміртегі ізіңіз ${currentCO2.total.toFixed(1)} кг CO2 айына"
+
+          2. ҰСЫНЫМДЫҚ - кеңестер:
+          Мысал: "Электрді 10% азайту ${(currentCO2.breakdown.electricity * 0.1).toFixed(1)} кг CO2 азайтады"
+
+          3. ДИНАМИКАЛЫҚ - өзгерістер:
+          Мысал: "Шығарындылар ай ішінде ${percentChange > 0 ? 'өсті' : 'азайды'} ${Math.abs(percentChange).toFixed(1)}%"
+
+          4. ТҮСІНДІРМЕЛІ - талдау:
+          Мысал: "Негізгі көз — ${currentCO2.breakdown.electricity > currentCO2.breakdown.gas ? 'электр' : 'газ'} (${Math.max(currentCO2.breakdown.electricity, currentCO2.breakdown.gas).toFixed(1)} кг)"
+
+          5. МОТИВАЦИЯЛЫҚ - мадақтау:
+          Мысал: "Керемет! ${currentCO2.total.toFixed(1)} кг CO2 — ${shouldUseCityAverage ? 'қала орташасынан төмен' : 'жақсы нәтиже'}"
+
+          6. ШОЛУ - эквиваленттермен:
+          Мысал: "${currentCO2.total.toFixed(1)} кг CO2 = ${fuelLiters} л бензин немесе ${treesNeeded} ағаш 🌱"
+
+          7. ЖОСПАРЛАУ - болжам:
+          Мысал: "Жылдық болжам: ${yearlyProjection} т CO2 қазіргі қарқында"
+
+          МАҢЫЗДЫ: Әр рет ТҮРЛІ типтер! НАҚТЫ деректер! Эмоциялар үшін эмодзи қос.` 
+          : 
+          `1. DESCRIPTIVE - facts:
+          Example: "Your carbon footprint was ${currentCO2.total.toFixed(1)} kg CO2 this month"
+
+          2. ADVISORY - advice:
+          Example: "Reducing electricity by 10% would cut ${(currentCO2.breakdown.electricity * 0.1).toFixed(1)} kg CO2"
+
+          3. PROGRESS - changes:
+          Example: "Emissions ${percentChange > 0 ? 'increased' : 'decreased'} ${Math.abs(percentChange).toFixed(1)}% this month"
+
+          4. CAUSAL - analysis:
+          Example: "Main source is ${currentCO2.breakdown.electricity > currentCO2.breakdown.gas ? 'electricity' : 'gas'} (${Math.max(currentCO2.breakdown.electricity, currentCO2.breakdown.gas).toFixed(1)} kg)"
+
+          5. ENGAGEMENT - praise:
+          Example: "Great! ${currentCO2.total.toFixed(1)} kg CO2 is ${shouldUseCityAverage ? 'below city average' : 'good result'}"
+
+          6. SUMMARY - equivalents:
+          Example: "${currentCO2.total.toFixed(1)} kg CO2 = ${fuelLiters}L gasoline or ${treesNeeded} trees 🌱"
+
+          7. FORECAST - prediction:
+          Example: "Yearly projection: ${yearlyProjection} tonnes CO2 at current pace"
+
+          IMPORTANT: Different types each time! Real data! Add emojis for emotions.`}
+
+        Respond in JSON format:
+        {
+          "insights": [
+            {
+              "title": "${language === 'ru' ? 'Эмоциональный заголовок' : language === 'kk' ? 'Эмоционалды тақырып' : 'Emotional title'}",
+              "description": "${language === 'ru' ? 'Описание с данными и эмодзи' : language === 'kk' ? 'Деректер мен эмодзимен сипаттама' : 'Description with data and emojis'}",
+              "category": "electricity/gas/heating/water/environmental",
+              "potentialSavings": "${language === 'ru' ? 'потенциал снижения' : language === 'kk' ? 'азайту мүмкіндігі' : 'reduction potential'}",
+              "priority": "high/medium/low"
+            }
+          ]
+        }
+      `;
 
       
       const response = await this.openai.chat.completions.create({
@@ -697,7 +943,11 @@ Respond ONLY with valid JSON format. No markdown, no backticks, no extra text:
         messages: [
           {
             role: "system",
-            content: language === 'ru' ? "Вы Помощник по Экологическому Следу. Вы эксперт по воздействию на окружающую среду. Ваша задача - объяснять экологические воздействие через образы и эмоции. Всегда отвечайте на русском языке. Используйте различные стили общения для разнообразия." : language === 'kk' ? "Сіз Экологиялық Із жөніндегі Көмекшісіз. Сіз қоршаған ортаға әсер ету жөніндегі сарапшысыз. Сіздің міндетіңіз - экологиялық әсерді бейнелер мен эмоциялар арқылы түсіндіру. Әрқашан қазақ тілінде жауап беріңіз. Әртүрлілік үшін әр түрлі қатынас стильдерін қолданыңыз." : "You are the Footprint Assistant (Impact). You are an expert on environmental influence. Your task is to explain environmental impact through images and emotions. Always respond in English. Use random communication styles for variety."
+            content: language === 'ru' 
+              ? "Ты ИИ-консультант Econest по углеродному следу. Генерируй РАЗНООБРАЗНЫЕ инсайты с эмоциями и образами. Каждый раз используй РАЗНЫЕ типы. Добавляй эмодзи для визуализации. Отвечай ТОЛЬКО на русском языке." 
+              : language === 'kk' 
+              ? "Сіз Econest көміртегі ізі бойынша ЖИ-кеңесшісіз. Эмоциялар мен бейнелермен ӘРТҮРЛІ түсініктемелер жасаңыз. Әр рет БАСҚА типтерді қолданыңыз. Визуализация үшін эмодзи қосыңыз. Жауапты ТЕК қазақ тілінде беріңіз." 
+              : "You are Econest AI advisor for carbon footprint. Generate DIVERSE insights with emotions and images. Each time use DIFFERENT types. Add emojis for visualization. Respond ONLY in English."
           },
           {
             role: "user",
@@ -705,8 +955,8 @@ Respond ONLY with valid JSON format. No markdown, no backticks, no extra text:
           }
         ],
         response_format: { type: "json_object" },
-        temperature: 0.8, // Balanced creativity and speed  
-        max_tokens: 800 // Reduced for faster generation
+        temperature: 0.8,
+        max_tokens: 1000
       });
 
       const aiResponse = response.choices[0].message.content;
@@ -804,11 +1054,26 @@ Respond ONLY with valid JSON format. No markdown, no backticks, no extra text:
           sewage: parseFloat(previousMonth.sewage || '0')
         });
 
-        const percentChange = ((currentCO2.total - previousCO2.total) / previousCO2.total * 100);
+        const percentChange = previousCO2.total > 0 ? ((currentCO2.total - previousCO2.total) / previousCO2.total * 100) : 0;
         const trend = percentChange > 0 ? "increased" : "decreased";
-        monthComparisonText = `Compared to last month: CO2 emissions ${trend} by ${Math.abs(percentChange).toFixed(1)}% (from ${previousCO2.total}kg to ${currentCO2.total}kg).`;
+        
+        if (language === 'ru') {
+          const trendRu = percentChange > 0 ? "выросли" : "снизились";
+          monthComparisonText = `По сравнению с прошлым месяцем: выбросы CO2 ${trendRu} на ${Math.abs(percentChange).toFixed(1)}% (с ${previousCO2.total}кг до ${currentCO2.total}кг).`;
+        } else if (language === 'kk') {
+          const trendKk = percentChange > 0 ? "өсті" : "азайды";
+          monthComparisonText = `Өткен айға қарағанда: CO2 шығарындылары ${trendKk} ${Math.abs(percentChange).toFixed(1)}% (${previousCO2.total}кг-дан ${currentCO2.total}кг-ға дейін).`;
+        } else {
+          monthComparisonText = `Compared to last month: CO2 emissions ${trend} by ${Math.abs(percentChange).toFixed(1)}% (from ${previousCO2.total}kg to ${currentCO2.total}kg).`;
+        }
       } else {
-        monthComparisonText = "This is your first month of data, so no comparison with previous month is available.";
+        if (language === 'ru') {
+          monthComparisonText = "Это ваш первый месяц данных, сравнение с предыдущим месяцем недоступно.";
+        } else if (language === 'kk') {
+          monthComparisonText = "Бұл сіздің бірінші деректер айы, өткен аймен салыстыру қол жетімді емес.";
+        } else {
+          monthComparisonText = "This is your first month of data, so no comparison with previous month is available.";
+        }
       }
 
       // Calculate environmental equivalents
@@ -823,82 +1088,213 @@ Respond ONLY with valid JSON format. No markdown, no backticks, no extra text:
       const percentDiff = (((currentCO2.total - almatyAverage) / almatyAverage) * 100).toFixed(1);
       const comparisonType = currentCO2.total > almatyAverage ? "above" : "below";
 
-      // Get weather context
+      // Get weather context (localized)
       let weatherContext = "";
       try {
         const weather = await weatherService.getCurrentWeatherByRegion("Almaty");
         const forecast = await weatherService.getWeatherForecast("Almaty", 7);
         
         if (weather) {
-          weatherContext = `Current weather in Almaty: ${weather.temperature}°C, ${weather.description}. ${weather.impact}`;
-          
-          if (forecast && forecast.length > 0) {
-            const nextWeekTemp = forecast.slice(1, 4).map((f: any) => f.temperature || f.temp || weather.temperature).reduce((a: number, b: number) => a + b, 0) / 3;
-            const tempTrend = nextWeekTemp > weather.temperature ? "warmer" : "cooler";
-            weatherContext += ` Weather forecast: Next 3 days will be ${tempTrend} (avg ${Math.round(nextWeekTemp)}°C).`;
+          if (language === 'ru') {
+            weatherContext = `Текущая погода в Алматы: ${weather.temperature}°C, ${weather.description}. ${weather.impact}`;
+            if (forecast && forecast.length > 0) {
+              const nextWeekTemp = forecast.slice(1, 4).map((f: any) => f.temperature || f.temp || weather.temperature).reduce((a: number, b: number) => a + b, 0) / 3;
+              const tempTrend = nextWeekTemp > weather.temperature ? "теплее" : "прохладнее";
+              weatherContext += ` Прогноз: ближайшие 3 дня будет ${tempTrend} (средняя ${Math.round(nextWeekTemp)}°C).`;
+            }
+          } else if (language === 'kk') {
+            weatherContext = `Алматыдағы ағымдағы ауа-райы: ${weather.temperature}°C, ${weather.description}. ${weather.impact}`;
+            if (forecast && forecast.length > 0) {
+              const nextWeekTemp = forecast.slice(1, 4).map((f: any) => f.temperature || f.temp || weather.temperature).reduce((a: number, b: number) => a + b, 0) / 3;
+              const tempTrend = nextWeekTemp > weather.temperature ? "жылырақ" : "салқындау";
+              weatherContext += ` Болжам: келесі 3 күн ${tempTrend} болады (орташа ${Math.round(nextWeekTemp)}°C).`;
+            }
+          } else {
+            weatherContext = `Current weather in Almaty: ${weather.temperature}°C, ${weather.description}. ${weather.impact}`;
+            if (forecast && forecast.length > 0) {
+              const nextWeekTemp = forecast.slice(1, 4).map((f: any) => f.temperature || f.temp || weather.temperature).reduce((a: number, b: number) => a + b, 0) / 3;
+              const tempTrend = nextWeekTemp > weather.temperature ? "warmer" : "cooler";
+              weatherContext += ` Weather forecast: Next 3 days will be ${tempTrend} (avg ${Math.round(nextWeekTemp)}°C).`;
+            }
           }
         }
       } catch (error) {
         console.error("Weather service error for CO2 insights:", error);
       }
 
-      // Generate AI analysis using OpenAI
-      const prompt = `You are an environmental AI assistant analyzing CO2 emissions data. Please provide EXACTLY 3-4 insights in English only. Use the specific patterns provided below.
+      // Generate AI analysis using OpenAI with 7 diverse insight types
+      const prompt = `
+        CRITICAL: ${language === 'ru' ? 'Отвечай ТОЛЬКО на русском языке.' : language === 'kk' ? 'Жауапты ТЕКСЕН қазақ тілінде беріңіз.' : 'Respond ONLY in English.'}
 
-User's CO2 emissions data (current month):
-- Total CO2 emissions: ${currentCO2.total.toFixed(1)} kg
-- Electricity: ${currentCO2.breakdown.electricity.toFixed(1)} kg CO2 (${((currentCO2.breakdown.electricity/currentCO2.total)*100).toFixed(1)}%)
-- Gas: ${currentCO2.breakdown.gas.toFixed(1)} kg CO2 (${((currentCO2.breakdown.gas/currentCO2.total)*100).toFixed(1)}%)
-- Heating: ${currentCO2.breakdown.heating.toFixed(1)} kg CO2 (${((currentCO2.breakdown.heating/currentCO2.total)*100).toFixed(1)}%)
-- Water: ${(currentCO2.breakdown.coldWater + currentCO2.breakdown.hotWater + currentCO2.breakdown.sewage).toFixed(1)} kg CO2 (${(((currentCO2.breakdown.coldWater + currentCO2.breakdown.hotWater + currentCO2.breakdown.sewage)/currentCO2.total)*100).toFixed(1)}%)
+        ${language === 'ru' ? 'Проанализируй углеродный след и создай 3-4 РАЗНЫХ типа инсайтов из списка ниже.' : language === 'kk' ? 'Көміртегі ізін талдап, төмендегі тізімнен 3-4 ТҮРЛІ түсініктеме жасаңыз.' : 'Analyze carbon footprint and create 3-4 DIFFERENT types of insights from the list below.'}
 
-Regional comparison:
-- Your emissions: ${currentCO2.total.toFixed(1)} kg CO2
-- Almaty average: ${almatyAverage} kg CO2
-- You are ${Math.abs(parseFloat(percentDiff))}% ${comparisonType} average
+        ${language === 'ru' ? `Данные CO2 выбросов (текущий месяц):
+        - Общие выбросы CO2: ${currentCO2.total.toFixed(1)} кг
+        - Электричество: ${currentCO2.breakdown.electricity.toFixed(1)} кг CO2 (${((currentCO2.breakdown.electricity/currentCO2.total)*100).toFixed(1)}%)
+        - Газ: ${currentCO2.breakdown.gas.toFixed(1)} кг CO2 (${((currentCO2.breakdown.gas/currentCO2.total)*100).toFixed(1)}%)
+        - Отопление: ${currentCO2.breakdown.heating.toFixed(1)} кг CO2 (${((currentCO2.breakdown.heating/currentCO2.total)*100).toFixed(1)}%)
+        - Вода: ${(currentCO2.breakdown.coldWater + currentCO2.breakdown.hotWater + currentCO2.breakdown.sewage).toFixed(1)} кг CO2
 
-Environmental equivalents:
-- ${fuelLiters} liters of gasoline
-- ${treesNeeded} trees needed to offset per year
-- ${flightsAlmatyAstana} Almaty-Astana flights
-- Yearly projection: ${yearlyProjection} tonnes CO2
-- Equivalent to ${householdsEquivalent} households
+        Региональное сравнение:
+        - Ваши выбросы: ${currentCO2.total.toFixed(1)} кг CO2
+        - Средний по Алматы: ${almatyAverage} кг CO2
+        - Вы на ${Math.abs(parseFloat(percentDiff))}% ${comparisonType === 'above' ? 'выше' : 'ниже'} среднего
 
-Month-to-month comparison:
-${monthComparisonText}
+        Эквиваленты:
+        - ${fuelLiters} литров бензина
+        - ${treesNeeded} деревьев для компенсации в год
+        - ${flightsAlmatyAstana} рейсов Алматы-Астана
+        - Годовой прогноз: ${yearlyProjection} тонн CO2
 
-${weatherContext}
+        Изменение за месяц: ${monthComparisonText}
+        Погода: ${weatherContext}` 
+        : language === 'kk' ? 
+        `CO2 шығарындылары деректері (ағымдағы ай):
+        - Жалпы CO2 шығарындылары: ${currentCO2.total.toFixed(1)} кг
+        - Электр: ${currentCO2.breakdown.electricity.toFixed(1)} кг CO2 (${((currentCO2.breakdown.electricity/currentCO2.total)*100).toFixed(1)}%)
+        - Газ: ${currentCO2.breakdown.gas.toFixed(1)} кг CO2 (${((currentCO2.breakdown.gas/currentCO2.total)*100).toFixed(1)}%)
+        - Жылыту: ${currentCO2.breakdown.heating.toFixed(1)} кг CO2 (${((currentCO2.breakdown.heating/currentCO2.total)*100).toFixed(1)}%)
+        - Су: ${(currentCO2.breakdown.coldWater + currentCO2.breakdown.hotWater + currentCO2.breakdown.sewage).toFixed(1)} кг CO2
 
-Use these EXACT patterns in your responses:
-1. CO₂ calculation: "Your monthly carbon footprint was {total} kg CO₂. That's {percent}% {direction} than last month."
-2. Category breakdown: "Main contributors: {category1} ({amount} kg CO₂, {share}%), {category2} ({amount} kg CO₂, {share}%)."
-3. Regional comparison: "You have {total} kg CO₂, Almaty average is {average} kg. That's {percent}% {direction}."
-4. Equivalents: "{total} kg CO₂ = {liters} liters of gasoline or {trees} trees needed to offset per year 🌱"
-5. Emotional conclusion: "At this pace, your yearly footprint will be {yearly} tonnes CO₂. This equals the impact of {households} households."
+        Аймақтық салыстыру:
+        - Сіздің шығарындыларыңыз: ${currentCO2.total.toFixed(1)} кг CO2
+        - Алматы орташа: ${almatyAverage} кг CO2
+        - Сіз орташадан ${Math.abs(parseFloat(percentDiff))}% ${comparisonType === 'above' ? 'жоғары' : 'төмен'}
 
-For each insight, provide:
-- title: Brief descriptive title (poetic/emotional style)
-- description: Use the patterns above with actual calculated values
-- category: electricity, gas, heating, water, or environmental
-- priority: high, medium, or low
-- potentialSavings: Estimated CO2 reduction potential (e.g., "15kg CO2 per month")
+        Эквиваленттер:
+        - ${fuelLiters} литр бензин
+        - ${treesNeeded} ағаш өтемақы үшін жылына
+        - ${flightsAlmatyAstana} Алматы-Астана рейсі
+        - Жылдық болжам: ${yearlyProjection} тонна CO2
 
-Respond in JSON format as an array of insights. Use ONLY ${language === 'ru' ? 'Russian' : language === 'kk' ? 'Kazakh' : 'English'} language.`;
+        Ай бойынша өзгеріс: ${monthComparisonText}
+        Ауа-райы: ${weatherContext}` 
+        : 
+        `CO2 emissions data (current month):
+        - Total CO2 emissions: ${currentCO2.total.toFixed(1)} kg
+        - Electricity: ${currentCO2.breakdown.electricity.toFixed(1)} kg CO2 (${((currentCO2.breakdown.electricity/currentCO2.total)*100).toFixed(1)}%)
+        - Gas: ${currentCO2.breakdown.gas.toFixed(1)} kg CO2 (${((currentCO2.breakdown.gas/currentCO2.total)*100).toFixed(1)}%)
+        - Heating: ${currentCO2.breakdown.heating.toFixed(1)} kg CO2 (${((currentCO2.breakdown.heating/currentCO2.total)*100).toFixed(1)}%)
+        - Water: ${(currentCO2.breakdown.coldWater + currentCO2.breakdown.hotWater + currentCO2.breakdown.sewage).toFixed(1)} kg CO2
+
+        Regional comparison:
+        - Your emissions: ${currentCO2.total.toFixed(1)} kg CO2
+        - Almaty average: ${almatyAverage} kg CO2
+        - You are ${Math.abs(parseFloat(percentDiff))}% ${comparisonType === 'above' ? 'above' : 'below'} average
+
+        Equivalents:
+        - ${fuelLiters} liters of gasoline
+        - ${treesNeeded} trees to offset per year
+        - ${flightsAlmatyAstana} Almaty-Astana flights
+        - Yearly projection: ${yearlyProjection} tonnes CO2
+
+        Monthly change: ${monthComparisonText}
+        Weather: ${weatherContext}`}
+
+        7 ТИПОВ ИНСАЙТОВ (используй РАЗНЫЕ типы каждый раз):
+
+        ${language === 'ru' ? 
+          `1. ИНФОРМАЦИОННЫЕ - констатация фактов:
+          Пример: "Твой углеродный след за месяц составил ${currentCO2.total.toFixed(1)} кг CO2"
+
+          2. РЕКОМЕНДАТЕЛЬНЫЕ - конкретные советы:
+          Пример: "Снижение потребления электричества на 10% уменьшит выбросы на ${(currentCO2.breakdown.electricity * 0.1).toFixed(1)} кг CO2"
+
+          3. ДИНАМИЧЕСКИЕ - показывают изменения:
+          Пример: "По сравнению с прошлым месяцем выбросы ${currentCO2.total > (previousCO2?.total || currentCO2.total) ? 'увеличились' : 'снизились'}"
+
+          4. ОБЪЯСНИТЕЛЬНО-АНАЛИТИЧЕСКИЕ - анализ причин:
+          Пример: "Основной источник выбросов — ${currentCO2.breakdown.electricity > currentCO2.breakdown.gas ? 'электричество' : 'газ'} (${Math.max(currentCO2.breakdown.electricity, currentCO2.breakdown.gas).toFixed(1)} кг CO2)"
+
+          5. МОТИВАЦИОННЫЕ - поощрение прогресса:
+          Пример: "Отличная работа! Твои выбросы ${comparisonType === 'below' ? 'ниже' : 'близки к'} среднему по региону"
+
+          6. ОБЗОРНЫЕ - месячные итоги с эквивалентами:
+          Пример: "${currentCO2.total.toFixed(1)} кг CO2 = ${fuelLiters} л бензина или ${treesNeeded} деревьев для компенсации"
+
+          7. ПЛАНИРОВОЧНЫЕ - прогноз и цели:
+          Пример: "При текущем темпе годовой след будет ${yearlyProjection} тонн CO2"
+
+          ВАЖНО: Генерируй РАЗНЫЕ типы каждый раз! Используй РЕАЛЬНЫЕ данные из промпта!` 
+          : language === 'kk' ? 
+          `1. АҚПАРАТТЫҚ - фактілерді баяндау:
+          Мысал: "Сіздің айлық көміртегі ізі ${currentCO2.total.toFixed(1)} кг CO2 құрады"
+
+          2. ҰСЫНЫМДЫҚ - нақты кеңестер:
+          Мысал: "Электр тұтынуды 10% азайту ${(currentCO2.breakdown.electricity * 0.1).toFixed(1)} кг CO2 азайтады"
+
+          3. ДИНАМИКАЛЫҚ - өзгерістерді көрсету:
+          Мысал: "Өткен айға қарағанда шығарындылар ${currentCO2.total > (previousCO2?.total || currentCO2.total) ? 'өсті' : 'азайды'}"
+
+          4. ТҮСІНДІРМЕЛІ-ТАЛДАМАЛЫҚ - себептерді талдау:
+          Мысал: "Негізгі көз — ${currentCO2.breakdown.electricity > currentCO2.breakdown.gas ? 'электр' : 'газ'} (${Math.max(currentCO2.breakdown.electricity, currentCO2.breakdown.gas).toFixed(1)} кг CO2)"
+
+          5. МОТИВАЦИЯЛЫҚ - үдерісті мадақтау:
+          Мысал: "Керемет! Шығарындыларыңыз аймақ бойынша ${comparisonType === 'below' ? 'төмен' : 'орташа деңгейде'}"
+
+          6. ШОЛУ - айлық қорытынды эквиваленттермен:
+          Мысал: "${currentCO2.total.toFixed(1)} кг CO2 = ${fuelLiters} л бензин немесе ${treesNeeded} ағаш өтемақы үшін"
+
+          7. ЖОСПАРЛАУ - болжам және мақсаттар:
+          Мысал: "Қазіргі қарқында жылдық із ${yearlyProjection} тонна CO2 болады"
+
+          МАҢЫЗДЫ: Әр рет ТҮРЛІ типтер қолдан! Промпттағі НАҚТЫ деректерді пайдалан!` 
+          : 
+          `1. DESCRIPTIVE - state facts:
+          Example: "Your monthly carbon footprint was ${currentCO2.total.toFixed(1)} kg CO2"
+
+          2. ADVISORY - specific advice:
+          Example: "Reducing electricity by 10% would cut emissions by ${(currentCO2.breakdown.electricity * 0.1).toFixed(1)} kg CO2"
+
+          3. PROGRESS TRACKING - show changes:
+          Example: "Compared to last month, emissions ${currentCO2.total > (previousCO2?.total || currentCO2.total) ? 'increased' : 'decreased'}"
+
+          4. CAUSAL/INSIGHT - analyze causes:
+          Example: "Main source is ${currentCO2.breakdown.electricity > currentCO2.breakdown.gas ? 'electricity' : 'gas'} (${Math.max(currentCO2.breakdown.electricity, currentCO2.breakdown.gas).toFixed(1)} kg CO2)"
+
+          5. ENGAGEMENT - encourage progress:
+          Example: "Great work! Your emissions are ${comparisonType === 'below' ? 'below' : 'near'} regional average"
+
+          6. SUMMARY - monthly recap with equivalents:
+          Example: "${currentCO2.total.toFixed(1)} kg CO2 = ${fuelLiters}L gasoline or ${treesNeeded} trees to offset"
+
+          7. FORECAST - predictions and goals:
+          Example: "At current pace, yearly footprint will be ${yearlyProjection} tonnes CO2"
+
+          IMPORTANT: Generate DIFFERENT types each time! Use REAL data from prompt!`}
+
+        Respond in JSON format:
+        {
+          "insights": [
+            {
+              "title": "${language === 'ru' ? 'Заголовок инсайта' : language === 'kk' ? 'Түсініктеме тақырыбы' : 'Insight title'}",
+              "description": "${language === 'ru' ? 'Описание с РЕАЛЬНЫМИ данными' : language === 'kk' ? 'НАҚТЫ деректермен сипаттама' : 'Description with REAL data'}",
+              "category": "electricity/gas/heating/water/environmental",
+              "potentialSavings": "${language === 'ru' ? 'потенциальное снижение CO2' : language === 'kk' ? 'CO2 азайтудың мүмкіндігі' : 'potential CO2 reduction'}",
+              "priority": "high/medium/low"
+            }
+          ]
+        }
+      `;
 
       
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4o-mini", // Updated to support JSON format
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
-            content: `You are an environmental AI assistant. Always respond in ${language === 'ru' ? 'Russian' : language === 'kk' ? 'Kazakh' : 'English'} only. Use the exact patterns provided to create insights with specific environmental equivalents and emotional metaphors.`
+            content: language === 'ru' 
+              ? "Ты ИИ-консультант Econest по анализу углеродного следа. Генерируй РАЗНООБРАЗНЫЕ инсайты из 7 типов. Каждый раз используй РАЗНЫЕ типы (не повторяйся!). Используй РЕАЛЬНЫЕ данные из промпта. Отвечай ТОЛЬКО на русском языке." 
+              : language === 'kk' 
+              ? "Сіз Econest көміртегі ізін талдау бойынша ЖИ-кеңесшісіз. 7 типтен ӘРТҮРЛІ түсініктемелер жасаңыз. Әр рет БАСҚА типтерді қолданыңыз (қайталамаңыз!). Промпттан НАҚТЫ деректерді пайдаланыңыз. Жауапты ТЕК қазақ тілінде беріңіз." 
+              : "You are Econest AI advisor for carbon footprint analysis. Generate DIVERSE insights from 7 types. Each time use DIFFERENT types (don't repeat!). Use REAL data from prompt. Respond ONLY in English."
           },
           {
             role: "user", 
             content: prompt
           }
         ],
-        temperature: 0.7,
+        temperature: 0.8,
         max_tokens: 1200
       });
 
