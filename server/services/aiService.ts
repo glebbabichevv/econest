@@ -164,25 +164,19 @@ class AIService {
         return this.generateFallbackRecommendations(userId); // Fallback to basic recommendations
       }
 
-      // Calculate consumption summary from monthly readings
-      const consumptionSummary = readings.reduce((acc, reading) => {
-        acc.coldWater += parseFloat(reading.coldWater || '0');
-        acc.hotWater += parseFloat(reading.hotWater || '0');
-        acc.sewage += parseFloat(reading.sewage || '0');
-        acc.heating += parseFloat(reading.heating || '0');
-        acc.electricity += parseFloat(reading.electricity || '0');
-        acc.gas += parseFloat(reading.gas || '0');
-        return acc;
-      }, { coldWater: 0, hotWater: 0, sewage: 0, heating: 0, electricity: 0, gas: 0 });
-
-      // Calculate monthly averages
-      const avgConsumption = Object.keys(consumptionSummary).reduce((acc, key) => {
-        acc[key as keyof typeof acc] = consumptionSummary[key as keyof typeof consumptionSummary] / readings.length;
-        return acc;
-      }, { coldWater: 0, hotWater: 0, sewage: 0, heating: 0, electricity: 0, gas: 0 });
+      // Use CURRENT month data (most recent reading)
+      const currentReading = readings[0];
+      const currentConsumption = {
+        coldWater: parseFloat(currentReading.coldWater || '0'),
+        hotWater: parseFloat(currentReading.hotWater || '0'),
+        sewage: parseFloat(currentReading.sewage || '0'),
+        heating: parseFloat(currentReading.heating || '0'),
+        electricity: parseFloat(currentReading.electricity || '0'),
+        gas: parseFloat(currentReading.gas || '0')
+      };
 
       // Calculate current and previous costs
-      const currentCost = this.calculateTotalCost(avgConsumption);
+      const currentCost = this.calculateTotalCost(currentConsumption);
       const previousMonthCost = readings.length > 1 ? this.calculateTotalCost({
         coldWater: parseFloat(readings[1].coldWater || '0'),
         hotWater: parseFloat(readings[1].hotWater || '0'),
@@ -241,13 +235,13 @@ class AIService {
 
         ${language === 'ru' ? 'Проанализируй данные о потреблении и создай 4-5 РАЗНЫХ типов рекомендаций из списка ниже.' : language === 'kk' ? 'Тұтыну деректерін талдап, төмендегі тізімнен 4-5 ТҮРЛІ ұсыныс жасаңыз.' : 'Analyze consumption data and create 4-5 DIFFERENT types of recommendations from the list below.'}
 
-        ${language === 'ru' ? `Данные пользователя за последние месяцы:
-        - Холодная вода: ${avgConsumption.coldWater.toFixed(1)} м³ (${(avgConsumption.coldWater * this.UTILITY_RATES.coldWater).toFixed(0)} ₸)
-        - Горячая вода: ${avgConsumption.hotWater.toFixed(1)} м³ (${(avgConsumption.hotWater * this.UTILITY_RATES.hotWater).toFixed(0)} ₸)
-        - Канализация: ${avgConsumption.sewage.toFixed(1)} м³ (${(avgConsumption.sewage * this.UTILITY_RATES.sewage).toFixed(0)} ₸)
-        - Отопление: ${avgConsumption.heating.toFixed(1)} Гкал (${(avgConsumption.heating * this.UTILITY_RATES.heating).toFixed(0)} ₸)
-        - Электричество: ${avgConsumption.electricity.toFixed(1)} кВт⋅ч (${this.calculateElectricityCost(avgConsumption.electricity).toFixed(0)} ₸)
-        - Газ: ${avgConsumption.gas.toFixed(1)} м³ (${(avgConsumption.gas * this.UTILITY_RATES.gas).toFixed(0)} ₸)
+        ${language === 'ru' ? `Данные пользователя за текущий месяц:
+        - Холодная вода: ${currentConsumption.coldWater.toFixed(1)} м³ (${(currentConsumption.coldWater * this.UTILITY_RATES.coldWater).toFixed(0)} ₸)
+        - Горячая вода: ${currentConsumption.hotWater.toFixed(1)} м³ (${(currentConsumption.hotWater * this.UTILITY_RATES.hotWater).toFixed(0)} ₸)
+        - Канализация: ${currentConsumption.sewage.toFixed(1)} м³ (${(currentConsumption.sewage * this.UTILITY_RATES.sewage).toFixed(0)} ₸)
+        - Отопление: ${currentConsumption.heating.toFixed(1)} Гкал (${(currentConsumption.heating * this.UTILITY_RATES.heating).toFixed(0)} ₸)
+        - Электричество: ${currentConsumption.electricity.toFixed(1)} кВт⋅ч (${this.calculateElectricityCost(currentConsumption.electricity).toFixed(0)} ₸)
+        - Газ: ${currentConsumption.gas.toFixed(1)} м³ (${(currentConsumption.gas * this.UTILITY_RATES.gas).toFixed(0)} ₸)
         
         Общая стоимость: ${currentCost.toFixed(0)} ₸
         Прошлый месяц: ${previousMonthCost.toFixed(0)} ₸
@@ -260,13 +254,13 @@ class AIService {
 
         Сезонный контекст: ${weatherContext}` 
         : language === 'kk' ? 
-        `Соңғы айлар бойынша пайдаланушы деректері:
-        - Суық су: ${avgConsumption.coldWater.toFixed(1)} м³ (${(avgConsumption.coldWater * this.UTILITY_RATES.coldWater).toFixed(0)} ₸)
-        - Ыстық су: ${avgConsumption.hotWater.toFixed(1)} м³ (${(avgConsumption.hotWater * this.UTILITY_RATES.hotWater).toFixed(0)} ₸)
-        - Кәріз: ${avgConsumption.sewage.toFixed(1)} м³ (${(avgConsumption.sewage * this.UTILITY_RATES.sewage).toFixed(0)} ₸)
-        - Жылыту: ${avgConsumption.heating.toFixed(1)} Гкал (${(avgConsumption.heating * this.UTILITY_RATES.heating).toFixed(0)} ₸)
-        - Электр: ${avgConsumption.electricity.toFixed(1)} кВт⋅сағ (${this.calculateElectricityCost(avgConsumption.electricity).toFixed(0)} ₸)
-        - Газ: ${avgConsumption.gas.toFixed(1)} м³ (${(avgConsumption.gas * this.UTILITY_RATES.gas).toFixed(0)} ₸)
+        `Ағымдағы ай бойынша пайдаланушы деректері:
+        - Суық су: ${currentConsumption.coldWater.toFixed(1)} м³ (${(currentConsumption.coldWater * this.UTILITY_RATES.coldWater).toFixed(0)} ₸)
+        - Ыстық су: ${currentConsumption.hotWater.toFixed(1)} м³ (${(currentConsumption.hotWater * this.UTILITY_RATES.hotWater).toFixed(0)} ₸)
+        - Кәріз: ${currentConsumption.sewage.toFixed(1)} м³ (${(currentConsumption.sewage * this.UTILITY_RATES.sewage).toFixed(0)} ₸)
+        - Жылыту: ${currentConsumption.heating.toFixed(1)} Гкал (${(currentConsumption.heating * this.UTILITY_RATES.heating).toFixed(0)} ₸)
+        - Электр: ${currentConsumption.electricity.toFixed(1)} кВт⋅сағ (${this.calculateElectricityCost(currentConsumption.electricity).toFixed(0)} ₸)
+        - Газ: ${currentConsumption.gas.toFixed(1)} м³ (${(currentConsumption.gas * this.UTILITY_RATES.gas).toFixed(0)} ₸)
         
         Жалпы құн: ${currentCost.toFixed(0)} ₸
         Өткен ай: ${previousMonthCost.toFixed(0)} ₸
@@ -279,13 +273,13 @@ class AIService {
 
         Маусымдық контекст: ${weatherContext}` 
         : 
-        `User's monthly consumption data:
-        - Cold Water: ${avgConsumption.coldWater.toFixed(1)} m³ (${(avgConsumption.coldWater * this.UTILITY_RATES.coldWater).toFixed(0)} ₸)
-        - Hot Water: ${avgConsumption.hotWater.toFixed(1)} m³ (${(avgConsumption.hotWater * this.UTILITY_RATES.hotWater).toFixed(0)} ₸)
-        - Sewage: ${avgConsumption.sewage.toFixed(1)} m³ (${(avgConsumption.sewage * this.UTILITY_RATES.sewage).toFixed(0)} ₸)
-        - Heating: ${avgConsumption.heating.toFixed(1)} Gcal (${(avgConsumption.heating * this.UTILITY_RATES.heating).toFixed(0)} ₸)
-        - Electricity: ${avgConsumption.electricity.toFixed(1)} kWh (${this.calculateElectricityCost(avgConsumption.electricity).toFixed(0)} ₸)
-        - Gas: ${avgConsumption.gas.toFixed(1)} m³ (${(avgConsumption.gas * this.UTILITY_RATES.gas).toFixed(0)} ₸)
+        `User's current month consumption data:
+        - Cold Water: ${currentConsumption.coldWater.toFixed(1)} m³ (${(currentConsumption.coldWater * this.UTILITY_RATES.coldWater).toFixed(0)} ₸)
+        - Hot Water: ${currentConsumption.hotWater.toFixed(1)} m³ (${(currentConsumption.hotWater * this.UTILITY_RATES.hotWater).toFixed(0)} ₸)
+        - Sewage: ${currentConsumption.sewage.toFixed(1)} m³ (${(currentConsumption.sewage * this.UTILITY_RATES.sewage).toFixed(0)} ₸)
+        - Heating: ${currentConsumption.heating.toFixed(1)} Gcal (${(currentConsumption.heating * this.UTILITY_RATES.heating).toFixed(0)} ₸)
+        - Electricity: ${currentConsumption.electricity.toFixed(1)} kWh (${this.calculateElectricityCost(currentConsumption.electricity).toFixed(0)} ₸)
+        - Gas: ${currentConsumption.gas.toFixed(1)} m³ (${(currentConsumption.gas * this.UTILITY_RATES.gas).toFixed(0)} ₸)
         
         Total monthly cost: ${currentCost.toFixed(0)} ₸
         Previous month: ${previousMonthCost.toFixed(0)} ₸
@@ -303,7 +297,7 @@ class AIService {
         ${language === 'ru' ? 
           `1. ИНФОРМАЦИОННЫЕ (Descriptive) - констатация фактов:
           Формат: [Период] + [тип ресурса] + [значение]
-          Пример: "В прошлом месяце ты израсходовал ${avgConsumption.electricity.toFixed(1)} кВт⋅ч электроэнергии"
+          Пример: "В этом месяце ты израсходовал 120 кВт⋅ч электроэнергии - это на 15% меньше среднего по Алматы (220 кВт⋅ч). Твой подход к экономии работает отлично!"
 
           2. РЕКОМЕНДАТЕЛЬНЫЕ (Advisory) - конкретные советы:
           Формат: [Совет] + [ожидаемый эффект]
@@ -333,7 +327,7 @@ class AIService {
           : language === 'kk' ? 
           `1. АҚПАРАТТЫҚ (Descriptive) - фактілерді баяндау:
           Формат: [Кезең] + [ресурс түрі] + [мән]
-          Мысал: "Өткен айда ${avgConsumption.electricity.toFixed(1)} кВт⋅сағ электр энергиясын тұтындыңыз"
+          Мысал: "Осы айда 120 кВт⋅сағ электр энергиясын тұтындыңыз - бұл Алматы орташасынан (220 кВт⋅сағ) 15% аз. Үнемдеуге деген көзқарасыңыз тамаша жұмыс істеп тұр!"
 
           2. ҰСЫНЫМДЫҚ (Advisory) - нақты кеңестер:
           Формат: [Кеңес] + [күтілетін әсер]
@@ -363,7 +357,7 @@ class AIService {
           : 
           `1. DESCRIPTIVE (Informational) - state facts:
           Format: [Period] + [resource type] + [value]
-          Example: "Last month you consumed ${avgConsumption.electricity.toFixed(1)} kWh of electricity"
+          Example: "This month you consumed 120 kWh of electricity - that's 15% below Almaty average (220 kWh). Your conservation approach is working excellently! Keep it up and you could save even more."
 
           2. ADVISORY (Recommendations) - specific advice:
           Format: [Advice] + [expected effect]
@@ -412,10 +406,10 @@ class AIService {
           {
             role: "system",
             content: language === 'ru' 
-              ? "Ты ИИ-консультант Econest по оптимизации потребления ресурсов. Твоя задача:\n\n1. Отвечать ТОЛЬКО на русском языке\n2. Генерировать РАЗНООБРАЗНЫЕ типы рекомендаций из 7 доступных типов\n3. Каждый раз использовать РАЗНЫЕ типы (не повторяться!)\n4. Использовать РЕАЛЬНЫЕ данные пользователя из промпта\n5. Делать точные расчеты с конкретными цифрами\n\nКаждая генерация должна содержать разные комбинации типов рекомендаций!" 
+              ? "Ты ИИ-консультант Econest по оптимизации потребления ресурсов. Твоя задача:\n\n1. Отвечать ТОЛЬКО на русском языке\n2. Генерировать РАЗНООБРАЗНЫЕ типы рекомендаций из 7 доступных типов\n3. Каждый раз использовать РАЗНЫЕ типы (не повторяться!)\n4. Использовать РЕАЛЬНЫЕ данные пользователя из промпта\n5. Делать точные расчеты с конкретными цифрами\n6. Писать ПОДРОБНО и РАЗВЕРНУТО - минимум 2-3 предложения в описании\n7. Указывать конкретные значения и проценты из данных пользователя\n\nКаждая генерация должна содержать разные комбинации типов рекомендаций! Рекомендации должны быть детальными и информативными." 
               : language === 'kk' 
-              ? "Сіз Econest ресурстарды тұтынуды оңтайландыру бойынша ЖИ-кеңесшісіз. Сіздің міндетіңіз:\n\n1. Жауапты ТЕК қазақ тілінде беру\n2. 7 қолжетімді типтен ӘРТҮРЛІ ұсыныстар жасау\n3. Әр рет БАСҚА типтерді қолдану (қайталамау!)\n4. Промпттан пайдаланушының НАҚТЫ деректерін пайдалану\n5. Нақты сандармен дәл есептеулер жасау\n\nӘр генерация әртүрлі ұсыныс типтерінің комбинацияларын қамтуы керек!" 
-              : "You are Econest AI advisor for resource consumption optimization. Your task:\n\n1. Respond ONLY in English\n2. Generate DIVERSE types of recommendations from 7 available types\n3. Each time use DIFFERENT types (don't repeat!)\n4. Use REAL user data from the prompt\n5. Make precise calculations with specific numbers\n\nEach generation must contain different combinations of recommendation types!"
+              ? "Сіз Econest ресурстарды тұтынуды оңтайландыру бойынша ЖИ-кеңесшісіз. Сіздің міндетіңіз:\n\n1. Жауапты ТЕК қазақ тілінде беру\n2. 7 қолжетімді типтен ӘРТҮРЛІ ұсыныстар жасау\n3. Әр рет БАСҚА типтерді қолдану (қайталамау!)\n4. Промпттан пайдаланушының НАҚТЫ деректерін пайдалану\n5. Нақты сандармен дәл есептеулер жасау\n6. ТОЛЫҚ және ЕГЖЕЙ-ТЕГЖЕЙЛІ жазу - сипаттамада кемінде 2-3 сөйлем\n7. Пайдаланушы деректерінен нақты мәндер мен пайыздарды көрсету\n\nӘр генерация әртүрлі ұсыныс типтерінің комбинацияларын қамтуы керек! Ұсыныстар егжей-тегжейлі және ақпараттық болуы керек." 
+              : "You are Econest AI advisor for resource consumption optimization. Your task:\n\n1. Respond ONLY in English\n2. Generate DIVERSE types of recommendations from 7 available types\n3. Each time use DIFFERENT types (don't repeat!)\n4. Use REAL user data from the prompt\n5. Make precise calculations with specific numbers\n6. Write DETAILED and COMPREHENSIVE - minimum 2-3 sentences in description\n7. Include specific values and percentages from user data\n\nEach generation must contain different combinations of recommendation types! Recommendations should be detailed and informative."
           },
           {
             role: "user",
